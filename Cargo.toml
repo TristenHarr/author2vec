@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["shared", "corpus", "web"]
+# NOTE: intentionally no `default-members`. dioxus-cli 0.7.9 panics when run from a
+# subdirectory if the workspace lists default-members (it canonicalizes those paths
+# relative to the cwd). Build the pieces with explicit commands instead:
+#   cargo run -p corpus --release   # native pipeline
+#   cd web && dx serve              # wasm app
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+
+[profile.release]
+opt-level = 3

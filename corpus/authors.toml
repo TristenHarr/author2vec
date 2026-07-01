@@ -1,0 +1,522 @@
+# Curated famous, English-original, public-domain authors from Project Gutenberg.
+# English-original only, so the embedding signal is the *author's* style rather than
+# a translator's. `id` is the Project Gutenberg ebook number. `series` groups books
+# that share characters/setting so they can be held out together. `gender` and
+# `country` (birth country) are traits we try to recover from writing style alone.
+
+[[authors]]
+name = "Jane Austen"
+color = "#e6194b"
+gender = "Female"
+country = "England"
+books = [
+  { id = 1342, title = "Pride and Prejudice" },
+  { id = 161,  title = "Sense and Sensibility" },
+]
+
+[[authors]]
+name = "Charles Dickens"
+color = "#3cb44b"
+gender = "Male"
+country = "England"
+books = [
+  { id = 98,  title = "A Tale of Two Cities" },
+  { id = 1400, title = "Great Expectations" },
+]
+
+[[authors]]
+name = "Mark Twain"
+color = "#ffe119"
+gender = "Male"
+country = "United States"
+books = [
+  { id = 76, title = "Adventures of Huckleberry Finn", series = "Tom and Huck" },
+  { id = 74, title = "The Adventures of Tom Sawyer", series = "Tom and Huck" },
+  { id = 86, title = "A Connecticut Yankee in King Arthur's Court" },
+]
+
+[[authors]]
+name = "Edgar Allan Poe"
+color = "#4363d8"
+gender = "Male"
+country = "United States"
+books = [
+  { id = 2147, title = "The Works of Edgar Allan Poe, Vol. 1" },
+  { id = 2148, title = "The Works of Edgar Allan Poe, Vol. 2" },
+]
+
+[[authors]]
+name = "Arthur Conan Doyle"
+color = "#f58231"
+gender = "Male"
+country = "Scotland"
+books = [
+  { id = 1661, title = "The Adventures of Sherlock Holmes", series = "Sherlock Holmes" },
+  { id = 2852, title = "The Hound of the Baskervilles", series = "Sherlock Holmes" },
+  { id = 139, title = "The Lost World" },
+]
+
+[[authors]]
+name = "Mary Shelley"
+color = "#911eb4"
+gender = "Female"
+country = "England"
+books = [
+  { id = 84,    title = "Frankenstein" },
+  { id = 18247, title = "The Last Man" },
+]
+
+[[authors]]
+name = "Oscar Wilde"
+color = "#46f0f0"
+gender = "Male"
+country = "Ireland"
+books = [
+  { id = 174, title = "The Picture of Dorian Gray" },
+  { id = 844, title = "The Importance of Being Earnest" },
+]
+
+[[authors]]
+name = "Herman Melville"
+color = "#f032e6"
+gender = "Male"
+country = "United States"
+books = [
+  { id = 2701, title = "Moby Dick" },
+  { id = 1900, title = "Typee" },
+]
+
+[[authors]]
+name = "Bram Stoker"
+color = "#008080"
+gender = "Male"
+country = "Ireland"
+books = [
+  { id = 345,  title = "Dracula" },
+  { id = 3781, title = "The Jewel of Seven Stars" },
+]
+
+[[authors]]
+name = "Louisa May Alcott"
+color = "#9a6324"
+gender = "Female"
+country = "United States"
+books = [
+  { id = 514,  title = "Little Women", series = "March Family" },
+  { id = 2788, title = "Little Men", series = "March Family" },
+  { id = 2726, title = "Eight Cousins" },
+]
+
+[[authors]]
+name = "H. G. Wells"
+color = "#800000"
+gender = "Male"
+country = "England"
+books = [
+  { id = 36, title = "The War of the Worlds" },
+  { id = 35, title = "The Time Machine" },
+]
+
+[[authors]]
+name = "Charlotte Bronte"
+color = "#808000"
+gender = "Female"
+country = "England"
+books = [
+  { id = 1260, title = "Jane Eyre" },
+  { id = 9182, title = "Villette" },
+]
+
+[[authors]]
+name = "Lewis Carroll"
+color = "#000075"
+gender = "Male"
+country = "England"
+books = [
+  { id = 11, title = "Alice's Adventures in Wonderland", series = "Alice" },
+  { id = 12, title = "Through the Looking-Glass", series = "Alice" },
+  { id = 620, title = "Sylvie and Bruno" },
+]
+
+[[authors]]
+name = "Robert Louis Stevenson"
+color = "#e6beff"
+gender = "Male"
+country = "Scotland"
+books = [
+  { id = 120, title = "Treasure Island" },
+  { id = 421, title = "Kidnapped" },
+]
+
+[[authors]]
+name = "George Eliot"
+color = "#bfef45"
+gender = "Female"
+country = "England"
+books = [
+  { id = 145, title = "Middlemarch" },
+  { id = 550, title = "Silas Marner" },
+]
+
+[[authors]]
+name = "Anne Bronte"
+color = "#fabed4"
+gender = "Female"
+country = "England"
+books = [
+  { id = 767, title = "Agnes Grey" },
+  { id = 969, title = "The Tenant of Wildfell Hall" },
+]
+
+[[authors]]
+name = "Elizabeth Gaskell"
+color = "#aaffc3"
+gender = "Female"
+country = "England"
+books = [
+  { id = 394,  title = "Cranford" },
+  { id = 4276, title = "North and South" },
+]
+
+[[authors]]
+name = "Edith Wharton"
+color = "#ffd8b1"
+gender = "Female"
+country = "United States"
+books = [
+  { id = 284, title = "The House of Mirth" },
+  { id = 541, title = "The Age of Innocence" },
+]
+
+[[authors]]
+name = "Willa Cather"
+color = "#ff6f61"
+gender = "Female"
+country = "United States"
+books = [
+  { id = 242, title = "My Antonia" },
+  { id = 24,  title = "O Pioneers!" },
+]
+
+[[authors]]
+name = "Nathaniel Hawthorne"
+color = "#708090"
+gender = "Male"
+country = "United States"
+books = [
+  { id = 33, title = "The Scarlet Letter" },
+  { id = 77, title = "The House of the Seven Gables" },
+]
+
+[[authors]]
+name = "Jonathan Swift"
+color = "#b03060"
+gender = "Male"
+country = "Ireland"
+books = [
+  { id = 829,  title = "Gulliver's Travels" },
+  { id = 4737, title = "A Tale of a Tub" },
+]
+
+[[authors]]
+name = "Walter Scott"
+color = "#40826d"
+gender = "Male"
+country = "Scotland"
+books = [
+  { id = 82,   title = "Ivanhoe" },
+  { id = 7025, title = "Rob Roy" },
+]
+
+[[authors]]
+name = "L. M. Montgomery"
+color = "#ff1493"
+gender = "Female"
+country = "Canada"
+books = [
+  { id = 45, title = "Anne of Green Gables", series = "Anne" },
+  { id = 47, title = "Anne of Avonlea", series = "Anne" },
+]
+
+[[authors]]
+name = "Stephen Leacock"
+color = "#daa520"
+gender = "Male"
+country = "Canada"
+books = [
+  { id = 3533, title = "Sunshine Sketches of a Little Town" },
+  { id = 4682, title = "Nonsense Novels" },
+]
+
+[[authors]]
+name = "Miles Franklin"
+color = "#20b2aa"
+gender = "Female"
+country = "Australia"
+books = [
+  { id = 11620, title = "My Brilliant Career" },
+  { id = 21659, title = "Some Everyday Folk and Dawn" },
+]
+
+[[authors]]
+name = "Marcus Clarke"
+gender = "Male"
+country = "Australia"
+books = [
+  { id = 3424, title = "For the Term of His Natural Life" },
+]
+
+# ---- expansion: more USA + balanced small countries + new countries ----
+
+[[authors]]
+name = "Jack London"
+gender = "Male"
+country = "United States"
+books = [
+  { id = 215, title = "The Call of the Wild" },
+  { id = 910, title = "White Fang" },
+]
+
+[[authors]]
+name = "Stephen Crane"
+gender = "Male"
+country = "United States"
+books = [
+  { id = 73,  title = "The Red Badge of Courage" },
+  { id = 447, title = "Maggie: A Girl of the Streets" },
+]
+
+[[authors]]
+name = "Kate Chopin"
+gender = "Female"
+country = "United States"
+books = [
+  { id = 160, title = "The Awakening and Selected Short Stories" },
+]
+
+[[authors]]
+name = "Harriet Beecher Stowe"
+gender = "Female"
+country = "United States"
+books = [
+  { id = 203, title = "Uncle Tom's Cabin" },
+]
+
+[[authors]]
+name = "Sarah Orne Jewett"
+gender = "Female"
+country = "United States"
+books = [
+  { id = 367, title = "The Country of the Pointed Firs" },
+]
+
+[[authors]]
+name = "George MacDonald"
+gender = "Male"
+country = "Scotland"
+books = [
+  { id = 325, title = "Phantastes" },
+  { id = 708, title = "The Princess and the Goblin" },
+]
+
+[[authors]]
+name = "Margaret Oliphant"
+gender = "Female"
+country = "Scotland"
+books = [
+  { id = 28006, title = "The Perpetual Curate" },
+]
+
+[[authors]]
+name = "Maria Edgeworth"
+gender = "Female"
+country = "Ireland"
+books = [
+  { id = 1424, title = "Castle Rackrent" },
+  { id = 9455, title = "Tales and Novels, Vol. 3" },
+]
+
+[[authors]]
+name = "Sheridan Le Fanu"
+gender = "Male"
+country = "Ireland"
+books = [
+  { id = 10007, title = "Carmilla" },
+  { id = 26451, title = "A Stable for Nightmares" },
+]
+
+[[authors]]
+name = "Oliver Goldsmith"
+gender = "Male"
+country = "Ireland"
+books = [
+  { id = 2667, title = "The Vicar of Wakefield" },
+]
+
+[[authors]]
+name = "Susanna Moodie"
+gender = "Female"
+country = "Canada"
+books = [
+  { id = 27373, title = "Flora Lyndsay" },
+  { id = 20835, title = "The Monctons" },
+]
+
+[[authors]]
+name = "Sara Jeannette Duncan"
+gender = "Female"
+country = "Canada"
+books = [
+  { id = 5301, title = "The Imperialist" },
+  { id = 5102, title = "The Path of a Star" },
+]
+
+[[authors]]
+name = "Rolf Boldrewood"
+gender = "Male"
+country = "Australia"
+books = [
+  { id = 1198,  title = "Robbery Under Arms" },
+  { id = 51314, title = "In Bad Company" },
+]
+
+[[authors]]
+name = "Ethel Turner"
+gender = "Female"
+country = "Australia"
+books = [
+  { id = 4731,  title = "Seven Little Australians" },
+  { id = 24509, title = "In the Mist of the Mountains" },
+]
+
+[[authors]]
+name = "Arthur Machen"
+gender = "Male"
+country = "Wales"
+books = [
+  { id = 389, title = "The Great God Pan" },
+]
+
+[[authors]]
+name = "Olive Schreiner"
+gender = "Female"
+country = "South Africa"
+books = [
+  { id = 1441, title = "The Story of an African Farm" },
+]
+
+[[authors]]
+name = "Rudyard Kipling"
+gender = "Male"
+country = "India"
+books = [
+  { id = 236,  title = "The Jungle Book" },
+  { id = 2226, title = "Kim" },
+]
+
+# ---- balancing pass: fill out the smaller countries + add New Zealand ----
+
+[[authors]]
+name = "Allen Raine"
+gender = "Female"
+country = "Wales"
+books = [
+  { id = 18778, title = "Garthowen" },
+  { id = 63502, title = "Torn Sails" },
+]
+
+[[authors]]
+name = "W. H. Davies"
+gender = "Male"
+country = "Wales"
+books = [
+  { id = 51425, title = "The Autobiography of a Super-Tramp" },
+]
+
+[[authors]]
+name = "Percy FitzPatrick"
+gender = "Male"
+country = "South Africa"
+books = [
+  { id = 36951, title = "Jock of the Bushveld" },
+  { id = 37260, title = "The Outspan" },
+]
+
+[[authors]]
+name = "Bertram Mitford"
+gender = "Male"
+country = "South Africa"
+books = [
+  { id = 27476, title = "The Sign of the Spider" },
+]
+
+[[authors]]
+name = "Toru Dutt"
+gender = "Female"
+country = "India"
+books = [
+  { id = 23245, title = "Ancient Ballads and Legends of Hindustan" },
+  { id = 13268, title = "Hindu Literature" },
+]
+
+[[authors]]
+name = "Cornelia Sorabji"
+gender = "Female"
+country = "India"
+books = [
+  { id = 71004, title = "Between the Twilights" },
+  { id = 69647, title = "Indian Tales of the Great Ones" },
+]
+
+[[authors]]
+name = "Katherine Mansfield"
+gender = "Female"
+country = "New Zealand"
+books = [
+  { id = 1429,  title = "The Garden Party, and Other Stories" },
+  { id = 44385, title = "Bliss, and Other Stories" },
+]
+
+[[authors]]
+name = "Ralph Connor"
+gender = "Male"
+country = "Canada"
+books = [
+  { id = 3287, title = "The Man from Glengarry" },
+  { id = 3242, title = "The Doctor" },
+]
+
+[[authors]]
+name = "Catharine Parr Traill"
+gender = "Female"
+country = "Canada"
+books = [
+  { id = 8382,  title = "Canadian Crusoes" },
+  { id = 13559, title = "The Backwoods of Canada" },
+]
+
+[[authors]]
+name = "Ada Cambridge"
+gender = "Female"
+country = "Australia"
+books = [
+  { id = 4218,  title = "Sisters" },
+  { id = 42270, title = "The Retrospect" },
+]
+
+[[authors]]
+name = "Joseph Furphy"
+gender = "Male"
+country = "Australia"
+books = [
+  { id = 3470, title = "Such Is Life" },
+]
+
+[[authors]]
+name = "John Buchan"
+gender = "Male"
+country = "Scotland"
+books = [
+  { id = 558, title = "The Thirty-Nine Steps" },
+  { id = 560, title = "Mr. Standfast" },
+]

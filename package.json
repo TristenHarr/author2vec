@@ -1,0 +1,16 @@
+{
+  "name": "author2vec-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deploy tooling for the author2vec static WASM site (Cloudflare Workers + static assets).",
+  "scripts": {
+    "clean": "rm -rf target/dx/web/release/web/public",
+    "build": "cd web && dx bundle --release",
+    "predeploy": "npm run clean && npm run build",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.106.0"
+  }
+}

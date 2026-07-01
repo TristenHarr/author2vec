@@ -1,0 +1,27 @@
+{
+  // Cloudflare Workers — static-assets deployment for the author2vec site.
+  // No Worker script: this is an assets-only Worker that serves the Dioxus/WASM
+  // bundle straight from Cloudflare's edge. Docs: https://developers.cloudflare.com/workers/static-assets/
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "author2vec",
+  "compatibility_date": "2026-07-01",
+  // Brahmastra Labs account (the zone author2vec.com lives here). The auth token
+  // also sees a second account, so this must be explicit for non-interactive deploys.
+  "account_id": "571af6c05aec7513477b528a6615559b",
+
+  "assets": {
+    // Output of `dx bundle --release` (see `npm run build`). Relative to this file.
+    "directory": "./target/dx/web/release/web/public",
+    // The app is a client-side SPA router (routes: /, /accuracy, /dimensions, /why).
+    // Serve index.html for any path that doesn't map to a real asset so deep links
+    // and refreshes resolve instead of 404ing.
+    "not_found_handling": "single-page-application"
+  },
+
+  // Custom domains. The zone is already on Cloudflare, so `wrangler deploy` will
+  // provision the hostnames and create the DNS records automatically.
+  "routes": [
+    { "pattern": "author2vec.com", "custom_domain": true },
+    { "pattern": "www.author2vec.com", "custom_domain": true }
+  ]
+}

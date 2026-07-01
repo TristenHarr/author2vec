@@ -1,0 +1,18 @@
+# Rust / Cargo
+/target
+**/*.rs.bk
+
+# Node / wrangler tooling
+/node_modules
+
+# Dioxus build output
+/web/dist
+/dx
+
+# Corpus pipeline caches (raw book text + run logs; re-fetched on demand)
+/corpus/.cache
+# fastembed model cache (auto-downloaded)
+.fastembed_cache
+
+# NOTE: web/assets/person2vec.{json,bin} ARE committed — they're the shipped
+# precomputed dataset. Regenerate with `cargo run -p corpus --release`.

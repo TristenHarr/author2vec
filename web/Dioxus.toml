@@ -1,0 +1,9 @@
+[application]
+name = "person2vec"
+default_platform = "web"
+
+[web.app]
+title = "author2vec — Claude already knows you"
+# For a GitHub Pages project site, set this to "/<repo-name>" for release builds
+# (and copy index.html -> 404.html). Keep "/" for local `dx serve`.
+base_path = "/"
