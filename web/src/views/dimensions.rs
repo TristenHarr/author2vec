@@ -39,15 +39,6 @@ pub fn Dimensions() -> Element {
 
 #[component]
 fn AttrPanel(attr: AttrResult) -> Element {
-    let beats_random = attr.fair_accuracy > attr.random_baseline;
-    let beats_majority = attr.fair_accuracy > attr.baseline;
-    let (verdict, vcolor) = if beats_majority {
-        ("Style beats the majority guess: a real signal.", "#1a7a3c")
-    } else if beats_random {
-        ("Style beats random, but not the majority guess: barely a signal.", "#b7791f")
-    } else {
-        ("Style does worse than random guessing: no usable signal here.", "#b0344b")
-    };
     let rows = [
         ("Blind guessing (random)", attr.random_baseline, "#9a9aa8"),
         ("Always guess the majority", attr.baseline, "#c0392b"),
@@ -78,20 +69,20 @@ fn AttrPanel(attr: AttrResult) -> Element {
                     }
                 }
             }
-            p { class: "attr-verdict", style: "color:{vcolor}", "{verdict}" }
             h4 { class: "attr-sub", "Per class, never-seen authors" }
             div { class: "attr-classes",
                 for (i, cls) in attr.classes.iter().enumerate() {
                     {
                         let (c, t) = attr.per_class[i];
                         let color = attr.colors[i].clone();
+                        let label = if cls == "None" { "No college (self-taught)" } else { cls.as_str() };
                         if t == 0 {
                             // Only one author in this class: holding them out leaves no one to
                             // learn the class from, so it cannot be tested fairly.
                             rsx! {
                                 div { class: "bar-row muted", key: "{cls}",
                                     Swatch { color: color.clone() }
-                                    span { class: "bar-name", "{cls}" }
+                                    span { class: "bar-name", "{label}" }
                                     span { class: "bar-note", "only 1 author, not testable" }
                                 }
                             }
@@ -100,7 +91,7 @@ fn AttrPanel(attr: AttrResult) -> Element {
                             rsx! {
                                 div { class: "bar-row", key: "{cls}",
                                     Swatch { color: color.clone() }
-                                    span { class: "bar-name", "{cls}" }
+                                    span { class: "bar-name", "{label}" }
                                     div { class: "bar-track",
                                         div { class: "bar-fill", style: "width:{acc}%; background:{color}" }
                                     }

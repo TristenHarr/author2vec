@@ -67,6 +67,8 @@ fn Shell() -> Element {
                 a { href: "https://github.com/Anush008/fastembed-rs", "fastembed" }
                 " (local ONNX) · Built with Rust + "
                 a { href: "https://dioxuslabs.com", "Dioxus" }
+                " · "
+                a { href: "https://github.com/TristenHarr/author2vec", "Source on GitHub" }
                 ". Embeddings and results precomputed once in Rust; the browser just displays them."
             }
         }

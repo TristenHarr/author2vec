@@ -1,0 +1,62 @@
+# author2vec dimensions worksheet — 55 authors
+# RAISED   = where they grew up / learned to read and write
+# EDUCATED = where they went to school / college
+# (leave blank to mean 'same as birth country')
+
+AUTHOR                     | GENDER | BIRTH         | RAISED        | EDUCATED
+----------------------------------------------------------------------------------------
+Jane Austen                | Female | England       |               | 
+Charles Dickens            | Male   | England       |               | 
+Mark Twain                 | Male   | United States |               | 
+Edgar Allan Poe            | Male   | United States |               | 
+Arthur Conan Doyle         | Male   | Scotland      |               | 
+Mary Shelley               | Female | England       |               | 
+Oscar Wilde                | Male   | Ireland       |               | 
+Herman Melville            | Male   | United States |               | 
+Bram Stoker                | Male   | Ireland       |               | 
+Louisa May Alcott          | Female | United States |               | 
+H. G. Wells                | Male   | England       |               | 
+Charlotte Bronte           | Female | England       |               | 
+Lewis Carroll              | Male   | England       |               | 
+Robert Louis Stevenson     | Male   | Scotland      |               | 
+George Eliot               | Female | England       |               | 
+Anne Bronte                | Female | England       |               | 
+Elizabeth Gaskell          | Female | England       |               | 
+Edith Wharton              | Female | United States |               | 
+Willa Cather               | Female | United States |               | 
+Nathaniel Hawthorne        | Male   | United States |               | 
+Jonathan Swift             | Male   | Ireland       |               | 
+Walter Scott               | Male   | Scotland      |               | 
+L. M. Montgomery           | Female | Canada        |               | 
+Stephen Leacock            | Male   | Canada        |               | 
+Miles Franklin             | Female | Australia     |               | 
+Marcus Clarke              | Male   | Australia     |               | 
+Jack London                | Male   | United States |               | 
+Stephen Crane              | Male   | United States |               | 
+Kate Chopin                | Female | United States |               | 
+Harriet Beecher Stowe      | Female | United States |               | 
+Sarah Orne Jewett          | Female | United States |               | 
+George MacDonald           | Male   | Scotland      |               | 
+Margaret Oliphant          | Female | Scotland      |               | 
+Maria Edgeworth            | Female | Ireland       |               | 
+Sheridan Le Fanu           | Male   | Ireland       |               | 
+Oliver Goldsmith           | Male   | Ireland       |               | 
+Susanna Moodie             | Female | Canada        |               | 
+Sara Jeannette Duncan      | Female | Canada        |               | 
+Rolf Boldrewood            | Male   | Australia     |               | 
+Ethel Turner               | Female | Australia     |               | 
+Arthur Machen              | Male   | Wales         |               | 
+Olive Schreiner            | Female | South Africa  |               | 
+Rudyard Kipling            | Male   | India         |               | 
+Allen Raine                | Female | Wales         |               | 
+W. H. Davies               | Male   | Wales         |               | 
+Percy FitzPatrick          | Male   | South Africa  |               | 
+Bertram Mitford            | Male   | South Africa  |               | 
+Toru Dutt                  | Female | India         |               | 
+Cornelia Sorabji           | Female | India         |               | 
+Katherine Mansfield        | Female | New Zealand   |               | 
+Ralph Connor               | Male   | Canada        |               | 
+Catharine Parr Traill      | Female | Canada        |               | 
+Ada Cambridge              | Female | Australia     |               | 
+Joseph Furphy              | Male   | Australia     |               | 
+John Buchan                | Male   | Scotland      |               | 

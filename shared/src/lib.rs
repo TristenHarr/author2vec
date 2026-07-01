@@ -25,6 +25,15 @@ pub struct AuthorMeta {
     /// Country of birth — another trait we try to recover from style.
     #[serde(default)]
     pub birth_country: String,
+    /// Country where they grew up / learned to read and write.
+    #[serde(default)]
+    pub raised: String,
+    /// Country of their main education.
+    #[serde(default)]
+    pub educated: String,
+    /// Specific college/university, or "None" if self-taught.
+    #[serde(default)]
+    pub college: String,
 }
 
 /// One ~200-word passage of an author's prose.
@@ -579,6 +588,9 @@ pub fn compute_results(bundle: &Bundle) -> Results {
     let attributes = vec![
         compute_attribute(bundle, "Gender", |a| a.gender.as_str()),
         compute_attribute(bundle, "Birth country", |a| a.birth_country.as_str()),
+        compute_attribute(bundle, "Where they were raised", |a| a.raised.as_str()),
+        compute_attribute(bundle, "Where they were educated", |a| a.educated.as_str()),
+        compute_attribute(bundle, "College", |a| a.college.as_str()),
     ];
 
     // Superpower illustration: how well the AI's model of "you" fits your held-out
@@ -736,81 +748,90 @@ fn compute_attribute(bundle: &Bundle, name: &str, get: impl Fn(&AuthorMeta) -> &
         .map(|p| author_class[p.author_id])
         .collect();
 
-    // Majority-class baseline (by passage count).
-    let mut counts = vec![0u32; k];
-    for (i, p) in bundle.meta.passages.iter().enumerate() {
-        if !p.is_mystery {
-            counts[pclass[i]] += 1;
-        }
-    }
-    let total: u32 = counts.iter().sum();
-    let baseline = *counts.iter().max().unwrap_or(&0) as f32 / total.max(1) as f32;
-
-    // Leaky (has read the author): leave-one-passage-out over class centroids.
-    let (sums, cnts) = class_sums(bundle, &pclass, k, None);
-    let (mut leaky_c, mut leaky_t) = (0u32, 0u32);
+    // Represent each author by the mean of their (non-mystery) passage vectors: one
+    // style point per author. All counts below are AUTHORS, not passages.
+    let mut asum = vec![vec![0f32; dim]; n];
+    let mut acnt = vec![0usize; n];
     for (i, p) in bundle.meta.passages.iter().enumerate() {
         if p.is_mystery {
             continue;
         }
-        let c = pclass[i];
         let v = bundle.vector(i);
-        let cents: Vec<Option<Vec<f32>>> = (0..k)
-            .map(|cc| {
-                if cc == c {
-                    let adj: Vec<f32> = (0..dim).map(|d| sums[c][d] - v[d]).collect();
-                    centroid_of_sum(&adj, cnts[c].saturating_sub(1), dim)
-                } else {
-                    centroid_of_sum(&sums[cc], cnts[cc], dim)
+        for d in 0..dim {
+            asum[p.author_id][d] += v[d];
+        }
+        acnt[p.author_id] += 1;
+    }
+    let amean: Vec<Option<Vec<f32>>> =
+        (0..n).map(|a| centroid_of_sum(&asum[a], acnt[a], dim)).collect();
+
+    // Baselines over the *testable* authors (classes with >=2 authors), matching the
+    // fair-accuracy population: majority-class share, and blind 1/(# testable classes).
+    let mut class_authors = vec![0u32; k];
+    for a in 0..n {
+        class_authors[author_class[a]] += 1;
+    }
+    let n_testable_classes = class_authors.iter().filter(|&&c| c >= 2).count().max(1);
+    let mut tested_counts = vec![0u32; k];
+    for a in 0..n {
+        if class_authors[author_class[a]] >= 2 {
+            tested_counts[author_class[a]] += 1;
+        }
+    }
+    let n_tested: u32 = tested_counts.iter().sum();
+    let baseline = *tested_counts.iter().max().unwrap_or(&0) as f32 / n_tested.max(1) as f32;
+    let random_baseline = 1.0 / n_testable_classes as f32;
+
+    // Leaky (has read the author): the class profile includes this author.
+    let (fsum, fcnt) = class_sums(bundle, &pclass, k, None);
+    let full_cents: Vec<Option<Vec<f32>>> =
+        (0..k).map(|c| centroid_of_sum(&fsum[c], fcnt[c], dim)).collect();
+    let (mut leaky_c, mut leaky_t) = (0u32, 0u32);
+    for a in 0..n {
+        if let Some(m) = &amean[a] {
+            if let Some(pred) = argmax_centroid(&full_cents, m) {
+                leaky_t += 1;
+                if pred == author_class[a] {
+                    leaky_c += 1;
                 }
-            })
-            .collect();
-        if let Some(pred) = argmax_centroid(&cents, v) {
-            leaky_t += 1;
-            if pred == c {
-                leaky_c += 1;
             }
         }
     }
     let leaky_accuracy = leaky_c as f32 / leaky_t.max(1) as f32;
 
-    // Fair (never read the author): leave-one-author-out over class centroids.
+    // Fair (never read the author): class profile built only from the OTHER authors,
+    // then one prediction per author. Classes with a single author aren't testable.
     let mut confusion = vec![vec![0u32; k]; k];
     let mut per_class = vec![(0u32, 0u32); k];
     let (mut fair_c, mut fair_t) = (0u32, 0u32);
-    let mut tested = 0usize;
     for a in 0..n {
         let true_c = author_class[a];
+        let Some(m) = &amean[a] else { continue };
+        if class_authors[true_c] < 2 {
+            continue;
+        }
         let (s2, c2) = class_sums(bundle, &pclass, k, Some(a));
         let cents: Vec<Option<Vec<f32>>> =
             (0..k).map(|cc| centroid_of_sum(&s2[cc], c2[cc], dim)).collect();
-        if cents[true_c].is_none() {
-            continue; // this class has no other author to learn from
-        }
-        tested += 1;
-        for (i, p) in bundle.meta.passages.iter().enumerate() {
-            if p.is_mystery || p.author_id != a {
-                continue;
-            }
-            if let Some(pred) = argmax_centroid(&cents, bundle.vector(i)) {
-                confusion[true_c][pred] += 1;
-                per_class[true_c].1 += 1;
-                fair_t += 1;
-                if pred == true_c {
-                    fair_c += 1;
-                    per_class[true_c].0 += 1;
-                }
+        if let Some(pred) = argmax_centroid(&cents, m) {
+            confusion[true_c][pred] += 1;
+            per_class[true_c].1 += 1;
+            fair_t += 1;
+            if pred == true_c {
+                fair_c += 1;
+                per_class[true_c].0 += 1;
             }
         }
     }
     let fair_accuracy = fair_c as f32 / fair_t.max(1) as f32;
+    let tested = fair_t as usize;
 
     AttrResult {
         name: name.to_string(),
         classes,
         colors,
         baseline,
-        random_baseline: 1.0 / k as f32,
+        random_baseline,
         fair_accuracy,
         leaky_accuracy,
         per_class,

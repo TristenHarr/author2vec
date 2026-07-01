@@ -50,6 +50,12 @@ struct AuthorCfg {
     gender: String,
     #[serde(default)]
     country: String,
+    #[serde(default)]
+    raised: String,
+    #[serde(default)]
+    educated: String,
+    #[serde(default)]
+    college: String,
     books: Vec<BookCfg>,
 }
 #[derive(Deserialize)]
@@ -87,6 +93,9 @@ fn main() {
             color: author_color(author_id),
             gender: a.gender.clone(),
             birth_country: a.country.clone(),
+            raised: a.raised.clone(),
+            educated: a.educated.clone(),
+            college: a.college.clone(),
         });
 
         // Gather (book_title, series, passage) across all of this author's books.

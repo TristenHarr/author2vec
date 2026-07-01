@@ -249,9 +249,13 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
         return rsx! {};
     };
     let n = bundle.n_authors();
-    let cell = if n > 18 { 26.0_f64 } else { 30.0_f64 };
     let left = 82.0_f64;
     let top = 88.0_f64;
+    // Scale the cell so the whole matrix fits the panel width and centers, instead of
+    // overflowing. Drop per-cell counts and shrink labels once cells get small.
+    let cell = ((940.0_f64 - left - 12.0) / n.max(1) as f64).clamp(11.0, 30.0);
+    let show_counts = cell >= 22.0;
+    let label_fs = if cell < 18.0 { 8 } else { 11 };
     let w = left + n as f64 * cell + 12.0;
     let h = top + n as f64 * cell + 12.0;
 
@@ -269,6 +273,7 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
                             key: "col{c}",
                             x: "{cx}", y: "{cy}",
                             class: "matrix-label",
+                            style: "font-size:{label_fs}px",
                             text_anchor: "start",
                             transform: "rotate(-45 {cx} {cy})",
                             "{name}"
@@ -286,6 +291,7 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
                             key: "row{row}",
                             x: "{left - 6.0}", y: "{ly}",
                             class: "matrix-label",
+                            style: "font-size:{label_fs}px",
                             text_anchor: "end",
                             "{short(&author.name)}"
                         }
@@ -304,7 +310,7 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
                                             fill: "{author.color}", fill_opacity: "{opacity}",
                                             stroke: "#e7e7ef", stroke_width: "1",
                                         }
-                                        if count > 0 {
+                                        if count > 0 && show_counts {
                                             text {
                                                 x: "{x + cell / 2.0}", y: "{y + cell / 2.0 + 3.0}",
                                                 class: "matrix-count",

@@ -35,7 +35,8 @@ pub fn Story() -> Element {
             }
             p {
                 "I stopped pretending I did not see it. This page is me saying it out loud, with "
-                "a little proof attached."
+                "a little proof attached. I used these famous books and texts, but extrapolate for programming and programmers. "
+                "Another reason I made this is because it took a couple prompts while babysitting my other agents. It is so easy to create."
             }
         }
     }
