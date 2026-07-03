@@ -6,7 +6,8 @@ use dioxus::prelude::*;
 use wasm_bindgen::JsCast;
 
 use super::{gate, Swatch};
-use crate::data::{use_dataset, LoadState};
+use crate::copy::copy_for;
+use crate::data::{use_dataset, use_selector, LoadState};
 use shared::Bundle;
 
 const CANVAS_ID: &str = "p2v-map";
@@ -44,14 +45,12 @@ pub fn Map() -> Element {
     let LoadState::Loaded(bundle) = state() else {
         unreachable!()
     };
+    let key = use_selector().selected.read().clone();
+    let c = copy_for(&key);
 
     rsx! {
         div { class: "map-view",
-            p { class: "explainer",
-                "Each dot is one ~200-word passage, placed by PCA of its 384-dimensional embedding "
-                "and colored by author. Hollow rings are the held-out \"mystery\" passages. "
-                "Hover a dot to read it; click an author in the legend to hide/show them."
-            }
+            p { class: "explainer", "{c.map_explainer}" }
             div { class: "map-layout",
                 div { class: "map-wrap",
                     canvas {
@@ -97,7 +96,7 @@ pub fn Map() -> Element {
                     }
                 }
                 div { class: "legend",
-                    h3 { "Authors" }
+                    h3 { "{c.entities_title}" }
                     for a in bundle.meta.authors.iter() {
                         {
                             let id = a.id;

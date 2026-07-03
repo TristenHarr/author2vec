@@ -6,16 +6,20 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 use gloo_net::http::Request;
-use shared::{Bundle, Manifest, Meta};
+use shared::{Bundle, DatasetManifest, Meta};
 
-// Compile-time asset handles. Keys MUST match the corpus `ModelSpec` keys.
-static MANIFEST: Asset = asset!("/assets/person2vec-models.json");
+// Compile-time asset handles. Dataset keys MUST match the file suffixes below (the
+// authors dataset keeps the existing `minilm` files — no rename/re-embed needed).
+static MANIFEST: Asset = asset!("/assets/person2vec-datasets.json");
 static MINILM_JSON: Asset = asset!("/assets/person2vec-minilm.json");
 static MINILM_BIN: Asset = asset!("/assets/person2vec-minilm.bin");
+static CODERS_JSON: Asset = asset!("/assets/person2vec-coders.json");
+static CODERS_BIN: Asset = asset!("/assets/person2vec-coders.bin");
 
-fn model_urls(key: &str) -> Option<(String, String)> {
+fn dataset_urls(key: &str) -> Option<(String, String)> {
     Some(match key {
         "minilm" => (MINILM_JSON.to_string(), MINILM_BIN.to_string()),
+        "coders" => (CODERS_JSON.to_string(), CODERS_BIN.to_string()),
         _ => return None,
     })
 }
@@ -28,10 +32,10 @@ pub enum LoadState {
     Failed(String),
 }
 
-/// Manifest + current selection, used by the model picker.
+/// Dataset manifest + current selection, used by the dataset toggle.
 #[derive(Clone, Copy)]
 pub struct Selector {
-    pub manifest: Signal<Option<Manifest>>,
+    pub manifest: Signal<Option<DatasetManifest>>,
     pub selected: Signal<String>,
 }
 
@@ -44,14 +48,14 @@ pub fn use_dataset() -> Signal<LoadState> {
 }
 
 pub fn use_provide_dataset() {
-    let manifest = use_signal(|| None::<Manifest>);
+    let manifest = use_signal(|| None::<DatasetManifest>);
     let selected = use_signal(String::new);
     let state = use_signal(|| LoadState::Loading);
 
     use_context_provider(|| state);
     use_context_provider(|| Selector { manifest, selected });
 
-    // Load the manifest once and pick the default model.
+    // Load the manifest once and pick the default dataset.
     use_future(move || async move {
         let mut manifest = manifest;
         let mut selected = selected;
@@ -63,15 +67,15 @@ pub fn use_provide_dataset() {
                 manifest.set(Some(m));
             }
             Err(_) => {
-                // Fall back to a known key so the app still works without a manifest.
+                // Fall back to the default dataset so the app still works without a manifest.
                 if selected.peek().is_empty() {
-                    selected.set("minilm".to_string());
+                    selected.set("coders".to_string());
                 }
             }
         }
     });
 
-    // (Re)load the selected model's bundle whenever the selection changes.
+    // (Re)load the selected dataset's bundle whenever the selection changes.
     use_effect(move || {
         let key = selected();
         if key.is_empty() {
@@ -88,13 +92,13 @@ pub fn use_provide_dataset() {
     });
 }
 
-async fn load_manifest() -> Result<Manifest, String> {
+async fn load_manifest() -> Result<DatasetManifest, String> {
     let bytes = fetch(&MANIFEST.to_string()).await?;
     serde_json::from_slice(&bytes).map_err(|e| e.to_string())
 }
 
 async fn load_bundle(key: &str) -> Result<Bundle, String> {
-    let (json_url, bin_url) = model_urls(key).ok_or_else(|| format!("unknown model {key}"))?;
+    let (json_url, bin_url) = dataset_urls(key).ok_or_else(|| format!("unknown dataset {key}"))?;
     let meta: Meta = serde_json::from_slice(&fetch(&json_url).await?).map_err(|e| e.to_string())?;
     let vectors = shared::vectors_from_bytes(&fetch(&bin_url).await?);
     let expected = meta.passages.len() * meta.dim;

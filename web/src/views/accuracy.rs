@@ -5,7 +5,8 @@
 use dioxus::prelude::*;
 
 use super::{gate, Swatch};
-use crate::data::{use_dataset, LoadState};
+use crate::copy::copy_for;
+use crate::data::{use_dataset, use_selector, LoadState};
 
 #[component]
 pub fn Accuracy() -> Element {
@@ -19,24 +20,45 @@ pub fn Accuracy() -> Element {
     let r = &bundle.meta.results;
     let n = bundle.n_authors();
     let baseline_pct = r.baseline * 100.0;
-    let book_out = r
-        .rungs
-        .iter()
-        .find(|x| x.label == "Never read this book")
-        .map(|x| x.accuracy)
-        .unwrap_or(0.0);
+    // Second-from-top rung = the finest "held-out" level (book / commit). Position-based
+    // so it works whatever the dataset's rung labels say.
+    let book_out = r.rungs.iter().rev().nth(1).map(|x| x.accuracy).unwrap_or(0.0);
+
+    let key = use_selector().selected.read().clone();
+    let c = copy_for(&key);
+    let sub = c.subject;
+    let ents = c.entities;
+    let explainer = format!(
+        "Can a computer name the {sub} of a passage it was never shown? It depends entirely on \
+         how much of that {sub} it has already read. With {n} {ents}, blind guessing scores about \
+         {baseline_pct:.1}%. Every number below is precomputed in Rust and just displayed here."
+    );
+    let per_heading = format!("Which {ents} are easiest to identify?");
+    let per_caption = format!("When the model has read the same {}.", c.unit);
+    let confusion_caption =
+        format!("Row = true {sub}, column = the model's guess (same-{} case).", c.unit);
+    let reel_heading = format!("The reveal: name the {sub} of a brand-new passage");
+    let reel_caption = format!(
+        "Each row is a passage held out of training entirely. We guess its {sub} two ways: when \
+         the model HAS read that {sub}'s other work, and when their whole body of work is hidden. \
+         When it is hidden the true {sub} is not even an option, so it guesses the nearest {sub} \
+         it DOES know: still just vectors, confidently landing next to your closest stylistic neighbor."
+    );
+    let reel_super = format!(
+        "So what is \u{201c}you\u{201d} to a model that has never read you? Nothing in particular: \
+         it falls back on the average of all {n} {ents}. That average already sits fairly close to \
+         you (cosine {:.2}) because {}. But it is the last sliver of distinctiveness, your own \
+         coordinate at {:.2}, that lets it pick YOU out of the crowd. Let it read you, and you go \
+         from the average of everyone to a point of your own. That is the superpower.",
+        r.untrained_sim, c.reel_super_clause, r.trained_sim
+    );
 
     let mut per = r.per_author.clone();
     per.sort_by(|a, b| b.accuracy.total_cmp(&a.accuracy));
 
     rsx! {
         div { class: "accuracy-view",
-            p { class: "explainer",
-                "Can a computer name the author of a passage it was never shown? It depends "
-                "entirely on how much of that author it has already read. With {n} authors, blind "
-                "guessing scores about {baseline_pct:.1}%. Every number below is precomputed in "
-                "Rust and just displayed here."
-            }
+            p { class: "explainer", "{explainer}" }
 
             div { class: "ladder-panel",
                 h3 { "The familiarity ladder" }
@@ -67,17 +89,20 @@ pub fn Accuracy() -> Element {
 
             div { class: "gradient-panel",
                 h3 { "It is a smooth gradient" }
-                p { class: "matrix-cap",
-                    "Give the model a book it has never seen, then vary how many passages of the "
-                    "author's OTHER writing it has read. Recognition climbs with exposure."
+                p { class: "matrix-cap", "{c.gradient_caption}" }
+                FamiliarityGradient {
+                    curve: r.curve.clone(),
+                    unseen: book_out,
+                    baseline: r.baseline,
+                    unseen_label: format!("unseen {}", c.unit),
+                    axis: c.gradient_axis.to_string(),
                 }
-                FamiliarityGradient { curve: r.curve.clone(), unseen: book_out, baseline: r.baseline }
             }
 
             div { class: "acc-grid",
                 div { class: "per-author",
-                    h3 { "Which authors are easiest to identify?" }
-                    p { class: "matrix-cap", "When the model has read the same book." }
+                    h3 { "{per_heading}" }
+                    p { class: "matrix-cap", "{per_caption}" }
                     for a in per.iter() {
                         {
                             let author = &bundle.meta.authors[a.author_id];
@@ -97,20 +122,14 @@ pub fn Accuracy() -> Element {
                 }
                 div { class: "matrix-wrap",
                     h3 { "Confusion matrix" }
-                    p { class: "matrix-cap", "Row = true author, column = the model's guess (same-book case)." }
+                    p { class: "matrix-cap", "{confusion_caption}" }
                     ConfusionMatrix { confusion: r.confusion.clone() }
                 }
             }
 
             div { class: "reel-panel",
-                h3 { "The reveal: name the author of a brand-new passage" }
-                p { class: "matrix-cap",
-                    "Each row is a passage held out of training entirely. We guess its author two "
-                    "ways: when the model HAS read that author's other work, and when their whole "
-                    "body of work is hidden. When it is hidden the true author is not even an "
-                    "option, so it guesses the nearest author it DOES know: still just vectors, "
-                    "confidently landing next to your closest stylistic neighbor."
-                }
+                h3 { "{reel_heading}" }
+                p { class: "matrix-cap", "{reel_caption}" }
                 {
                     let sp = r.reel_hits_seen as f32 / r.reel_total.max(1) as f32 * 100.0;
                     let up = r.reel_hits_unseen as f32 / r.reel_total.max(1) as f32 * 100.0;
@@ -127,14 +146,7 @@ pub fn Accuracy() -> Element {
                         }
                     }
                 }
-                p { class: "reel-super",
-                    "So what is “you” to a model that has never read you? Nothing in particular: it "
-                    "falls back on the average of all {n} authors. That average already sits fairly "
-                    "close to you (cosine {r.untrained_sim:.2}) because you are human and write in "
-                    "English. But it is the last sliver of distinctiveness, your own coordinate at "
-                    "{r.trained_sim:.2}, that lets it pick YOU out of the crowd. Let it read you, and "
-                    "you go from the average of everyone to a point of your own. That is the superpower."
-                }
+                p { class: "reel-super", "{reel_super}" }
                 div { class: "reel-list",
                     for pred in r.reel.iter() {
                         {
@@ -177,7 +189,13 @@ pub fn Accuracy() -> Element {
 /// Small SVG line chart: accuracy vs. how many passages/author the model has read,
 /// with dashed reference lines for the "never read this book" and chance levels.
 #[component]
-fn FamiliarityGradient(curve: Vec<(usize, f32)>, unseen: f32, baseline: f32) -> Element {
+fn FamiliarityGradient(
+    curve: Vec<(usize, f32)>,
+    unseen: f32,
+    baseline: f32,
+    unseen_label: String,
+    axis: String,
+) -> Element {
     let w = 580.0_f64;
     let h = 232.0_f64;
     let ml = 44.0_f64;
@@ -218,7 +236,7 @@ fn FamiliarityGradient(curve: Vec<(usize, f32)>, unseen: f32, baseline: f32) -> 
             line { x1: "{ml}", y1: "{by}", x2: "{x_right}", y2: "{by}", stroke: "#b0b0bd", stroke_width: "1.5", stroke_dasharray: "5 4" }
             text { x: "{x_right + 8.0}", y: "{by + 3.0}", class: "gref", fill: "#8a8a99", "chance {baseline * 100.0:.0}%" }
             line { x1: "{ml}", y1: "{uy}", x2: "{x_right}", y2: "{uy}", stroke: "#e0a0a0", stroke_width: "1.5", stroke_dasharray: "5 4" }
-            text { x: "{x_right + 8.0}", y: "{uy + 3.0}", class: "gref", fill: "#c0392b", "unseen book {unseen * 100.0:.0}%" }
+            text { x: "{x_right + 8.0}", y: "{uy + 3.0}", class: "gref", fill: "#c0392b", "{unseen_label} {unseen * 100.0:.0}%" }
             polyline { points: "{pts}", fill: "none", stroke: "#5b4be0", stroke_width: "2.5" }
             for (i, (cap, acc)) in curve.iter().copied().enumerate() {
                 {
@@ -235,7 +253,7 @@ fn FamiliarityGradient(curve: Vec<(usize, f32)>, unseen: f32, baseline: f32) -> 
                 let axx = ml + pw / 2.0;
                 let axy = h - 6.0;
                 rsx! {
-                    text { x: "{axx}", y: "{axy}", class: "gaxis", text_anchor: "middle", "passages per author the model has read" }
+                    text { x: "{axx}", y: "{axy}", class: "gaxis", text_anchor: "middle", "{axis}" }
                 }
             }
         }

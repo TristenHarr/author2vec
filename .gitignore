@@ -11,6 +11,8 @@
 
 # Corpus pipeline caches (raw book text + run logs; re-fetched on demand)
 /corpus/.cache
+# Cloned source repos for the code dataset (large; re-cloned on demand)
+/corpus/.clones
 # fastembed model cache (auto-downloaded)
 .fastembed_cache
 

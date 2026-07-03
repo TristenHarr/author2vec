@@ -1,9 +1,13 @@
-//! Tab: the personal note, in the author's own words.
+//! Tab: the personal note, in the author's own words, plus a dataset-aware methodology.
 
 use dioxus::prelude::*;
 
+use crate::copy::copy_for;
+use crate::data::use_selector;
+
 #[component]
 pub fn Story() -> Element {
+    let c = copy_for(&use_selector().selected.read().clone());
     rsx! {
         div { class: "story",
             h2 { "Why I made this" }
@@ -35,9 +39,13 @@ pub fn Story() -> Element {
             }
             p {
                 "I stopped pretending I did not see it. This page is me saying it out loud, with "
-                "a little proof attached. I used these famous books and texts, but extrapolate for programming and programmers. "
-                "Another reason I made this is because it took a couple prompts while babysitting my other agents. It is so easy to create."
+                "a little proof attached. "
+                "{c.story_proof}"
+                " Another reason I made this is because it took a couple prompts while babysitting my other agents. It is so easy to create."
             }
+
+            h3 { class: "method-head", "How it works, and why you can trust the number" }
+            p { class: "method-note", "{c.methodology}" }
         }
     }
 }

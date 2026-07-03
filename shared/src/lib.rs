@@ -34,6 +34,19 @@ pub struct AuthorMeta {
     /// Specific college/university, or "None" if self-taught.
     #[serde(default)]
     pub college: String,
+    /// Generic recoverable traits (name → value). Used by the code dataset for
+    /// language / era / ecosystem / role; when present they drive the Dimensions
+    /// view, otherwise the fixed fields above are used. Skipped when empty so the
+    /// prose bundle serializes unchanged.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub traits: Vec<Trait>,
+}
+
+/// A generic recoverable attribute of an author/coder (e.g. "Primary language" → "C").
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Trait {
+    pub name: String,
+    pub value: String,
 }
 
 /// One ~200-word passage of an author's prose.
@@ -51,6 +64,10 @@ pub struct Passage {
     pub y: f32,
     /// Held-out passages: excluded from centroids/LOOCV, used as classifier queries.
     pub is_mystery: bool,
+    /// Unix timestamp (seconds) the code was authored — code dataset only; 0 = unknown
+    /// (prose). Drives the "when was this written?" / "weekend?" style dimensions.
+    #[serde(default)]
+    pub authored: i64,
 }
 
 /// One embedding model available in the demo (different model / different size).
@@ -71,12 +88,54 @@ pub struct Manifest {
     pub models: Vec<ModelInfo>,
 }
 
+/// One dataset lens on the site: prose authors, or code "coders".
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct DatasetInfo {
+    /// Filename key: `person2vec-<key>.{json,bin}`.
+    pub key: String,
+    pub label: String,
+    /// Short subtitle shown under the toggle, e.g. "prose" / "code".
+    pub blurb: String,
+}
+
+/// Lists the datasets the site offers; loaded first by the web app.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct DatasetManifest {
+    pub default: String,
+    pub datasets: Vec<DatasetInfo>,
+}
+
 /// One rung of the familiarity ladder (how much the model has read of the author).
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Rung {
     pub label: String,
     pub sublabel: String,
     pub accuracy: f32,
+}
+
+/// Display strings for the five familiarity rungs, supplied per dataset so the same
+/// `compute_results` machinery can narrate prose (book/series) or code (commit/repo).
+#[derive(Clone, Debug)]
+pub struct LadderLabels {
+    /// Each is (label, sublabel). Bottom → top of the ladder.
+    pub blind: (&'static str, &'static str),
+    pub author_out: (&'static str, &'static str),
+    pub series_out: (&'static str, &'static str),
+    pub book_out: (&'static str, &'static str),
+    pub seen: (&'static str, &'static str),
+}
+
+impl LadderLabels {
+    /// Original prose labels: hold out books / series / the author.
+    pub fn prose() -> Self {
+        Self {
+            blind: ("Blind guessing", "no information"),
+            author_out: ("Never read the author", "held out every work by them"),
+            series_out: ("Never read this series", "has read the author's other work"),
+            book_out: ("Never read this book", "has read the rest of the series"),
+            seen: ("Has read the book", "has seen other passages from it"),
+        }
+    }
 }
 
 /// Per-author accuracy, precomputed.
@@ -555,8 +614,14 @@ pub fn loocv_leave_author_out(bundle: &Bundle) -> LoocvResult {
     out.finish()
 }
 
-/// Precompute the whole familiarity ladder + supporting panels for the accuracy view.
+/// Precompute the whole familiarity ladder + supporting panels for the accuracy view,
+/// using the default prose rung labels.
 pub fn compute_results(bundle: &Bundle) -> Results {
+    compute_results_with_labels(bundle, &LadderLabels::prose())
+}
+
+/// Like [`compute_results`] but with dataset-specific rung labels (prose vs code).
+pub fn compute_results_with_labels(bundle: &Bundle, labels: &LadderLabels) -> Results {
     let n = bundle.n_authors();
     let baseline = 1.0 / n as f32;
     let seen = loocv_nearest_centroid(bundle);
@@ -566,11 +631,11 @@ pub fn compute_results(bundle: &Bundle) -> Results {
     let curve = familiarity_curve(bundle, &[2, 4, 8, 16, 32, 64, 128]);
 
     let rungs = vec![
-        Rung { label: "Blind guessing".into(), sublabel: "no information".into(), accuracy: baseline },
-        Rung { label: "Never read the author".into(), sublabel: "held out every work by them".into(), accuracy: author_out.accuracy },
-        Rung { label: "Never read this series".into(), sublabel: "has read the author's other work".into(), accuracy: series_out.accuracy },
-        Rung { label: "Never read this book".into(), sublabel: "has read the rest of the series".into(), accuracy: book_out.accuracy },
-        Rung { label: "Has read the book".into(), sublabel: "has seen other passages from it".into(), accuracy: seen.accuracy },
+        Rung { label: labels.blind.0.into(), sublabel: labels.blind.1.into(), accuracy: baseline },
+        Rung { label: labels.author_out.0.into(), sublabel: labels.author_out.1.into(), accuracy: author_out.accuracy },
+        Rung { label: labels.series_out.0.into(), sublabel: labels.series_out.1.into(), accuracy: series_out.accuracy },
+        Rung { label: labels.book_out.0.into(), sublabel: labels.book_out.1.into(), accuracy: book_out.accuracy },
+        Rung { label: labels.seen.0.into(), sublabel: labels.seen.1.into(), accuracy: seen.accuracy },
     ];
     let per_author = (0..n)
         .map(|a| {
@@ -585,13 +650,7 @@ pub fn compute_results(bundle: &Bundle) -> Results {
         .collect();
 
     let (reel, reel_hits_seen, reel_hits_unseen, reel_total) = compute_reel(bundle);
-    let attributes = vec![
-        compute_attribute(bundle, "Gender", |a| a.gender.as_str()),
-        compute_attribute(bundle, "Birth country", |a| a.birth_country.as_str()),
-        compute_attribute(bundle, "Where they were raised", |a| a.raised.as_str()),
-        compute_attribute(bundle, "Where they were educated", |a| a.educated.as_str()),
-        compute_attribute(bundle, "College", |a| a.college.as_str()),
-    ];
+    let attributes = compute_attributes(bundle);
 
     // Superpower illustration: how well the AI's model of "you" fits your held-out
     // writing when trained (your own centroid) vs untrained (the average of ALL authors,
@@ -837,6 +896,198 @@ fn compute_attribute(bundle: &Bundle, name: &str, get: impl Fn(&AuthorMeta) -> &
         per_class,
         confusion,
         tested_authors: tested,
+        total_authors: n,
+    }
+}
+
+const ERA_LABELS: [&str; 4] = ["≤ 2009", "2010–2015", "2016–2020", "2021+"];
+
+/// Year (civil calendar) from a Unix timestamp — Howard Hinnant's days→civil algorithm.
+fn year_from_unix(ts: i64) -> i64 {
+    let z = ts.div_euclid(86_400) + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    yoe + era * 400 + if m <= 2 { 1 } else { 0 }
+}
+
+fn era_bucket(ts: i64) -> Option<usize> {
+    if ts <= 0 {
+        return None;
+    }
+    Some(match year_from_unix(ts) {
+        y if y <= 2009 => 0,
+        y if y <= 2015 => 1,
+        y if y <= 2020 => 2,
+        _ => 3,
+    })
+}
+
+/// Weekend? 1970-01-01 was a Thursday; 0=Sun … 6=Sat.
+fn weekend_bucket(ts: i64) -> Option<usize> {
+    if ts <= 0 {
+        return None;
+    }
+    let dow = (ts.div_euclid(86_400) + 4).rem_euclid(7);
+    Some(if dow == 0 || dow == 6 { 1 } else { 0 })
+}
+
+/// Build the trait-recovery experiments. For code (passages carry timestamps) we add
+/// per-passage style dimensions (when was it written? weekend?) recovered with
+/// leave-one-author-out. Per-author traits come from `AuthorMeta.traits` (code) or the
+/// fixed prose fields (gender, country, …).
+fn compute_attributes(bundle: &Bundle) -> Vec<AttrResult> {
+    let mut out: Vec<AttrResult> = Vec::new();
+
+    // Per-passage temporal dimensions (code dataset only).
+    if bundle.meta.passages.iter().any(|p| p.authored > 0) {
+        out.push(compute_passage_attribute(bundle, "When was it written?", &ERA_LABELS, era_bucket));
+        out.push(compute_passage_attribute(
+            bundle,
+            "Weekend or weekday?",
+            &["Weekday", "Weekend"],
+            weekend_bucket,
+        ));
+    }
+
+    // Per-author traits.
+    let has_traits = bundle.meta.authors.iter().any(|a| !a.traits.is_empty());
+    if has_traits {
+        let mut names: Vec<String> = Vec::new();
+        for a in &bundle.meta.authors {
+            for t in &a.traits {
+                if !names.iter().any(|nm| nm == &t.name) {
+                    names.push(t.name.clone());
+                }
+            }
+        }
+        for name in &names {
+            out.push(compute_attribute(bundle, name, move |a| {
+                a.traits
+                    .iter()
+                    .find(|t| &t.name == name)
+                    .map(|t| t.value.as_str())
+                    .unwrap_or("")
+            }));
+        }
+    } else {
+        out.push(compute_attribute(bundle, "Gender", |a| a.gender.as_str()));
+        out.push(compute_attribute(bundle, "Birth country", |a| a.birth_country.as_str()));
+        out.push(compute_attribute(bundle, "Where they were raised", |a| a.raised.as_str()));
+        out.push(compute_attribute(bundle, "Where they were educated", |a| a.educated.as_str()));
+        out.push(compute_attribute(bundle, "College", |a| a.college.as_str()));
+    }
+    out
+}
+
+/// Recover a PER-PASSAGE attribute (era, weekend) from code style. Uses leave-one-author-out:
+/// class centroids are built from OTHER authors' passages, so a correct guess means the
+/// STYLE encodes the attribute across people — not that it recognized the author.
+fn compute_passage_attribute(
+    bundle: &Bundle,
+    name: &str,
+    class_labels: &[&str],
+    class_of: impl Fn(i64) -> Option<usize>,
+) -> AttrResult {
+    let dim = bundle.meta.dim;
+    let n = bundle.n_authors();
+    let k = class_labels.len().max(1);
+    let palette = ["#e6194b", "#4363d8", "#3cb44b", "#f58231", "#911eb4", "#008080"];
+    let colors: Vec<String> = (0..k).map(|i| palette[i % palette.len()].to_string()).collect();
+    let classes: Vec<String> = class_labels.iter().map(|s| s.to_string()).collect();
+
+    // Class of each non-mystery passage (None = not classifiable / prose).
+    let pclass: Vec<Option<usize>> = bundle
+        .meta
+        .passages
+        .iter()
+        .map(|p| if p.is_mystery { None } else { class_of(p.authored) })
+        .collect();
+
+    let centroids = |exclude: Option<usize>| -> Vec<Option<Vec<f32>>> {
+        let mut sums = vec![vec![0f32; dim]; k];
+        let mut cnts = vec![0usize; k];
+        for (i, p) in bundle.meta.passages.iter().enumerate() {
+            if Some(p.author_id) == exclude {
+                continue;
+            }
+            let Some(c) = pclass[i] else { continue };
+            let v = bundle.vector(i);
+            for d in 0..dim {
+                sums[c][d] += v[d];
+            }
+            cnts[c] += 1;
+        }
+        (0..k).map(|c| centroid_of_sum(&sums[c], cnts[c], dim)).collect()
+    };
+
+    // Baselines over the classified passages.
+    let mut class_counts = vec![0u32; k];
+    for c in pclass.iter().flatten() {
+        class_counts[*c] += 1;
+    }
+    let total: u32 = class_counts.iter().sum();
+    let baseline = *class_counts.iter().max().unwrap_or(&0) as f32 / total.max(1) as f32;
+    let random_baseline = 1.0 / class_counts.iter().filter(|&&c| c > 0).count().max(1) as f32;
+
+    // Leaky: train on all passages (includes the author's own).
+    let full = centroids(None);
+    let (mut leaky_c, mut leaky_t) = (0u32, 0u32);
+    for (i, _) in bundle.meta.passages.iter().enumerate() {
+        let Some(true_c) = pclass[i] else { continue };
+        if let Some(pred) = argmax_centroid(&full, bundle.vector(i)) {
+            leaky_t += 1;
+            if pred == true_c {
+                leaky_c += 1;
+            }
+        }
+    }
+    let leaky_accuracy = leaky_c as f32 / leaky_t.max(1) as f32;
+
+    // Fair: leave-one-author-out.
+    let mut confusion = vec![vec![0u32; k]; k];
+    let mut per_class = vec![(0u32, 0u32); k];
+    let (mut fair_c, mut fair_t) = (0u32, 0u32);
+    let mut tested_authors = 0usize;
+    for a in 0..n {
+        let cents = centroids(Some(a));
+        let mut tested = false;
+        for (i, p) in bundle.meta.passages.iter().enumerate() {
+            if p.author_id != a {
+                continue;
+            }
+            let Some(true_c) = pclass[i] else { continue };
+            if let Some(pred) = argmax_centroid(&cents, bundle.vector(i)) {
+                tested = true;
+                confusion[true_c][pred] += 1;
+                per_class[true_c].1 += 1;
+                fair_t += 1;
+                if pred == true_c {
+                    fair_c += 1;
+                    per_class[true_c].0 += 1;
+                }
+            }
+        }
+        if tested {
+            tested_authors += 1;
+        }
+    }
+    let fair_accuracy = fair_c as f32 / fair_t.max(1) as f32;
+
+    AttrResult {
+        name: name.to_string(),
+        classes,
+        colors,
+        baseline,
+        random_baseline,
+        fair_accuracy,
+        leaky_accuracy,
+        per_class,
+        confusion,
+        tested_authors,
         total_authors: n,
     }
 }

@@ -1,0 +1,161 @@
+# Well-known open-source developers, coder-first. Each dev lists MANY of their repos
+# (their marquee projects + their own public repos). Attribution runs
+# `git log --author=<them>` per (dev, repo), so we pull EXACTLY that developer's commits
+# across full history — old and new — then pool their added lines per file into passages.
+# `emails`/`logins`/`name` all become --author patterns (and an identity double-check).
+#
+# `traits` are recovered from code style alone in the Dimensions view (language, era,
+# ecosystem, role). Repos with no `depth` are full-history (needed to reach a founder's
+# early work); `depth`/`max_commits` only bound the couple of genuinely huge repos.
+
+languages = ["c", "h", "cpp", "cc", "cxx", "hpp", "py", "js", "mjs", "cjs", "jsx", "ts", "tsx", "go", "rb", "rs", "zig"]
+
+[[devs]]
+name = "Salvatore Sanfilippo"
+logins = ["antirez"]
+traits = { paradigm = "Systems" }
+repos = [
+  { slug = "redis",    url = "https://github.com/redis/redis.git", domain = "Databases" },
+  { slug = "kilo",     url = "https://github.com/antirez/kilo.git", domain = "Editors" },
+  { slug = "disque",   url = "https://github.com/antirez/disque.git", domain = "Databases" },
+  { slug = "sds",      url = "https://github.com/antirez/sds.git", domain = "Libraries" },
+  { slug = "linenoise",url = "https://github.com/antirez/linenoise.git", domain = "Libraries" },
+  { slug = "dump1090", url = "https://github.com/antirez/dump1090.git", domain = "Radio" },
+]
+
+[[devs]]
+name = "TJ Holowaychuk"
+logins = ["tj", "visionmedia"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "express",   url = "https://github.com/expressjs/express.git", domain = "Web frameworks" },
+  { slug = "koa",       url = "https://github.com/koajs/koa.git", domain = "Web frameworks" },
+  { slug = "commander", url = "https://github.com/tj/commander.js.git", domain = "CLI tooling" },
+  { slug = "co",        url = "https://github.com/tj/co.git", domain = "Async" },
+]
+
+[[devs]]
+name = "Sindre Sorhus"
+logins = ["sindresorhus"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "chalk",     url = "https://github.com/chalk/chalk.git", domain = "CLI tooling" },
+  { slug = "ora",       url = "https://github.com/sindresorhus/ora.git", domain = "CLI tooling" },
+  { slug = "execa",     url = "https://github.com/sindresorhus/execa.git", domain = "CLI tooling" },
+  { slug = "got",       url = "https://github.com/sindresorhus/got.git", domain = "HTTP" },
+  { slug = "ky",        url = "https://github.com/sindresorhus/ky.git", domain = "HTTP" },
+  { slug = "type-fest", url = "https://github.com/sindresorhus/type-fest.git", domain = "Types" },
+]
+
+[[devs]]
+name = "Evan You"
+logins = ["yyx990803"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "vue-core",   url = "https://github.com/vuejs/core.git", domain = "Frontend" },
+  { slug = "vite",       url = "https://github.com/vitejs/vite.git", domain = "Build tools" },
+  { slug = "vue2",       url = "https://github.com/vuejs/vue.git", domain = "Frontend" },
+  { slug = "vue-router", url = "https://github.com/vuejs/vue-router.git", domain = "Frontend" },
+  { slug = "vuepress",   url = "https://github.com/vuejs/vuepress.git", domain = "Docs" },
+]
+
+[[devs]]
+name = "Rich Harris"
+logins = ["Rich-Harris"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "svelte",       url = "https://github.com/sveltejs/svelte.git", domain = "Frontend" },
+  { slug = "rollup",       url = "https://github.com/rollup/rollup.git", domain = "Build tools" },
+  { slug = "degit",        url = "https://github.com/Rich-Harris/degit.git", domain = "CLI tooling" },
+  { slug = "magic-string", url = "https://github.com/Rich-Harris/magic-string.git", domain = "Build tools" },
+]
+
+[[devs]]
+name = "Armin Ronacher"
+logins = ["mitsuhiko"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "flask",     url = "https://github.com/pallets/flask.git", domain = "Web frameworks" },
+  { slug = "jinja",     url = "https://github.com/pallets/jinja.git", domain = "Templating" },
+  { slug = "click",     url = "https://github.com/pallets/click.git", domain = "CLI tooling" },
+  { slug = "werkzeug",  url = "https://github.com/pallets/werkzeug.git", domain = "Web frameworks" },
+  { slug = "insta",     url = "https://github.com/mitsuhiko/insta.git", domain = "Dev tooling" },
+  { slug = "minijinja", url = "https://github.com/mitsuhiko/minijinja.git", domain = "Templating" },
+]
+
+[[devs]]
+name = "Charlie Marsh"
+logins = ["charliermarsh"]
+traits = { paradigm = "Systems" }
+repos = [
+  { slug = "ruff", url = "https://github.com/astral-sh/ruff.git", domain = "Dev tooling" },
+  { slug = "uv",   url = "https://github.com/astral-sh/uv.git", domain = "Dev tooling" },
+  { slug = "rye",  url = "https://github.com/astral-sh/rye.git", domain = "Dev tooling" },
+]
+
+[[devs]]
+name = "Mitchell Hashimoto"
+logins = ["mitchellh"]
+traits = { paradigm = "Systems" }
+repos = [
+  { slug = "ghostty", url = "https://github.com/ghostty-org/ghostty.git", domain = "Terminals" },
+  { slug = "libxev",  url = "https://github.com/mitchellh/libxev.git", domain = "Libraries" },
+  { slug = "vagrant", url = "https://github.com/hashicorp/vagrant.git", domain = "Infrastructure" },
+]
+
+[[devs]]
+name = "Jeremy Ashkenas"
+logins = ["jashkenas"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "backbone",   url = "https://github.com/jashkenas/backbone.git", domain = "Frontend" },
+  { slug = "underscore", url = "https://github.com/jashkenas/underscore.git", domain = "Utilities" },
+  { slug = "docco",      url = "https://github.com/jashkenas/docco.git", domain = "Docs" },
+]
+
+[[devs]]
+name = "Linus Torvalds"
+emails = ["torvalds@linux-foundation.org", "torvalds@osdl.org", "torvalds@ppc970.osdl.org", "torvalds@g5.osdl.org", "torvalds@woody.linux-foundation.org", "torvalds@evo.osdl.org"]
+logins = ["torvalds"]
+traits = { paradigm = "Systems" }
+repos = [
+  # His own small C repos capture his style without the 5-6GB Linux clone; Git captures
+  # his 2005 founding work (full history via --author).
+  { slug = "git",        url = "https://github.com/git/git.git", domain = "Version control" },
+  { slug = "uemacs",     url = "https://github.com/torvalds/uemacs.git", domain = "Editors" },
+  { slug = "test-tlb",   url = "https://github.com/torvalds/test-tlb.git", domain = "Systems" },
+  { slug = "pesconvert", url = "https://github.com/torvalds/pesconvert.git", domain = "Graphics" },
+]
+
+[[devs]]
+name = "Guido van Rossum"
+emails = ["guido@python.org", "guido@dropbox.com"]
+logins = ["gvanrossum"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "cpython",   url = "https://github.com/python/cpython.git", domain = "Language runtime", paths = ["Lib", "Modules", "Python"] },
+  { slug = "old-demos", url = "https://github.com/gvanrossum/old-demos.git", domain = "Demos" },
+  { slug = "abc-unix",  url = "https://github.com/gvanrossum/abc-unix.git", domain = "Language runtime" },
+]
+
+[[devs]]
+name = "Brad Fitzpatrick"
+logins = ["bradfitz"]
+traits = { paradigm = "Systems" }
+repos = [
+  { slug = "tailscale", url = "https://github.com/tailscale/tailscale.git", domain = "Networking" },
+  { slug = "gomemcache",url = "https://github.com/bradfitz/gomemcache.git", domain = "Databases" },
+  { slug = "goimports", url = "https://github.com/bradfitz/goimports.git", domain = "Dev tooling" },
+  # Go itself is huge; a bounded clone is a supplement (his other repos carry him).
+  { slug = "go",        url = "https://github.com/golang/go.git", domain = "Language runtime", depth = 2000, paths = ["src"] },
+]
+
+[[devs]]
+name = "David Heinemeier Hansson"
+emails = ["david@loudthinking.com", "david@hey.com", "david@basecamp.com", "david@37signals.com"]
+logins = ["dhh"]
+traits = { paradigm = "Scripting" }
+repos = [
+  { slug = "rails", url = "https://github.com/rails/rails.git", domain = "Web frameworks" },
+  { slug = "kamal", url = "https://github.com/basecamp/kamal.git", domain = "Infrastructure" },
+]

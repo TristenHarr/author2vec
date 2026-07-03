@@ -4,7 +4,8 @@
 use dioxus::prelude::*;
 
 use super::{gate, Swatch};
-use crate::data::{use_dataset, LoadState};
+use crate::copy::copy_for;
+use crate::data::{use_dataset, use_selector, LoadState};
 use shared::AttrResult;
 
 #[component]
@@ -17,16 +18,11 @@ pub fn Dimensions() -> Element {
         unreachable!()
     };
     let attrs = bundle.meta.results.attributes.clone();
+    let c = copy_for(&use_selector().selected.read().clone());
 
     rsx! {
         div { class: "dims-view",
-            p { class: "explainer",
-                "Trippy question: can writing style alone reveal an author's gender or birth "
-                "country, for an author the model has NEVER read? We build each trait's profile "
-                "from the OTHER authors and guess (leave-one-author-out), so it can't cheat by "
-                "recognizing who wrote it. Compare it against blind guessing and against always "
-                "guessing the biggest group."
-            }
+            p { class: "explainer", "{c.dims_explainer}" }
             if attrs.is_empty() {
                 p { class: "matrix-cap", "No trait data in this dataset yet." }
             }
@@ -39,20 +35,24 @@ pub fn Dimensions() -> Element {
 
 #[component]
 fn AttrPanel(attr: AttrResult) -> Element {
+    let c = copy_for(&use_selector().selected.read().clone());
+    let sub = c.subject;
+    let ents = c.entities;
     let rows = [
-        ("Blind guessing (random)", attr.random_baseline, "#9a9aa8"),
-        ("Always guess the majority", attr.baseline, "#c0392b"),
-        ("Never read the author", attr.fair_accuracy, "#5b4be0"),
-        ("Has read the author (leaks identity)", attr.leaky_accuracy, "#2a9d5c"),
+        ("Blind guessing (random)".to_string(), attr.random_baseline, "#9a9aa8"),
+        ("Always guess the majority".to_string(), attr.baseline, "#c0392b"),
+        (format!("Never read the {sub}"), attr.fair_accuracy, "#5b4be0"),
+        (format!("Has read the {sub} (leaks identity)"), attr.leaky_accuracy, "#2a9d5c"),
     ];
+    let fair_caption = format!(
+        "Guessed from style, for a {sub} never seen. Fair test covers {}/{} {ents}.",
+        attr.tested_authors, attr.total_authors
+    );
 
     rsx! {
         div { class: "attr-panel",
             h3 { "{attr.name}" }
-            p { class: "matrix-cap",
-                "Guessed from writing style, for an author never seen. Fair test covers "
-                "{attr.tested_authors}/{attr.total_authors} authors."
-            }
+            p { class: "matrix-cap", "{fair_caption}" }
             div { class: "attr-bars",
                 for (label, val, color) in rows {
                     {
@@ -69,7 +69,7 @@ fn AttrPanel(attr: AttrResult) -> Element {
                     }
                 }
             }
-            h4 { class: "attr-sub", "Per class, never-seen authors" }
+            h4 { class: "attr-sub", "Per class, never-seen {ents}" }
             div { class: "attr-classes",
                 for (i, cls) in attr.classes.iter().enumerate() {
                     {
@@ -83,7 +83,7 @@ fn AttrPanel(attr: AttrResult) -> Element {
                                 div { class: "bar-row muted", key: "{cls}",
                                     Swatch { color: color.clone() }
                                     span { class: "bar-name", "{label}" }
-                                    span { class: "bar-note", "only 1 author, not testable" }
+                                    span { class: "bar-note", "only 1 {sub}, not testable" }
                                 }
                             }
                         } else {

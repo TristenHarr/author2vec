@@ -2,9 +2,11 @@
 
 use dioxus::prelude::*;
 
+mod copy;
 mod data;
 mod views;
 
+use copy::copy_for;
 use data::use_selector;
 use views::{Accuracy, Dimensions, Map, Story};
 
@@ -18,9 +20,9 @@ fn main() {
 enum Route {
     #[layout(Shell)]
     #[route("/")]
-    Map {},
-    #[route("/accuracy")]
     Accuracy {},
+    #[route("/map")]
+    Map {},
     #[route("/dimensions")]
     Dimensions {},
     #[route("/why")]
@@ -40,29 +42,27 @@ fn App() -> Element {
 /// Shared shell: title, explainer, tab nav, model picker, and the routed content.
 #[component]
 fn Shell() -> Element {
+    let sel = use_selector();
+    let key = sel.selected.read().clone();
+    let c = copy_for(&key);
     rsx! {
         div { class: "app",
             header { class: "hero",
                 h1 { "author2vec" }
                 p { class: "subtitle", "The AI's already know you, or they probably never will" }
-                p { class: "tagline",
-                    "Every author writes in a slightly different corner of vector space. "
-                    "We embedded thousands of passages from famous public-domain books with a "
-                    "local AI model. Here is what their fingerprints look like, and how well a "
-                    "computer can tell them apart."
-                }
+                p { class: "tagline", "{c.tagline}" }
+                DatasetToggle {}
                 nav { class: "tabs",
+                    Link { to: Route::Accuracy {}, class: "tab", active_class: "active", "{c.tab_predict}" }
                     Link { to: Route::Map {}, class: "tab", active_class: "active", "🗺 Vector-space map" }
-                    Link { to: Route::Accuracy {}, class: "tab", active_class: "active", "🎯 Can we predict the author?" }
                     Link { to: Route::Dimensions {}, class: "tab", active_class: "active", "🔮 Hidden dimensions" }
                     Link { to: Route::Story {}, class: "tab", active_class: "active", "💭 Why I made this" }
                 }
-                ModelPicker {}
             }
             main { class: "content", Outlet::<Route> {} }
             footer { class: "footer",
-                "Texts: "
-                a { href: "https://www.gutenberg.org", "Project Gutenberg" }
+                "{c.source_prefix}"
+                a { href: "{c.source_href}", "{c.source_name}" }
                 " · Embeddings via "
                 a { href: "https://github.com/Anush008/fastembed-rs", "fastembed" }
                 " (local ONNX) · Built with Rust + "
@@ -75,34 +75,34 @@ fn Shell() -> Element {
     }
 }
 
-/// Row of chips to switch which embedding model's vectors are loaded.
+/// Segmented control to switch which dataset (Authors / Coders) is loaded.
 #[component]
-fn ModelPicker() -> Element {
+fn DatasetToggle() -> Element {
     let sel = use_selector();
     let manifest = sel.manifest.read();
     let Some(m) = manifest.as_ref() else {
         return rsx! {};
     };
-    // With a single model there is nothing to pick.
-    if m.models.len() <= 1 {
+    // With a single dataset there is nothing to switch.
+    if m.datasets.len() <= 1 {
         return rsx! {};
     }
     let current = sel.selected.read().clone();
     rsx! {
         div { class: "model-picker",
-            span { class: "mp-label", "Embedding model:" }
-            for mi in m.models.iter() {
+            span { class: "mp-label", "Dataset:" }
+            for d in m.datasets.iter() {
                 {
-                    let key = mi.key.clone();
+                    let key = d.key.clone();
                     let mut selected = sel.selected;
-                    let active = current == mi.key;
+                    let active = current == d.key;
                     rsx! {
                         button {
-                            key: "{mi.key}",
+                            key: "{d.key}",
                             class: if active { "chip active" } else { "chip" },
                             onclick: move |_| selected.set(key.clone()),
-                            "{mi.name} "
-                            span { class: "mp-dim", "{mi.dim}d · {mi.size}" }
+                            "{d.label} "
+                            span { class: "mp-dim", "{d.blurb}" }
                         }
                     }
                 }

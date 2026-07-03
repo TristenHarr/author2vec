@@ -1,0 +1,29 @@
+# Tiny smoke-test roster: a few small repos to validate the pipeline end-to-end fast.
+languages = ["c", "h", "js", "mjs", "ts"]
+
+[[devs]]
+name = "Salvatore Sanfilippo"
+logins = ["antirez"]
+traits = { language = "C", era = "2000s", ecosystem = "Editors", role = "Creator" }
+repos = [
+  { slug = "kilo",      url = "https://github.com/antirez/kilo.git", domain = "Editors" },
+  { slug = "dump1090",  url = "https://github.com/antirez/dump1090.git", domain = "Radio" },
+]
+
+[[devs]]
+name = "TJ Holowaychuk"
+logins = ["tj", "visionmedia"]
+traits = { language = "JavaScript", era = "2000s", ecosystem = "CLI tooling", role = "Creator" }
+repos = [
+  { slug = "commander", url = "https://github.com/tj/commander.js.git", domain = "CLI tooling" },
+  { slug = "co",        url = "https://github.com/tj/co.git", domain = "Async" },
+]
+
+[[devs]]
+name = "Sindre Sorhus"
+logins = ["sindresorhus"]
+traits = { language = "TypeScript", era = "2010s", ecosystem = "CLI tooling", role = "Creator" }
+repos = [
+  { slug = "ora",   url = "https://github.com/sindresorhus/ora.git", domain = "CLI tooling" },
+  { slug = "execa", url = "https://github.com/sindresorhus/execa.git", domain = "CLI tooling" },
+]
