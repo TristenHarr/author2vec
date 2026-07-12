@@ -211,6 +211,20 @@ if dec:
     add("gpt2", "decoder_nexttok_final", r3(dec["next_token_acc"][-1]), fn,
         "next_token_acc[-1]", "final-depth logit-lens next-token accuracy")
 
+# ---- decoder directed-modulation (GPT-2) ----
+sti = load("person2vec-decoder-steer-gpt2.json")
+if sti:
+    fn = "person2vec-decoder-steer-gpt2.json"
+    add("gpt2", "decoder_steer_alpha", sti["alpha"], fn, "alpha", "")
+    add("gpt2", "decoder_steer_mean_real", r3(sti["mean_delta_real"]), fn,
+        "mean_delta_real", "mean Δlog-prob(target), real concept direction")
+    add("gpt2", "decoder_steer_mean_random", r3(sti["mean_delta_random"]), fn,
+        "mean_delta_random", "matched-norm random control")
+    for c in sti["concepts"]:
+        add("gpt2", f"decoder_steer::{c['name']}",
+            [r3(c["steer_pos"] - c["base"]), r3(c["steer_neg"] - c["base"]), r3(c["random"] - c["base"])],
+            fn, "[+δ Δ, −δ Δ, random Δ]", c["name"])
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

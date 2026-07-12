@@ -328,8 +328,31 @@ next-token driver), which naturally becomes low-rank as the network commits to a
 rather than the full residual stream the paper differentiates. The workspace geometry transfers;
 the motor *readout* is ours, and we flag it as such.
 
-### 5.6 Behavioral steering — can't-answer → can-answer
-_[pending: Phase 4]_ ![placeholder](figures/fig8_behavioral.png)
+### 5.6 Behavioral steering — is the lever causal on a decoder?
+
+The paper's boldest claims are behavioral: swap a J-lens vector for a reasoning intermediate and the
+answer changes. We wanted to test the strongest version — take a prompt the model answers wrongly
+and steer it right — but on a 124M-parameter GPT-2 that barely reasons, that test is neither clean
+(steering toward the answer token is just injecting the answer) nor likely to succeed. So we test
+the **mechanistic prerequisite** instead, and report its ceiling honestly. **Hypothesis:** injecting
+a *concept-context* direction — built leakage-free as the difference of mid-layer mean residuals
+between concept-primed and neutral prompts, **not** the target's unembedding — raises concept-
+related tokens in a held-out neutral prompt, more than a matched-norm random direction.
+
+**Result: the lever is causal and bidirectional, but modest.** Injecting $+\alpha\hat\delta$ at the
+mid layer raises the mean log-prob of held-out concept tokens by $+0.10$/$+0.22$/$+0.44$ (money /
+music / war), and $-\alpha\hat\delta$ lowers it below baseline in every case; the mean effect is
+**$+0.254$ for the real direction versus $-0.085$ for the matched-norm random control**. So a
+concept direction extracted purely from context is a genuine, sign-controllable causal handle on the
+decoder's output distribution — the prerequisite the paper's behavioral experiments rely on.
+
+*Honesty — this is the prerequisite, not the headline.* The effect is small: it shifts the
+*distribution* (concept tokens go from $\approx e^{-10}$ to $\approx e^{-9.75}$) but does **not flip
+the model's actual output**, and it rests on only 3 concepts × 6 prompts. It is **not** the paper's
+"can't→can" reasoning result, and we do not claim it is. Redirecting a *reasoning intermediate* to
+change a final answer needs a model that can reason; GPT-2 shows the handle exists and is causal,
+and marks exactly where a capable open decoder (e.g. Qwen2.5) is required to go further. We regard
+that as the honest next step, not a result we have.
 
 ### 5.7 Expertise / lexical sophistication
 _[pending: Phase 5 — the "IQ" reframe; construct honesty; likely mixed/negative result]_

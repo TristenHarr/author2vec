@@ -1556,5 +1556,65 @@
     "asset": "person2vec-decoder-structural-gpt2.json",
     "path": "next_token_acc[-1]",
     "note": "final-depth logit-lens next-token accuracy"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_steer_alpha",
+    "value": 8.0,
+    "asset": "person2vec-decoder-steer-gpt2.json",
+    "path": "alpha",
+    "note": ""
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_steer_mean_real",
+    "value": 0.254,
+    "asset": "person2vec-decoder-steer-gpt2.json",
+    "path": "mean_delta_real",
+    "note": "mean \u0394log-prob(target), real concept direction"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_steer_mean_random",
+    "value": -0.085,
+    "asset": "person2vec-decoder-steer-gpt2.json",
+    "path": "mean_delta_random",
+    "note": "matched-norm random control"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_steer::money/finance",
+    "value": [
+      0.098,
+      -0.081,
+      -0.06
+    ],
+    "asset": "person2vec-decoder-steer-gpt2.json",
+    "path": "[+\u03b4 \u0394, \u2212\u03b4 \u0394, random \u0394]",
+    "note": "money/finance"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_steer::music",
+    "value": [
+      0.223,
+      -0.171,
+      0.085
+    ],
+    "asset": "person2vec-decoder-steer-gpt2.json",
+    "path": "[+\u03b4 \u0394, \u2212\u03b4 \u0394, random \u0394]",
+    "note": "music"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_steer::war/military",
+    "value": [
+      0.441,
+      -0.332,
+      -0.281
+    ],
+    "asset": "person2vec-decoder-steer-gpt2.json",
+    "path": "[+\u03b4 \u0394, \u2212\u03b4 \u0394, random \u0394]",
+    "note": "war/military"
   }
 ]
