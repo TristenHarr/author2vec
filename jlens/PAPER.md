@@ -220,8 +220,8 @@ null). `lib.rs:stable_rank`,
 Decoding author identity by leave-one-out nearest-centroid on the **internal** per-layer
 Jacobian readout beats chance at **every** layer: prose per-layer
 $[5.2, 7.2, 8.8, 8.0, 7.2, 8.8]\%$ against a $1.8\%$ chance and a $14.4\%$ output ceiling; code
-per-layer up to $49.5\%$ against a $7.7\%$ chance — the **best internal layer exceeds the
-$38.0\%$ output-embedding ceiling**. Identity is computed inside the layers, not merely
+per-layer up to $50.8\%$ against a $6.7\%$ chance — the **best internal layer ($50.8\%$) exceeds
+the $46.8\%$ output-embedding ceiling**. Identity is computed inside the layers, not merely
 emitted. _(All values: ledger `identity_*`.)_
 
 ### 5.2 Identity ignition — does the space collapse to a single person?
@@ -589,7 +589,7 @@ Structural signatures and internal identity accuracy by residual depth, straight
 | 4 | 54.5 | 127.6 | 0.49 | +0.116 |
 | 5 | 106.9 | 205.2 | 0.61 | +0.088 |
 
-**Coders (JinaBERT, 12 layers, 15 developers)** — internal identity accuracy by layer: [42.5, 49.5, 47.5, 38.5, 39.0, 39.5, 40.0, 43.5, 42.5, 41.5, 42.0, 38.5]% (chance 6.7%).
+**Coders (JinaBERT, 12 layers, 15 developers)** — internal identity accuracy by layer: [45.2, 44.8, 48.0, 50.8, 40.0, 48.8, 48.0, 40.4, 42.0, 42.0, 42.4, 43.2]% (chance 6.7%).
 
 | layer | stable rank | eff dim | verbaliz. | autocorr |
 |---|---|---|---|---|
