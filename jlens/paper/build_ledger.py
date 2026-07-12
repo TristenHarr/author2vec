@@ -237,6 +237,29 @@ if exp:
     add("minilm", "expertise_r_long_word", exp["r_education_axis_vs_long_word_frac"], fn,
         "r_education_axis_vs_long_word_frac", "")
 
+# ---- homogenization over time (coders) ----
+hg = load("person2vec-homogenization-coders.json")
+if hg:
+    fn = "person2vec-homogenization-coders.json"
+    add("coders", "homogenization_pre2021", hg["cross_sim_pre2021"], fn, "cross_sim_pre2021", "mean cross-coder sim, AI-free era")
+    add("coders", "homogenization_post2022", hg["cross_sim_post2022"], fn, "cross_sim_post2022", "mean cross-coder sim, AI era")
+    add("coders", "homogenization_delta", hg["convergence_delta"], fn, "convergence_delta", "+ = converged")
+    add("coders", "homogenization_p_two_sided", hg["p_two_sided"], fn, "p_two_sided", "500-sample permutation null")
+    add("coders", "homogenization_within_consistency", hg["within_coder_consistency"], fn, "within_coder_consistency", "")
+    add("coders", "homogenization_n_coders", hg["n_coders_both_eras"], fn, "n_coders_both_eras", "")
+
+# ---- per-coder recognizability specifics (the two added devs) ----
+core_c = load("person2vec-coders.json")
+if core_c and "results" in core_c and core_c["results"].get("per_author"):
+    fn = "person2vec-coders.json"
+    nm = [a["name"] for a in core_c["authors"]]
+    accs = {nm[pa["author_id"]]: pa["accuracy"] for pa in core_c["results"]["per_author"]}
+    add("coders", "recognizability_spread", [r3(min(accs.values())), r3(max(accs.values()))], fn,
+        "min/max results.per_author[].accuracy", "some coders known better than others")
+    for who in ("Andrew Kelley", "Jarred Sumner"):
+        if who in accs:
+            add("coders", f"recognizability::{who}", r3(accs[who]), fn, "results.per_author[].accuracy", "same-file")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

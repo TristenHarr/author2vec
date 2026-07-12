@@ -387,10 +387,11 @@ direction as "intelligence."
 
 Downstream, the same embeddings support an honest authorship study: prose recognition climbs
 from a $1.8\%$ blind baseline to $58.3\%$ once the model has read the author's book; a new-passage
-reveal is $130/220$ correct when the author is known and $0/220$ when fully hidden (code:
-$7.7\%\!\to\!74.6\%$; reveal $38/52$). Trait recovery **nails some and whiffs on others** —
-prose gender $85.5\%$ (majority $52.7\%$) but most geographic traits at or below their majority
-baselines; code systems-vs-scripting $84.6\%$ (majority $61.5\%$) but commit-time near chance.
+reveal is $130/220$ correct when the author is known and $0/220$ when fully hidden (code, 15
+developers: $6.7\%\!\to\!71.1\%$; reveal $45/60$). Trait recovery **nails some and whiffs on
+others** — prose gender $85.5\%$ (majority $52.7\%$) but most geographic traits at or below their
+majority baselines; code systems-vs-scripting $80.0\%$ (majority $53.3\%$) but commit-time and
+weekend near or below chance.
 
 ### 5.9 Does the model know some coders better than others? And is style homogenizing?
 
