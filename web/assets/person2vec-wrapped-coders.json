@@ -1,0 +1,167 @@
+[
+ {
+  "name": "Jeremy Ashkenas",
+  "recog": 89.7,
+  "outlier": 0.322,
+  "para": "Scripting",
+  "lean": -0.385,
+  "twin": "David Heinemeier Hansson",
+  "twin_sim": 0.72,
+  "opposite": "Andrew Kelley",
+  "distinct_rank": 1
+ },
+ {
+  "name": "TJ Holowaychuk",
+  "recog": 81.0,
+  "outlier": 0.299,
+  "para": "Scripting",
+  "lean": -0.367,
+  "twin": "Sindre Sorhus",
+  "twin_sim": 0.71,
+  "opposite": "Linus Torvalds",
+  "distinct_rank": 2
+ },
+ {
+  "name": "Linus Torvalds",
+  "recog": 82.5,
+  "outlier": 0.272,
+  "para": "Systems",
+  "lean": 0.266,
+  "twin": "Guido van Rossum",
+  "twin_sim": 0.69,
+  "opposite": "TJ Holowaychuk",
+  "distinct_rank": 3
+ },
+ {
+  "name": "Salvatore Sanfilippo",
+  "recog": 81.0,
+  "outlier": 0.251,
+  "para": "Systems",
+  "lean": 0.315,
+  "twin": "Brad Fitzpatrick",
+  "twin_sim": 0.72,
+  "opposite": "Evan You",
+  "distinct_rank": 4
+ },
+ {
+  "name": "Sindre Sorhus",
+  "recog": 75.4,
+  "outlier": 0.239,
+  "para": "Scripting",
+  "lean": -0.125,
+  "twin": "Jarred Sumner",
+  "twin_sim": 0.71,
+  "opposite": "Jeremy Ashkenas",
+  "distinct_rank": 5
+ },
+ {
+  "name": "Brad Fitzpatrick",
+  "recog": 73.8,
+  "outlier": 0.207,
+  "para": "Systems",
+  "lean": 0.244,
+  "twin": "Jarred Sumner",
+  "twin_sim": 0.72,
+  "opposite": "Jeremy Ashkenas",
+  "distinct_rank": 6
+ },
+ {
+  "name": "Evan You",
+  "recog": 67.5,
+  "outlier": 0.192,
+  "para": "Scripting",
+  "lean": -0.154,
+  "twin": "Rich Harris",
+  "twin_sim": 0.85,
+  "opposite": "Salvatore Sanfilippo",
+  "distinct_rank": 7
+ },
+ {
+  "name": "David Heinemeier Hansson",
+  "recog": 61.9,
+  "outlier": 0.176,
+  "para": "Scripting",
+  "lean": -0.34,
+  "twin": "Armin Ronacher",
+  "twin_sim": 0.79,
+  "opposite": "Linus Torvalds",
+  "distinct_rank": 8
+ },
+ {
+  "name": "Charlie Marsh",
+  "recog": 76.2,
+  "outlier": 0.173,
+  "para": "Systems",
+  "lean": 0.099,
+  "twin": "Andrew Kelley",
+  "twin_sim": 0.77,
+  "opposite": "Jeremy Ashkenas",
+  "distinct_rank": 9
+ },
+ {
+  "name": "Mitchell Hashimoto",
+  "recog": 65.9,
+  "outlier": 0.171,
+  "para": "Systems",
+  "lean": 0.192,
+  "twin": "Jarred Sumner",
+  "twin_sim": 0.77,
+  "opposite": "TJ Holowaychuk",
+  "distinct_rank": 10
+ },
+ {
+  "name": "Rich Harris",
+  "recog": 77.0,
+  "outlier": 0.162,
+  "para": "Scripting",
+  "lean": -0.154,
+  "twin": "Evan You",
+  "twin_sim": 0.85,
+  "opposite": "TJ Holowaychuk",
+  "distinct_rank": 11
+ },
+ {
+  "name": "Andrew Kelley",
+  "recog": 72.2,
+  "outlier": 0.16,
+  "para": "Systems",
+  "lean": 0.252,
+  "twin": "Jarred Sumner",
+  "twin_sim": 0.84,
+  "opposite": "Jeremy Ashkenas",
+  "distinct_rank": 12
+ },
+ {
+  "name": "Guido van Rossum",
+  "recog": 60.3,
+  "outlier": 0.134,
+  "para": "Scripting",
+  "lean": 0.034,
+  "twin": "Andrew Kelley",
+  "twin_sim": 0.79,
+  "opposite": "TJ Holowaychuk",
+  "distinct_rank": 13
+ },
+ {
+  "name": "Armin Ronacher",
+  "recog": 48.4,
+  "outlier": 0.115,
+  "para": "Scripting",
+  "lean": -0.242,
+  "twin": "David Heinemeier Hansson",
+  "twin_sim": 0.79,
+  "opposite": "Salvatore Sanfilippo",
+  "distinct_rank": 14
+ },
+ {
+  "name": "Jarred Sumner",
+  "recog": 54.0,
+  "outlier": 0.107,
+  "para": "Systems",
+  "lean": 0.185,
+  "twin": "Andrew Kelley",
+  "twin_sim": 0.84,
+  "opposite": "Jeremy Ashkenas",
+  "distinct_rank": 15
+ }
+]

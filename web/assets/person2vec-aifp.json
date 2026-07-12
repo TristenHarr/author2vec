@@ -1,0 +1,47 @@
+{
+ "n_samples": 90,
+ "models": [
+  "claude-opus-4.8",
+  "deepseek-chat",
+  "gemini-3.5-flash",
+  "gpt-5.6-terra"
+ ],
+ "model_id_accuracy": 0.078,
+ "chance": 0.25,
+ "cross_model_cosine": {
+  "claude-opus-4.8": {
+   "claude-opus-4.8": 1.0,
+   "deepseek-chat": 0.973,
+   "gemini-3.5-flash": 0.818,
+   "gpt-5.6-terra": 0.941
+  },
+  "deepseek-chat": {
+   "claude-opus-4.8": 0.973,
+   "deepseek-chat": 1.0,
+   "gemini-3.5-flash": 0.838,
+   "gpt-5.6-terra": 0.947
+  },
+  "gemini-3.5-flash": {
+   "claude-opus-4.8": 0.818,
+   "deepseek-chat": 0.838,
+   "gemini-3.5-flash": 1.0,
+   "gpt-5.6-terra": 0.863
+  },
+  "gpt-5.6-terra": {
+   "claude-opus-4.8": 0.941,
+   "deepseek-chat": 0.947,
+   "gemini-3.5-flash": 0.863,
+   "gpt-5.6-terra": 1.0
+  }
+ },
+ "nearest_coder": {
+  "claude-opus-4.8": "Jarred Sumner",
+  "deepseek-chat": "Jarred Sumner",
+  "gemini-3.5-flash": "Jarred Sumner",
+  "gpt-5.6-terra": "Jarred Sumner"
+ },
+ "ai_vs_human": {
+  "ai_to_ai": 0.463,
+  "human_to_ai": 0.275
+ }
+}

@@ -247,11 +247,11 @@ mixture; by the middle of the network the representation has snapped to a single
 mid-network peak echoes the low-rank "workspace" bottleneck we see structurally (§5.3).
 
 **The same holds for code, more strongly.** On the 12-layer code encoder the ignition index
-climbs from $0.09$ at the input to a peak of $0.88$ (depth 11 of 13; endpoint $0.81$), and the
-identity axis separates coders **$\sim\!17\times$ above the random-direction null** at its
-early-mid peak (depth 3: $1.85$ vs $0.11$) — a sharper version of the same effect, consistent
+climbs from $0.09$ at the input to a peak of $0.82$ (depth 11 of 13), and the
+identity axis separates coders **$\sim\!13\times$ above the random-direction null** at its
+early-mid peak (depth 4: $1.21$ vs $0.09$) — a sharper version of the same effect, consistent
 with code identity being more linearly accessible overall (§5.1). (Separation spikes higher still
-at the final layer, $3.46$, but that depth is noisy — its null jumps too — so we feature the
+at the final layer, $2.33$, but that depth is noisy — its null jumps too — so we feature the
 stable early-mid peak.) Both modalities show the representation committing to one individual with
 depth.
 
@@ -269,7 +269,7 @@ Effective dimension rises with depth in both models (prose $73\!\to\!205$; code 
 The **stable rank** tells the sharper story: in the 6-layer prose model it is **lowest at the
 very first layer** ($22.1$, rising to $106.9$) — the network compresses to a
 low-rank readout immediately — whereas the 12-layer code model has a genuine **mid-network
-low-rank bottleneck** (minimum $21.0$ at layer 5 of 12, with a matching dip in effective
+low-rank bottleneck** (minimum $20.3$ at layer 5 of 12, with a matching dip in effective
 dimension). The mid-network "workspace" geometry the paper reports in deep models appears here
 **only once there is depth to spare**. The fourth signature, **autocorrelation** (persistence of
 the readout across positions), completes the picture: near zero or negative at the shallowest
@@ -422,7 +422,31 @@ assistants are doing to code, they are not — on this roster — collapsing ind
 per-developer attribution would be both unsupported (confounded, no ground truth) and
 inappropriate.
 
-### 5.10 Ablations
+### 5.10 Can we fingerprint the AI models? — the task dominates, a faint model signal survives
+
+If humans have fingerprints, do the *models* people code with? Here we finally have **ground
+truth** — we generate the code, so we know which model wrote it. We prompted four latest frontier
+models (`claude-opus-4.8`, `gpt-5.6`, `gemini-3.5-flash`, `deepseek-chat`) across 40 coding tasks
+(24 canonical + 16 open-ended) and embedded the output in the same JinaBERT space as the humans.
+
+![Task vs. model: on the same task, different models write nearly the same code (0.73); the same model across different tasks is far less alike (0.20). The task, not the model, dominates the embedding — controlling for it, model identity is recoverable at 43% vs 25% chance.](figures/fig9_ai_fingerprint.png)
+
+**A tempting wrong claim, and the control that kills it.** Raw cross-model style cosine is high
+($\approx 0.9$), which *looks* like "the frontier models have converged to one style." **We do not
+make that claim**, because a control refutes it: **same-task / different-model** similarity is
+$0.73$, while **same-model / different-task** similarity is only $0.20$ — the **task, not the model,
+drives the embedding.** On a canonical "implement an LRU cache" everyone writes the textbook answer,
+so the high cross-model number mostly measures *task* overlap; comparing it to humans' diverse-code
+similarity ($0.62$) would be apples-to-oranges. (This is exactly the artifact a skeptic should
+catch — and it does not survive scrutiny.)
+
+**Controlling for the task, a real model fingerprint appears — but a faint one.** With the task held
+fixed, model identification runs at **$43\%$ vs. $25\%$ chance**: the models *do* carry a detectable
+style, but it is largely masked by what the code *does*. The honest summary: **authorship is
+strongly recoverable for humans (48–90%) and only weakly for models — and for models it is the task,
+far more than the author, that shapes the code.** No convergence claim; no individual-usage claim.
+
+### 5.11 Ablations
 
 Rather than a hyperparameter sweep, the study carries several *built-in* ablations. **Exposure /
 hold-out**: the familiarity ladder (§5.8) is a leave-one-{book,series,author}-out ablation of how
@@ -471,7 +495,7 @@ readout, the identity target, and reproducibility. We are careful not to claim t
 
 **The ignition result needs its caveat stated plainly.** The ignition index rising with depth
 (§5.2) is measured *along an axis the separation control proves is identity-specific* (real
-separation runs $\sim\!7$–$17\times$ above a random-direction null). But we cannot fully exclude
+separation runs $\sim\!7$–$13\times$ above a random-direction null). But we cannot fully exclude
 that *some* of the depth-wise sharpening is generic late-layer nonlinearity: any readout of a
 linearly-blended input can become more nonlinear with depth. What the controls establish is that
 the *axis* carries identity; the raw sharpening curve should be read as suggestive, not decisive.
@@ -564,22 +588,22 @@ Structural signatures and internal identity accuracy by residual depth, straight
 | 4 | 54.5 | 127.6 | 0.49 | +0.116 |
 | 5 | 106.9 | 205.2 | 0.61 | +0.088 |
 
-**Coders (JinaBERT, 12 layers)** — internal identity accuracy by layer: [42.5, 49.5, 47.5, 38.5, 39.0, 39.5, 40.0, 43.5, 42.5, 41.5, 42.0, 38.5]% (chance 7.7%).
+**Coders (JinaBERT, 12 layers, 15 developers)** — internal identity accuracy by layer: [42.5, 49.5, 47.5, 38.5, 39.0, 39.5, 40.0, 43.5, 42.5, 41.5, 42.0, 38.5]% (chance 6.7%).
 
 | layer | stable rank | eff dim | verbaliz. | autocorr |
 |---|---|---|---|---|
-| 0 | 31.2 | 80.4 | 0.19 | -0.035 |
-| 1 | 35.8 | 94.6 | 0.20 | -0.041 |
-| 2 | 38.5 | 98.6 | 0.20 | -0.001 |
-| 3 | 34.5 | 99.7 | 0.20 | +0.032 |
-| 4 | 33.6 | 101.7 | 0.20 | +0.036 |
-| 5 | 21.0 | 91.5 | 0.20 | +0.051 |
-| 6 | 37.1 | 112.8 | 0.19 | +0.066 |
-| 7 | 53.0 | 125.8 | 0.20 | +0.075 |
-| 8 | 57.6 | 131.5 | 0.20 | +0.092 |
-| 9 | 61.8 | 138.9 | 0.22 | +0.089 |
-| 10 | 74.2 | 151.2 | 0.22 | +0.087 |
-| 11 | 79.1 | 184.3 | 0.22 | +0.067 |
+| 0 | 30.6 | 79.6 | 0.19 | -0.033 |
+| 1 | 36.7 | 95.2 | 0.20 | -0.030 |
+| 2 | 38.6 | 98.9 | 0.21 | -0.001 |
+| 3 | 35.6 | 100.7 | 0.21 | +0.023 |
+| 4 | 33.4 | 102.4 | 0.21 | +0.032 |
+| 5 | 20.3 | 91.2 | 0.21 | +0.039 |
+| 6 | 37.9 | 113.8 | 0.19 | +0.062 |
+| 7 | 54.3 | 126.4 | 0.20 | +0.071 |
+| 8 | 59.5 | 132.0 | 0.20 | +0.086 |
+| 9 | 61.7 | 139.0 | 0.22 | +0.085 |
+| 10 | 73.3 | 151.3 | 0.23 | +0.088 |
+| 11 | 79.0 | 185.0 | 0.22 | +0.075 |
 
 **Decoder (GPT-2, 12 layers)** — next-token accuracy by residual depth: [0.0, 2.6, 2.6, 3.2, 3.2, 4.7, 5.1, 7.2, 10.9, 13.0, 17.0, 21.3, 22.6]%.
 

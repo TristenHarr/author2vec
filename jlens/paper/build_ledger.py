@@ -260,6 +260,22 @@ if core_c and "results" in core_c and core_c["results"].get("per_author"):
         if who in accs:
             add("coders", f"recognizability::{who}", r3(accs[who]), fn, "results.per_author[].accuracy", "same-file")
 
+# ---- AI-model fingerprint (do frontier models have distinct code styles?) ----
+aifp = load("person2vec-aifp.json")
+if aifp:
+    fn = "person2vec-aifp.json"
+    add("ai", "aifp_n_samples", aifp["n_samples"], fn, "n_samples", "")
+    add("ai", "aifp_models", aifp["models"], fn, "models", "")
+    add("ai", "aifp_model_id_accuracy", aifp["model_id_accuracy"], fn, "model_id_accuracy",
+        f"LOO model ID; chance {aifp['chance']} (below chance = not separable)")
+    cm = aifp["cross_model_cosine"]
+    ms = list(cm)
+    off = [cm[a][b] for i, a in enumerate(ms) for j, b in enumerate(ms) if i < j]
+    add("ai", "aifp_cross_model_cosine_mean", round(sum(off) / len(off), 3), fn,
+        "mean off-diagonal cross_model_cosine", "frontier models are ~identical in style")
+    add("ai", "aifp_ai_to_ai", aifp["ai_vs_human"]["ai_to_ai"], fn, "ai_vs_human.ai_to_ai", "")
+    add("ai", "aifp_human_to_ai", aifp["ai_vs_human"]["human_to_ai"], fn, "ai_vs_human.human_to_ai", "")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)
