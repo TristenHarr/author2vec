@@ -1,0 +1,233 @@
+# Author2vec: A Jacobian Lens for Authorship Identity in Embedding Encoders
+
+**Tristen Harr** · Brahmastra Labs · [author2vec.com](https://author2vec.com)
+
+> **Status: working draft (autonomous research build).** Every quantitative claim is
+> traced to a shipped data bundle in the audit ledger (Appendix D); sections tied to
+> experiments still in progress are marked _[pending: T#]_. This document is written
+> against `jlens/paper/ledger.json` — no number appears here that is not in the ledger.
+
+---
+
+## Abstract
+
+Anthropic's *"Verbalizable Representations Form a Global Workspace in Language Models"*
+introduces the **averaged-Jacobian lens (J-lens)** and uses it to argue that a large,
+closed **decoder** (Claude Sonnet 4.5, 127 layers) maintains a privileged "workspace" of
+verbalizable, causally-active concepts. We adapt that mechanistic apparatus to a setting the
+method was not designed for — small, **open embedding encoders** whose output is a single
+masked-mean-pooled vector — and re-point it at a different question: **personal writing
+style / authorship identity**. Three ingredients make the transplant work: (i) a
+**δ-broadcast reduction** that collapses the encoder's position×position Jacobian to a single
+per-layer matrix; (ii) an **embedding-space projection** that removes the meaningless radial
+direction of a normalized embedding; and (iii) a **style lens** — a readout that projects the
+layer Jacobian onto empirically-recovered, human-interpretable identity axes instead of the
+token vocabulary. On a 6-layer prose encoder (MiniLM) and a 12-layer code encoder (JinaBERT)
+we find that **author identity is a computed intermediate, decodable above chance at every
+layer** (not merely an output artifact), that the two encoder depths expose different
+low-rank "workspace" geometry, and that the identity direction is both a **detector** (is a
+person's fingerprint in the weights at all?) and a **causal lever** (steering). We further
+run [pending] an **identity-ignition** experiment (does the representation commit to a single
+individual at a characteristic depth?), a **decoder** track, and a **directed-steering**
+experiment. Everything runs on open models and ships as static assets; the whole apparatus
+is reproducible on a laptop. We are explicit about what is **replication** vs. **new**, and
+about what we **do not** claim: no "IQ", no consciousness.
+
+## Contributions
+
+1. **An encoder adaptation of the averaged-Jacobian J-lens** via the δ-broadcast reduction
+   (§4.2) — the paper's method redefined for a masked-mean-pooled, non-generative encoder.
+2. **An embedding-space Jacobian projection** for L2-normalized outputs (§4.3), unit-tested
+   orthogonal to the embedding.
+3. **The style lens** (§4.5): a Jacobian readout onto interpretable identity axes rather than
+   the token vocabulary — the trustworthy signal where an encoder has no clean unembedding.
+4. **Identity is a computed intermediate** (§5.1): author identity decodes above chance from
+   the internal Jacobian at *every* layer, with the best internal code layer exceeding the
+   output-embedding ceiling.
+5. **A fingerprint-presence detector** (§5.3): known identity vs. "blank space" for
+   out-of-distribution text — a question the paper does not ask.
+6. **[pending] Identity ignition** (§5.2): evidence that the representation collapses toward a
+   single individual at a characteristic depth.
+7. **[pending] Causal steering & directed modulation** (§5.4), including steering a decoder
+   from a failed answer to a correct one under leakage controls.
+8. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
+   code), with a faithfulness gate and a full audit ledger.
+
+---
+
+## 1. Introduction
+
+_[T6.1] The reframe: reasoning-workspace-in-closed-decoders → identity-forensics-in-open-encoders;
+why an encoder is a clean minimal testbed for the mechanistic (not behavioral) claims; roadmap._
+
+## 2. Related work
+
+_[T6.1] Position against: logit lens [@nostalgebraist2020logitlens], tuned lens
+[@belrose2023tunedlens], activation steering / ActAdd [@turner2023actadd] & CAA
+[@rimsky2024caa], representation engineering / diff-in-means [@zou2023repe], dictionary
+learning / SAEs [@bricken2023monosemanticity], probing [@alain2017probing; @hewitt2019structural],
+CKA [@kornblith2019cka], global workspace & ignition [@baars1988workspace; @dehaene2011ignition],
+Sentence-BERT [@reimers2019sbert], authorship attribution / stylometry, and the reference
+paper [@workspace2026]. Be explicit that the J-lens, J-space, and structural signatures are
+**theirs**; our novelty is the encoder adaptation + identity target + reproducibility._
+
+## 3. Background: the averaged-Jacobian lens
+
+_[T6.1] Summarize [@workspace2026]: the causal J-lens $J_\ell = \mathbb{E}_{t,t'\ge t}[\partial
+h_{\text{final},t'}/\partial h_{\ell,t}]$; the vocabulary readout; J-space decomposition
+(~6–10% of variance, ~10–25 concepts); the four Figure-28 signatures (next-token accuracy,
+excess kurtosis, autocorrelation, effective dimension); the sensory→workspace→motor
+tripartition; scale (127 layers, workspace ≈L38–92). This frames the contrast: they study a
+generative decoder with per-position logits; we study a pooled encoder._
+
+## 4. Method
+
+**Setup.** We study two open **embedding encoders**: `sentence-transformers/all-MiniLM-L6-v2`
+(prose; 6 layers, $d=384$, vocab 30{,}522) and `jinaai/jina-embeddings-v2-base-code` (code;
+12 layers, $d=768$, vocab 61{,}056). Each maps a passage to one **masked-mean-pooled**,
+L2-normalized vector $p$. A **faithfulness gate** (`bin/spike`) asserts our native candle
+forward reproduces the shipped fastembed embeddings at cosine $>0.99$ before any Jacobian is
+trusted.
+
+### 4.1 The problem an encoder poses
+The causal J-lens is defined per token position toward next-token logits. An encoder emits a
+single pooled vector and no logits, so the per-position causal Jacobian is undefined here.
+
+### 4.2 δ-broadcast averaged Jacobian
+We perturb **every** source position by a shared displacement $\delta$ and differentiate the
+pooled output, collapsing the position×position Jacobian to one matrix per layer:
+$$ J_\ell \;=\; \frac{1}{T}\,\frac{\partial p}{\partial \delta}\;\in\;\mathbb{R}^{d\times d}. $$
+$J_\ell$ is built by **batched central finite differences** ($\varepsilon=0.05$, pure gemm),
+not per-dimension autograd. `lib.rs:layer_jacobian`. (Derivation: Appendix A.)
+
+### 4.3 Embedding-space projection
+Because $p$ is L2-normalized, its radial direction carries no information, so we project:
+$$ J_{\text{emb}} \;=\; \tfrac{1}{\lVert p\rVert}\,(I - e e^{\top})\,J_{\text{raw}},\qquad e = p/\lVert p\rVert, $$
+which is unit-tested to satisfy $e^{\top}(J_{\text{emb}}v)\approx 0$. `lib.rs:to_embedding_jacobian`.
+
+### 4.4 Vocabulary (logit) lens
+Standardized $J\!\cdot\!h$ times the tied WordPiece embeddings $W_U$ → top tokens. Noisy here
+(the checkpoint ships no trained MLM head); reported but not load-bearing. `lib.rs:vocab_topk`.
+
+### 4.5 Style lens (novel)
+We read the Jacobian onto interpretable **identity axes** instead of the vocabulary:
+$$ s_a(h) \;=\; A_a \cdot \operatorname{normalize}(J_{\text{emb}}\,h),\qquad
+   A_a = \operatorname{normalize}\big(\bar{c}^{+}_a - \bar{c}^{-}_a\big), $$
+each axis a unit **difference-of-class-means** (Fisher) direction over the reference
+embeddings. Shipped axes — prose: `male ↔ female`, `educated=England ↔ rest`,
+`educated=US ↔ rest`, `raised=England ↔ rest`, `raised=US ↔ rest`; code:
+`Systems ↔ rest`, `Scripting ↔ rest`. `lib.rs:style_scores`, `axis`, `author_axes`.
+
+### 4.6 J-space decomposition
+Non-negative matching pursuit over unit rows of $W_U J_\ell$ yields a sparse concept set and
+the fraction of activation variance it captures. `lib.rs:jspace_nmp`.
+
+### 4.7 Structural depth signatures
+Per layer: **stable rank** $\lVert J\rVert_F^2/\sigma_1^2$, **effective dimension**
+(participation ratio $\lVert J\rVert_F^4/\lVert J^\top J\rVert_F^2$), **verbalizability**
+(excess kurtosis of the vocab-lens readout), **layer×layer linear CKA**, and — completing the
+paper's four-metric set — **autocorrelation** _[pending: T1.1]_. `lib.rs:stable_rank`,
+`effective_dim`, `excess_kurtosis`, `linear_cka`.
+
+## 5. Experiments and results
+
+### 5.1 Identity is a computed intermediate
+
+![Identity accuracy decoded from the internal Jacobian at each layer, vs. chance (dotted) and the output-embedding ceiling (dashed).](figures/fig1_identity.png)
+
+Decoding author identity by leave-one-out nearest-centroid on the **internal** per-layer
+Jacobian readout beats chance at **every** layer: prose per-layer
+$[5.2, 7.2, 8.8, 8.0, 7.2, 8.8]\%$ against a $1.8\%$ chance and a $14.4\%$ output ceiling; code
+per-layer up to $49.5\%$ against a $7.7\%$ chance — the **best internal layer exceeds the
+$38.0\%$ output-embedding ceiling**. Identity is computed inside the layers, not merely
+emitted. _(All values: ledger `identity_*`.)_
+
+### 5.2 Identity ignition — does the space collapse to a single person?
+
+_[pending: T2.1–T2.5]_ Hypothesis: ambiguous between-two-authors inputs transition from graded
+to all-or-none commitment to a single identity at a characteristic depth.
+
+![placeholder](figures/fig6_ignition.png)
+
+### 5.3 Structural signatures across depth
+
+![Structural depth signatures of the averaged Jacobian (normalized depth).](figures/fig2_structural.png)
+
+![Layer-to-layer readout geometry (linear CKA).](figures/fig3_cka.png)
+
+Effective dimension rises with depth (prose $73\!\to\!205$). Prose **stable rank is lowest at
+the very first layer** ($22.1$, rising to $106.9$); the deeper code model instead has a genuine
+**mid-network low-rank bottleneck** (stable rank minimum $10.9$ at layer 5 of 12). The
+mid-network "workspace" geometry the paper reports in deep models appears here only once there
+is depth to spare. _[autocorrelation panel pending T1.4]._
+
+### 5.4 Fingerprint presence and causal steering
+
+![Is a person's fingerprint in the weights? Known identities vs. out-of-distribution "blank space".](figures/fig4_fingerprint.png)
+
+A calibrated nearest-centroid detector separates known identities from "blank space". Prose
+(bar $0.30$): known probes $0.62$–$0.69$, out-of-distribution text (code, chat, biology,
+legalese) $0.10$–$0.25$. Code is tighter and reported honestly (bar $0.51$): known
+$0.54$–$0.70$, OOD $0.17$–$0.49$ — "modern chat" sits just under the bar. **[pending: T1.3]**
+steering: injecting $\alpha\,\hat\delta$, $\hat\delta=\operatorname{normalize}(J_{\text{emb}}^{\top}A)$,
+swings the output's axis loading, with matched-norm and random-direction controls.
+
+### 5.5 Decoder track — structure on a generative model
+_[pending: Phase 3]_ ![placeholder](figures/fig7_decoder.png)
+
+### 5.6 Behavioral steering — can't-answer → can-answer
+_[pending: Phase 4]_ ![placeholder](figures/fig8_behavioral.png)
+
+### 5.7 Expertise / lexical sophistication
+_[pending: Phase 5 — the "IQ" reframe; construct honesty; likely mixed/negative result]_
+![placeholder](figures/fig9_expertise.png)
+
+### 5.8 The authorship study (context) & style trajectories
+
+![Style-lens axis loadings through depth for one passage.](figures/fig5_style.png)
+
+Downstream, the same embeddings support an honest authorship study: prose recognition climbs
+from a $1.8\%$ blind baseline to $58.3\%$ once the model has read the author's book; a new-passage
+reveal is $130/220$ correct when the author is known and $0/220$ when fully hidden (code:
+$7.7\%\!\to\!74.6\%$; reveal $38/52$). Trait recovery **nails some and whiffs on others** —
+prose gender $85.5\%$ (majority $52.7\%$) but most geographic traits at or below their majority
+baselines; code systems-vs-scripting $84.6\%$ (majority $61.5\%$) but commit-time near chance.
+
+### 5.9 Ablations
+_[T6.1]_ Leave-one-{book,series,author}-out and exposure curves (already shipped in `results`);
+the two encoder depths as a depth ablation. $\varepsilon$ / context-length robustness: future work.
+
+## 6. Discussion
+_[T6.1] What the identity-workspace analogy supports and what it does not._
+
+## 7. Limitations and threats to validity
+_[T6.1]_ **Replication vs. novel:** the J-lens, J-space, and structural metrics are the
+paper's; ours is the adaptation + target + reproducibility. **Not built:** the paper's
+behavioral half on a decoder (verbal report, reasoning swaps, ablation-kills-reasoning) — see
+Phases 3–5. **Construct honesty:** we measure identity commitment and expertise register, **not
+IQ, not consciousness.** The single-averaged, single-direction lens is lossy; the vocab lens is
+noisy (no MLM head); finite-difference $\varepsilon$ introduces error. 55 authors / 13 coders on
+laptop-scale models prove the *mechanism*, not a sharp personal fingerprint of any specific
+individual — that remains a well-motivated extrapolation.
+
+## 8. Reproducibility
+_[T6.1]_ Commands (`cargo run -p corpus --release`; `cargo run -p jlens --bin {spike,jlens,steer,fingerprint} --release`),
+model ids, seeds, env vars (`JLENS_DEVICE/JAC_LEN/CHUNK`); the claim→asset map (Appendix D /
+`jlens/paper/method_map.md`). All similarity math runs client-side (WASM); the viewer does no
+linear algebra.
+
+---
+
+## Appendix A — δ-broadcast derivation
+_[T6.1] Pooled-output Jacobian collapse; central-difference estimator and its error term._
+
+## Appendix B — Per-layer tables (both models)
+_[T6.1] identity, stable rank, effective dim, verbalizability, autocorrelation._
+
+## Appendix C — Axis definitions, rosters, and OOD probe sets
+_[T6.1] From `corpus/authors.toml`, `corpus/coders.toml`, and the fingerprint bundles._
+
+## Appendix D — Audit ledger
+Every number above is generated by `jlens/paper/build_ledger.py` into
+`jlens/paper/ledger.json` (value → source asset + JSON path) and cross-checked by the figure
+pipeline. Method claims resolve via `jlens/paper/method_map.md`.
