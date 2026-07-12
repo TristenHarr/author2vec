@@ -1984,5 +1984,423 @@
     "asset": "person2vec-aifp.json",
     "path": "verdict",
     "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Armin Ronacher",
+    "value": [
+      0.399,
+      0.571
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 61/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Jarred Sumner",
+    "value": [
+      0.453,
+      0.624
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 68/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Guido van Rossum",
+    "value": [
+      0.516,
+      0.684
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 76/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::David Heinemeier Hansson",
+    "value": [
+      0.532,
+      0.699
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 78/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Mitchell Hashimoto",
+    "value": [
+      0.572,
+      0.736
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 83/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Evan You",
+    "value": [
+      0.589,
+      0.75
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 85/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Andrew Kelley",
+    "value": [
+      0.638,
+      0.793
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 91/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Brad Fitzpatrick",
+    "value": [
+      0.655,
+      0.807
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 93/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Sindre Sorhus",
+    "value": [
+      0.672,
+      0.821
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 95/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Charlie Marsh",
+    "value": [
+      0.68,
+      0.828
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 96/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Rich Harris",
+    "value": [
+      0.689,
+      0.835
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 97/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Salvatore Sanfilippo",
+    "value": [
+      0.732,
+      0.869
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 102/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::TJ Holowaychuk",
+    "value": [
+      0.732,
+      0.869
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 102/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Linus Torvalds",
+    "value": [
+      0.75,
+      0.882
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 104/126"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_recognizability::Jeremy Ashkenas",
+    "value": [
+      0.831,
+      0.939
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "coders_recognizability[].[lo,hi]",
+    "note": "Wilson 95% on 113/126"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_identity_best_internal",
+    "value": [
+      0.059,
+      0.13
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity best per_layer Wilson",
+    "note": "n=250"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_identity_output",
+    "value": [
+      0.106,
+      0.193
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity output Wilson",
+    "note": "n=250"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_identity_per_layer_lo",
+    "value": [
+      0.031,
+      0.046,
+      0.059,
+      0.052,
+      0.046,
+      0.059
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity per_layer Wilson lo",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_identity_per_layer_hi",
+    "value": [
+      0.087,
+      0.111,
+      0.13,
+      0.12,
+      0.111,
+      0.13
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity per_layer Wilson hi",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_identity_best_internal",
+    "value": [
+      0.446,
+      0.569
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity best per_layer Wilson",
+    "note": "n=250"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_identity_output",
+    "value": [
+      0.407,
+      0.53
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity output Wilson",
+    "note": "n=250"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_identity_per_layer_lo",
+    "value": [
+      0.391,
+      0.388,
+      0.419,
+      0.446,
+      0.341,
+      0.427,
+      0.419,
+      0.345,
+      0.36,
+      0.36,
+      0.364,
+      0.372
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity per_layer Wilson lo",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_identity_per_layer_hi",
+    "value": [
+      0.514,
+      0.51,
+      0.542,
+      0.569,
+      0.462,
+      0.55,
+      0.542,
+      0.466,
+      0.482,
+      0.482,
+      0.486,
+      0.494
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "identity per_layer Wilson hi",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_bigfive::Extraversion",
+    "value": [
+      0.534,
+      0.574
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "bigfive trait Wilson",
+    "note": "clears majority=True"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_bigfive::Neuroticism",
+    "value": [
+      0.543,
+      0.582
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "bigfive trait Wilson",
+    "note": "clears majority=True"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_bigfive::Agreeableness",
+    "value": [
+      0.533,
+      0.572
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "bigfive trait Wilson",
+    "note": "clears majority=True"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_bigfive::Conscientiousness",
+    "value": [
+      0.531,
+      0.57
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "bigfive trait Wilson",
+    "note": "clears majority=True"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_bigfive::Openness",
+    "value": [
+      0.563,
+      0.602
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "bigfive trait Wilson",
+    "note": "clears majority=True"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_ignition_sem",
+    "value": [
+      0.064,
+      0.104,
+      0.134,
+      0.164,
+      0.19,
+      0.142,
+      0.079
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "ignition separation SEM",
+    "note": "std/sqrt(n_pairs=15)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "ci_ignition_sem",
+    "value": [
+      0.208,
+      0.143,
+      0.175,
+      0.224,
+      0.166,
+      0.175,
+      0.137,
+      0.15,
+      0.136,
+      0.117,
+      0.104,
+      0.052,
+      0.531
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "ignition separation SEM",
+    "note": "std/sqrt(n_pairs=15)"
+  },
+  {
+    "dataset": "ai",
+    "metric": "ci_aifp_model_id",
+    "value": [
+      0.346,
+      0.503
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "aifp task_controlled_model_id Wilson",
+    "note": "n=149"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_blog::gender",
+    "value": [
+      0.482,
+      0.645
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "blog attr Wilson",
+    "note": "n=138"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_blog::age",
+    "value": [
+      0.453,
+      0.617
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "blog attr Wilson",
+    "note": "n=138"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ci_blog::zodiac",
+    "value": [
+      0.02,
+      0.092
+    ],
+    "asset": "person2vec-cis.json",
+    "path": "blog attr Wilson",
+    "note": "n=138"
   }
 ]

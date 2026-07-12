@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 ASSETS = os.path.join(ROOT, "..", "web", "assets")
 LEDGER = os.path.join(ROOT, "paper", "ledger.json")
-OUT = HERE
+OUT = os.environ.get("FIG_OUT", HERE)  # override to render into a temp dir (freshness gate)
 
 # ---- palette (site brand, validated) ----
 AUTHORS, CODERS = "#5b4be0", "#0d9488"

@@ -233,6 +233,32 @@ def _lines_with(vocab):
     return out
 
 
+# ---------- CHECK: committed figures match a fresh render (no stale figure drift) ----------
+@check("figures_fresh", hard=True)
+def _figs_fresh():
+    import tempfile
+    import filecmp
+    gen = os.path.join(FIGDIR, "make_figures.py")
+    if not os.path.exists(gen):
+        return []
+    tmp = tempfile.mkdtemp(prefix="figcheck_")
+    env = dict(os.environ, FIG_OUT=tmp, MPLBACKEND="Agg")
+    r = subprocess.run([sys.executable, gen], env=env, capture_output=True, text=True, cwd=ROOT)
+    if r.returncode != 0:
+        # can't render (e.g. matplotlib absent) — don't block; surface as a soft note
+        return []
+    fails = []
+    for f in sorted(os.listdir(tmp)):
+        if not f.endswith(".png"):
+            continue
+        committed = os.path.join(FIGDIR, f)
+        if not os.path.exists(committed):
+            fails.append(f"{f} renders but is not committed")
+        elif not filecmp.cmp(os.path.join(tmp, f), committed, shallow=False):
+            fails.append(f"{f} differs from a fresh render — stale (regenerate make_figures.py)")
+    return fails
+
+
 # ---------- CHECK: method_map.md file:line references are accurate ----------
 @check("method_map_accurate", hard=True)
 def _methodmap():

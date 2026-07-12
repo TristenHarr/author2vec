@@ -310,6 +310,35 @@ if aifp:
         "task_controlled_p", "1000-permutation p-value")
     add("ai", "aifp_verdict", aifp["verdict"], fn, "verdict", "")
 
+# ---- confidence intervals (Wilson / SEM) so every cited bound is traceable ----
+cis = load("person2vec-cis.json")
+if cis:
+    fn = "person2vec-cis.json"
+    for r in cis.get("coders_recognizability", []):
+        add("coders", f"ci_recognizability::{r['name']}", [r["lo"], r["hi"]], fn,
+            "coders_recognizability[].[lo,hi]", f"Wilson 95% on {r['correct']}/{r['total']}")
+    for ds, d in cis.get("identity", {}).items():
+        best = max(d["per_layer"], key=lambda x: x["acc"])
+        add(ds, "ci_identity_best_internal", [best["lo"], best["hi"]], fn,
+            "identity best per_layer Wilson", f"n={d['n']}")
+        add(ds, "ci_identity_output", [d["output"]["lo"], d["output"]["hi"]], fn,
+            "identity output Wilson", f"n={d['n']}")
+        add(ds, "ci_identity_per_layer_lo", [p["lo"] for p in d["per_layer"]], fn,
+            "identity per_layer Wilson lo", "")
+        add(ds, "ci_identity_per_layer_hi", [p["hi"] for p in d["per_layer"]], fn,
+            "identity per_layer Wilson hi", "")
+    for t, v in cis.get("bigfive", {}).items():
+        add("minilm", f"ci_bigfive::{t}", [v["lo"], v["hi"]], fn,
+            "bigfive trait Wilson", f"clears majority={v['clears_majority']}")
+    for ds, d in cis.get("ignition", {}).items():
+        add(ds, "ci_ignition_sem", d["separation_sem"], fn, "ignition separation SEM",
+            f"std/sqrt(n_pairs={d['n_pairs']})")
+    if "aifp" in cis:
+        add("ai", "ci_aifp_model_id", [cis["aifp"]["lo"], cis["aifp"]["hi"]], fn,
+            "aifp task_controlled_model_id Wilson", f"n={cis['aifp']['n']}")
+    for a, v in cis.get("blog", {}).items():
+        add("minilm", f"ci_blog::{a}", [v["lo"], v["hi"]], fn, "blog attr Wilson", f"n={v['n']}")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

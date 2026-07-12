@@ -1,0 +1,358 @@
+{
+ "z": 1.96,
+ "note": "Wilson 95% CIs on proportions; SEM bands (std/sqrt n) for ignition.",
+ "coders_recognizability": [
+  {
+   "name": "Armin Ronacher",
+   "acc": 0.484,
+   "correct": 61,
+   "total": 126,
+   "lo": 0.399,
+   "hi": 0.571
+  },
+  {
+   "name": "Jarred Sumner",
+   "acc": 0.54,
+   "correct": 68,
+   "total": 126,
+   "lo": 0.453,
+   "hi": 0.624
+  },
+  {
+   "name": "Guido van Rossum",
+   "acc": 0.603,
+   "correct": 76,
+   "total": 126,
+   "lo": 0.516,
+   "hi": 0.684
+  },
+  {
+   "name": "David Heinemeier Hansson",
+   "acc": 0.619,
+   "correct": 78,
+   "total": 126,
+   "lo": 0.532,
+   "hi": 0.699
+  },
+  {
+   "name": "Mitchell Hashimoto",
+   "acc": 0.659,
+   "correct": 83,
+   "total": 126,
+   "lo": 0.572,
+   "hi": 0.736
+  },
+  {
+   "name": "Evan You",
+   "acc": 0.675,
+   "correct": 85,
+   "total": 126,
+   "lo": 0.589,
+   "hi": 0.75
+  },
+  {
+   "name": "Andrew Kelley",
+   "acc": 0.722,
+   "correct": 91,
+   "total": 126,
+   "lo": 0.638,
+   "hi": 0.793
+  },
+  {
+   "name": "Brad Fitzpatrick",
+   "acc": 0.738,
+   "correct": 93,
+   "total": 126,
+   "lo": 0.655,
+   "hi": 0.807
+  },
+  {
+   "name": "Sindre Sorhus",
+   "acc": 0.754,
+   "correct": 95,
+   "total": 126,
+   "lo": 0.672,
+   "hi": 0.821
+  },
+  {
+   "name": "Charlie Marsh",
+   "acc": 0.762,
+   "correct": 96,
+   "total": 126,
+   "lo": 0.68,
+   "hi": 0.828
+  },
+  {
+   "name": "Rich Harris",
+   "acc": 0.77,
+   "correct": 97,
+   "total": 126,
+   "lo": 0.689,
+   "hi": 0.835
+  },
+  {
+   "name": "Salvatore Sanfilippo",
+   "acc": 0.81,
+   "correct": 102,
+   "total": 126,
+   "lo": 0.732,
+   "hi": 0.869
+  },
+  {
+   "name": "TJ Holowaychuk",
+   "acc": 0.81,
+   "correct": 102,
+   "total": 126,
+   "lo": 0.732,
+   "hi": 0.869
+  },
+  {
+   "name": "Linus Torvalds",
+   "acc": 0.825,
+   "correct": 104,
+   "total": 126,
+   "lo": 0.75,
+   "hi": 0.882
+  },
+  {
+   "name": "Jeremy Ashkenas",
+   "acc": 0.897,
+   "correct": 113,
+   "total": 126,
+   "lo": 0.831,
+   "hi": 0.939
+  }
+ ],
+ "identity": {
+  "minilm": {
+   "n": 250,
+   "per_layer": [
+    {
+     "acc": 0.052,
+     "lo": 0.031,
+     "hi": 0.087
+    },
+    {
+     "acc": 0.072,
+     "lo": 0.046,
+     "hi": 0.111
+    },
+    {
+     "acc": 0.088,
+     "lo": 0.059,
+     "hi": 0.13
+    },
+    {
+     "acc": 0.08,
+     "lo": 0.052,
+     "hi": 0.12
+    },
+    {
+     "acc": 0.072,
+     "lo": 0.046,
+     "hi": 0.111
+    },
+    {
+     "acc": 0.088,
+     "lo": 0.059,
+     "hi": 0.13
+    }
+   ],
+   "output": {
+    "acc": 0.144,
+    "lo": 0.106,
+    "hi": 0.193
+   }
+  },
+  "coders": {
+   "n": 250,
+   "per_layer": [
+    {
+     "acc": 0.452,
+     "lo": 0.391,
+     "hi": 0.514
+    },
+    {
+     "acc": 0.448,
+     "lo": 0.388,
+     "hi": 0.51
+    },
+    {
+     "acc": 0.48,
+     "lo": 0.419,
+     "hi": 0.542
+    },
+    {
+     "acc": 0.508,
+     "lo": 0.446,
+     "hi": 0.569
+    },
+    {
+     "acc": 0.4,
+     "lo": 0.341,
+     "hi": 0.462
+    },
+    {
+     "acc": 0.488,
+     "lo": 0.427,
+     "hi": 0.55
+    },
+    {
+     "acc": 0.48,
+     "lo": 0.419,
+     "hi": 0.542
+    },
+    {
+     "acc": 0.404,
+     "lo": 0.345,
+     "hi": 0.466
+    },
+    {
+     "acc": 0.42,
+     "lo": 0.36,
+     "hi": 0.482
+    },
+    {
+     "acc": 0.42,
+     "lo": 0.36,
+     "hi": 0.482
+    },
+    {
+     "acc": 0.424,
+     "lo": 0.364,
+     "hi": 0.486
+    },
+    {
+     "acc": 0.432,
+     "lo": 0.372,
+     "hi": 0.494
+    }
+   ],
+   "output": {
+    "acc": 0.468,
+    "lo": 0.407,
+    "hi": 0.53
+   }
+  }
+ },
+ "bigfive": {
+  "Extraversion": {
+   "acc": 0.554,
+   "majority": 0.517,
+   "lo": 0.534,
+   "hi": 0.574,
+   "clears_majority": true
+  },
+  "Neuroticism": {
+   "acc": 0.563,
+   "majority": 0.5,
+   "lo": 0.543,
+   "hi": 0.582,
+   "clears_majority": true
+  },
+  "Agreeableness": {
+   "acc": 0.553,
+   "majority": 0.531,
+   "lo": 0.533,
+   "hi": 0.572,
+   "clears_majority": true
+  },
+  "Conscientiousness": {
+   "acc": 0.551,
+   "majority": 0.508,
+   "lo": 0.531,
+   "hi": 0.57,
+   "clears_majority": true
+  },
+  "Openness": {
+   "acc": 0.583,
+   "majority": 0.515,
+   "lo": 0.563,
+   "hi": 0.602,
+   "clears_majority": true
+  }
+ },
+ "ignition": {
+  "minilm": {
+   "n_pairs": 15,
+   "separation_mean": [
+    0.355,
+    0.544,
+    0.63,
+    0.775,
+    0.954,
+    0.663,
+    0.543
+   ],
+   "separation_sem": [
+    0.064,
+    0.104,
+    0.134,
+    0.164,
+    0.19,
+    0.142,
+    0.079
+   ]
+  },
+  "coders": {
+   "n_pairs": 15,
+   "separation_mean": [
+    0.839,
+    0.778,
+    1.187,
+    1.557,
+    1.205,
+    0.93,
+    0.752,
+    0.714,
+    0.686,
+    0.768,
+    0.657,
+    0.39,
+    2.329
+   ],
+   "separation_sem": [
+    0.208,
+    0.143,
+    0.175,
+    0.224,
+    0.166,
+    0.175,
+    0.137,
+    0.15,
+    0.136,
+    0.117,
+    0.104,
+    0.052,
+    0.531
+   ]
+  }
+ },
+ "aifp": {
+  "id_acc": 0.423,
+  "n": 149,
+  "lo": 0.346,
+  "hi": 0.503,
+  "null_mean": 0.244
+ },
+ "blog": {
+  "gender": {
+   "acc": 0.565,
+   "n": 138,
+   "lo": 0.482,
+   "hi": 0.645
+  },
+  "age": {
+   "acc": 0.536,
+   "n": 138,
+   "lo": 0.453,
+   "hi": 0.617
+  },
+  "zodiac": {
+   "acc": 0.043,
+   "n": 138,
+   "lo": 0.02,
+   "hi": 0.092
+  }
+ }
+}
