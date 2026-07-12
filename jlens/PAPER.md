@@ -1,7 +1,7 @@
 # Author2vec: A Jacobian Lens for Authorship Identity in Embedding Encoders
 
 **Tristen Harr** · Brahmastra Labs · [author2vec.com](https://author2vec.com)
-**Alexander Stepanov** · Berkely University
+**Alexander Stepanov** · UC Berkeley
 
 > **Status: complete draft (autonomous research build), not yet shipped.** All experiments
 > (Phases 0–5) have been run; every quantitative claim is traced to a shipped data bundle in the
@@ -392,7 +392,36 @@ $7.7\%\!\to\!74.6\%$; reveal $38/52$). Trait recovery **nails some and whiffs on
 prose gender $85.5\%$ (majority $52.7\%$) but most geographic traits at or below their majority
 baselines; code systems-vs-scripting $84.6\%$ (majority $61.5\%$) but commit-time near chance.
 
-### 5.9 Ablations
+### 5.9 Does the model know some coders better than others? And is style homogenizing?
+
+The 15-developer code roster lets us ask two questions the prose side cannot.
+
+**Some coders are far more recognizable than others.** Same-file recognition accuracy varies
+enormously across developers — from **Jeremy Ashkenas at 89.7%** (a highly idiosyncratic
+CoffeeScript/Backbone style) down to **Armin Ronacher at 48.4%**, a **41-point spread**, all far
+above the $6.7\%$ chance floor. The two developers we added to probe the tails — **Andrew Kelley**
+(Zig) and **Jarred Sumner** (Bun) — land at $72.2\%$ (mid-pack) and $54.0\%$ (near the bottom).
+We report this as *measured recognizability* and resist over-reading it: a lower score reflects
+how stylistically distinctive a developer's *attributed, name-scrubbed* code is in this corpus,
+confounded by codebase heterogeneity (Bun mixes Zig, C++, and generated code across many hands) —
+**not** a verdict on the person.
+
+![Per-coder same-file recognizability across the 15 developers (Kelley and Sumner highlighted); chance 6.7%.](figures/fig8_coders_recognizability.png)
+
+**No sign of AI-era style homogenization.** If a shared external influence (AI assistants) were
+melting coders into one style, cross-coder similarity should *rise* in the AI era. Time gives a
+clean hold-out: pre-2021 commits are provably AI-free (Copilot shipped mid-2021, ChatGPT late
+2022). Comparing mean cross-coder style similarity pre-2021 vs. 2023-onward, over the 9 developers
+with enough history in both eras, the change is **$+0.005$** ($0.568\!\to\!0.574$) —
+indistinguishable from a 500-sample within-coder permutation null (null mean $-0.033$,
+**two-sided $p=0.96$**), while each developer stays recognizably themselves across the boundary
+(within-coder self-consistency $0.77$). **We find no evidence of homogenization.** Whatever AI
+assistants are doing to code, they are not — on this roster — collapsing individual style. We make
+**no** claim about which individuals do or don't use AI: the population signal is null, and
+per-developer attribution would be both unsupported (confounded, no ground truth) and
+inappropriate.
+
+### 5.10 Ablations
 
 Rather than a hyperparameter sweep, the study carries several *built-in* ablations. **Exposure /
 hold-out**: the familiarity ladder (§5.8) is a leave-one-{book,series,author}-out ablation of how

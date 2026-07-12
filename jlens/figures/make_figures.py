@@ -270,8 +270,39 @@ def fig7_decoder():
     save(fig, "fig7_decoder.png")
 
 
+# ---- Fig 8: per-coder recognizability (15 coders) ----
+def fig8_coders_recognizability():
+    b = load_bundle("person2vec-coders.json")
+    res = b.get("results", {})
+    if "per_author" not in res:
+        print("  (skip fig8: coders results not present)")
+        return
+    names = [b["authors"][pa["author_id"]]["name"] for pa in res["per_author"]]
+    accs = [pa["accuracy"] * 100 for pa in res["per_author"]]
+    order = sorted(range(len(accs)), key=lambda i: accs[i])
+    names = [names[i] for i in order]
+    accs = [accs[i] for i in order]
+    chance = 100.0 / len(b["authors"])
+    colors = [CODERS if ("Kelley" in n or "Sumner" in n) else "#b9b9d0" for n in names]
+    fig, ax = plt.subplots(figsize=(7.5, 5.2))
+    y = list(range(len(names)))
+    ax.barh(y, accs, color=colors, height=0.72, zorder=3)
+    ax.axvline(chance, ls=":", color=NEG, lw=1.4, label=f"chance {chance:.1f}%")
+    for yi, (n, a) in enumerate(zip(names, accs)):
+        ax.text(a + 0.8, yi, f"{a:.0f}%", va="center", fontsize=8, color=INK)
+    ax.set_yticks(y)
+    ax.set_yticklabels(names, fontsize=8)
+    ax.set_xlabel("same-file recognition accuracy (%)")
+    ax.set_xlim(0, 100)
+    ax.set_title("The model knows some coders better than others\n(Kelley / Sumner highlighted)",
+                 fontsize=12, fontweight="bold")
+    ax.legend(loc="lower right", fontsize=8)
+    save(fig, "fig8_coders_recognizability.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
+    fig8_coders_recognizability()
     fig1_identity()
     fig2_structural()
     fig3_cka()

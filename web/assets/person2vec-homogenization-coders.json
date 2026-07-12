@@ -1,0 +1,12 @@
+{
+  "n_coders_both_eras": 9,
+  "min_passages_per_era": 8,
+  "cross_sim_pre2021": 0.5683,
+  "cross_sim_post2022": 0.5737,
+  "convergence_delta": 0.0054,
+  "null_mean": -0.0328,
+  "null_sd": 0.0177,
+  "p_two_sided": 0.958,
+  "within_coder_consistency": 0.774,
+  "verdict": "no evidence of homogenization"
+}

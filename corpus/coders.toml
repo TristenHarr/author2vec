@@ -159,3 +159,24 @@ repos = [
   { slug = "rails", url = "https://github.com/rails/rails.git", domain = "Web frameworks" },
   { slug = "kamal", url = "https://github.com/basecamp/kamal.git", domain = "Infrastructure" },
 ]
+
+[[devs]]
+name = "Andrew Kelley"
+logins = ["andrewrk"]
+traits = { paradigm = "Systems" }
+repos = [
+  # Zig (his signature work) bounded to the compiler + stdlib source; supplemented by
+  # his smaller older C/Zig repos so the centroid isn't one huge codebase.
+  { slug = "zig",        url = "https://github.com/ziglang/zig.git", domain = "Language runtime", depth = 4000, paths = ["src", "lib/std"] },
+  { slug = "libsoundio", url = "https://github.com/andrewrk/libsoundio.git", domain = "Audio" },
+  { slug = "tetris",     url = "https://github.com/andrewrk/tetris.git", domain = "Games" },
+]
+
+[[devs]]
+name = "Jarred Sumner"
+logins = ["Jarred-Sumner"]
+traits = { paradigm = "Systems" }
+repos = [
+  # Bun is very large; shallow + src-only keeps the clone and attribution tractable.
+  { slug = "bun", url = "https://github.com/oven-sh/bun.git", domain = "Language runtime", depth = 4000, paths = ["src"] },
+]
