@@ -45,7 +45,7 @@ about what we **do not** claim: no "IQ", no consciousness.
 4. **Identity is a computed intermediate** (§5.1): author identity decodes above chance from
    the internal Jacobian at *every* layer, with the best internal code layer exceeding the
    output-embedding ceiling.
-5. **A fingerprint-presence detector** (§5.3): known identity vs. "blank space" for
+5. **A fingerprint-presence detector** (§5.4): known identity vs. "blank space" for
    out-of-distribution text — a question the paper does not ask.
 6. **Identity ignition** (§5.2): the representation commits to a single individual increasingly
    with depth, peaking mid-network, above two null controls — on both prose and code.
@@ -233,13 +233,13 @@ $h_0(\alpha)=(1-\alpha)h_0^{B}+\alpha h_0^{A}$, sweep $\alpha\in[0,1]$, and read
 $s_\ell(\alpha)=\hat u_\ell\!\cdot\!(\bar p_\ell(\alpha)-m_\ell)$ at every depth (15 pairs). A
 graded layer ramps linearly in $\alpha$; an *ignited* layer snaps.
 
-![Identity ignition (MiniLM). Left: commitment vs. α by depth for one pair (input-linear at depth 0, stepped by mid-depth). Middle: A-vs-B separation rises to a mid-network peak and towers over both nulls. Right: the ignition index (transition sharpness) rises with depth.](figures/fig6_ignition.png)
+![Identity ignition (MiniLM). Left: commitment vs. α by depth for one pair (input-linear at depth 0, stepped by mid-depth). Middle: A-vs-B separation rises to a mid-network peak, far above the random null (~7×) and clearly above the shuffled null. Right: the ignition index (transition sharpness) rises with depth.](figures/fig6_ignition.png)
 
 **The representation commits to one author, increasingly with depth.** Endpoint separation along
 the identity axis rises from $0.36$ at the input to a **mid-network peak of $0.95$ at depth 4**
 (of 6), then eases to $0.54$ at the output — and it dominates both controls at every depth: the
 random-direction null sits at $0.06$–$0.14$ (a $\sim\!7\times$ margin at the peak) and the
-shuffled-label null at $0.15$–$0.47$. So the effect is **identity-specific**, not a generic
+shuffled-label null at $0.12$–$0.47$. So the effect is **identity-specific**, not a generic
 consequence of blending inputs. The **ignition index** (transition sharpness, $0$ = graded, $1$
 = all-or-none) climbs from $0.09$ at the input — where the readout is, correctly, linear in the
 blended input — to $0.73$–$0.74$ by mid-depth and holds. In short: *shallow layers hold a graded
@@ -247,10 +247,13 @@ mixture; by the middle of the network the representation has snapped to a single
 mid-network peak echoes the low-rank "workspace" bottleneck we see structurally (§5.3).
 
 **The same holds for code, more strongly.** On the 12-layer code encoder the ignition index
-climbs $0.09\to0.88$ across depth, and the identity axis separates coders **$\sim\!17\times$
-above the random-direction null** at its early-mid peak (depth 3: $1.85$ vs $0.11$) — a sharper
-version of the same effect, consistent with code identity being more linearly accessible overall
-(§5.1). Both modalities show the representation committing to a single individual with depth.
+climbs from $0.09$ at the input to a peak of $0.88$ (depth 11 of 13; endpoint $0.81$), and the
+identity axis separates coders **$\sim\!17\times$ above the random-direction null** at its
+early-mid peak (depth 3: $1.85$ vs $0.11$) — a sharper version of the same effect, consistent
+with code identity being more linearly accessible overall (§5.1). (Separation spikes higher still
+at the final layer, $3.46$, but that depth is noisy — its null jumps too — so we feature the
+stable early-mid peak.) Both modalities show the representation committing to one individual with
+depth.
 
 *Honesty.* This is a 6-layer encoder and 15 pairs; the sharpening is measured *along an axis the
 separation control proves is identity-specific*, but we cannot fully exclude that some of the
@@ -264,7 +267,7 @@ depth-wise sharpening reflects generic late-layer nonlinearity. We report the ra
 
 Effective dimension rises with depth in both models (prose $73\!\to\!205$; code $80\!\to\!184$).
 The **stable rank** tells the sharper story: in the 6-layer prose model it is **lowest at the
-very first layer** ($22.1$, rising monotonically to $106.9$) — the network compresses to a
+very first layer** ($22.1$, rising to $106.9$) — the network compresses to a
 low-rank readout immediately — whereas the 12-layer code model has a genuine **mid-network
 low-rank bottleneck** (minimum $21.0$ at layer 5 of 12, with a matching dip in effective
 dimension). The mid-network "workspace" geometry the paper reports in deep models appears here
@@ -287,11 +290,13 @@ $0.54$–$0.70$, OOD $0.17$–$0.49$ — "modern chat" sits just under the bar.
 
 **The identity direction is a causal lever, not just a readable one.** Forming the residual
 steering direction $\hat\delta=\widehat{J_{\text{emb}}^{\top}A}$ and injecting $\alpha\hat\delta$
-at the mid layer swings the output's loading on axis $A$ **monotonically from $\approx-0.5$ (at
-$\alpha=-6$) through $\approx0$ (unperturbed) to $\approx+0.55$ (at $\alpha=+6$)** — the same
-sign and magnitude across all five prose identity axes (gender, education, upbringing). A
-**matched-norm random direction**, injected identically, leaves the loading essentially flat
-(total drift $\le 0.16$ over the same sweep, versus a real swing of $0.80$–$1.11$). So the layer
+at the mid layer drives the output's loading on axis $A$ through a **large, sign-controllable
+swing — from $\approx-0.5$ (at $\alpha=-6$) through $\approx0$ (unperturbed) to $\approx+0.5$ (at
+$\alpha=+6$)**, saturating (and for gender slightly reversing) at the extreme $\alpha$. The
+effect has the **same sign across all five** prose identity axes (gender, education, upbringing),
+though not the same magnitude — the gender axis swings least ($\approx0.80$), the others
+$\approx1.05$–$1.11$. A **matched-norm random direction**, injected identically, leaves the
+loading essentially flat (total drift $\le 0.16$ over the same sweep). So the layer
 holds the identity direction as something the rest of the network *acts on*, not merely
 correlates with.
 
@@ -444,7 +449,9 @@ Our shuffled-label null is also imperfect (its two groups still contain real pas
 above zero); the random-direction null is the cleaner floor.
 
 **Statistical power.** Ignition uses 15 author/coder pairs and a 7- or 11-point α grid; structural
-signatures average over 32–96 passages. These are small. We report standard deviations and the raw
+signatures average over 32–96 passages. These are small — and the ignition *index* at each depth
+averages only over the pairs whose endpoints separate along the axis (5–14 of 15, fewest at the
+shallowest layers). We report standard deviations and the raw
 per-depth series rather than smoothed summaries.
 
 **Reproducibility caveats.** Encoder structural signatures reproduce bit-for-bit on MiniLM across
@@ -468,19 +475,19 @@ and gated (`bin/spike`) to reproduce the shipped fastembed embeddings at cosine 
 
 **Pipeline.**
 ```
-cargo run -p corpus --release                 # prose corpus → person2vec-minilm.{json,bin}
-cargo run -p corpus --bin coders --release    # code corpus  → person2vec-coders.{json,bin}
+cargo run -p corpus --release                 # prose corpus -> person2vec-minilm.{json,bin}
+cargo run -p corpus --bin coders --release    # code corpus  -> person2vec-coders.{json,bin}
 cargo run -p jlens  --bin spike     --release              # faithfulness gate
-cargo run -p jlens  --bin jlens     --release -- <ds> <N>  # → person2vec-jlens-<ds>.json
-cargo run -p jlens  --bin steer     --release -- <ds>      # → person2vec-identity-<ds>.json
-cargo run -p jlens  --bin fingerprint --release -- <ds>    # → person2vec-fingerprint-<ds>.json
-cargo run -p jlens  --bin ignition    --release -- <ds>    # → person2vec-ignition-<ds>.json  (§5.2)
-cargo run -p jlens  --bin steer_bundle --release -- <ds>   # → person2vec-steer-<ds>.json     (§5.4)
-cargo run -p jlens  --bin decoder_structural --release -- 10  # → decoder-structural-gpt2.json (§5.5)
-cargo run -p jlens  --bin decoder_steer --release          # → decoder-steer-gpt2.json         (§5.6)
-python3 jlens/paper/expertise_probe.py        # → person2vec-expertise-minilm.json            (§5.7)
-python3 jlens/paper/build_ledger.py           # → jlens/paper/ledger.json  (every cited number)
-python3 jlens/figures/make_figures.py         # → jlens/figures/*.png
+cargo run -p jlens  --bin jlens     --release -- <ds> <N>  # -> person2vec-jlens-<ds>.json
+cargo run -p jlens  --bin steer     --release -- <ds>      # -> person2vec-identity-<ds>.json
+cargo run -p jlens  --bin fingerprint --release -- <ds>    # -> person2vec-fingerprint-<ds>.json
+cargo run -p jlens  --bin ignition    --release -- <ds>    # -> person2vec-ignition-<ds>.json  (sec 5.2)
+cargo run -p jlens  --bin steer_bundle --release -- <ds>   # -> person2vec-steer-<ds>.json     (sec 5.4)
+cargo run -p jlens  --bin decoder_structural --release -- 10  # -> decoder-structural-gpt2.json (sec 5.5)
+cargo run -p jlens  --bin decoder_steer --release          # -> decoder-steer-gpt2.json         (sec 5.6)
+python3 jlens/paper/expertise_probe.py        # -> person2vec-expertise-minilm.json            (sec 5.7)
+python3 jlens/paper/build_ledger.py           # -> jlens/paper/ledger.json  (every cited number)
+python3 jlens/figures/make_figures.py         # -> jlens/figures/*.png
 ```
 `<ds>` ∈ {`minilm`, `coders`}. Env vars: `JLENS_DEVICE` (`metal`|`cpu`), `JLENS_JAC_LEN`
 (Jacobian context, default 64), `JLENS_CHUNK` (finite-difference batch; smaller = less GPU

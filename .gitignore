@@ -16,5 +16,9 @@
 # fastembed model cache (auto-downloaded)
 .fastembed_cache
 
+# macOS junk
+.DS_Store
+**/.DS_Store
+
 # NOTE: web/assets/person2vec.{json,bin} ARE committed — they're the shipped
 # precomputed dataset. Regenerate with `cargo run -p corpus --release`.

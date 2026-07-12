@@ -1,0 +1,24 @@
+% Map the Unicode symbols the paper uses (in text and inline code) to LaTeX, so
+% tectonic/XeTeX renders them even when the base font lacks the glyph.
+\usepackage{newunicodechar}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≫}{\ensuremath{\gg}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∂}{\ensuremath{\partial}}
+\newunicodechar{‖}{\ensuremath{\Vert}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{δ}{\ensuremath{\delta}}
+\newunicodechar{Δ}{\ensuremath{\Delta}}
+\newunicodechar{ε}{\ensuremath{\varepsilon}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{√}{\ensuremath{\surd}}
+\newunicodechar{…}{\ldots}

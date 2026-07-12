@@ -25,6 +25,7 @@ $(OUT): $(PAPER) $(BIB)
 	  --citeproc --bibliography=$(BIB) \
 	  --pdf-engine=$(ENGINE) \
 	  --resource-path=..:. \
+	  -H header.tex \
 	  -V geometry:margin=1in -V fontsize=10pt -V linkcolor=blue \
 	  -V colorlinks=true \
 	  --toc \
