@@ -233,6 +233,40 @@ def _lines_with(vocab):
     return out
 
 
+# ---------- CHECK: method_map.md file:line references are accurate ----------
+@check("method_map_accurate", hard=True)
+def _methodmap():
+    mm = os.path.join(PAPER_DIR, "method_map.md")
+    if not os.path.exists(mm):
+        return ["method_map.md missing"]
+    fails = []
+    cache = {}
+    for row in open(mm):
+        if not row.lstrip().startswith("|"):
+            continue
+        locs = re.findall(r"([\w./-]+\.rs):(\d+)", row)
+        if not locs:
+            continue
+        funcs = set()
+        for tok in re.findall(r"`([^`]+)`", row):
+            for ident in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", tok):
+                funcs.add(ident)
+        for path, ln in locs:
+            ln = int(ln)
+            fpath = os.path.join(ROOT, path)
+            if fpath not in cache:
+                cache[fpath] = open(fpath).read().split("\n") if os.path.exists(fpath) else None
+            src = cache[fpath]
+            if src is None:
+                fails.append(f"method_map.md -> {path}:{ln}  file not found")
+                continue
+            window = "\n".join(src[max(0, ln - 4):ln + 3])
+            if not any(re.search(rf"fn {re.escape(f)}\b|{re.escape(f)}\s*[(<]", window) for f in funcs):
+                fails.append(f"method_map.md -> {path}:{ln}  no matching fn near line "
+                             f"(expected one of: {', '.join(sorted(funcs))[:60]})")
+    return fails
+
+
 # ---------- CHECK: zero hype superlatives (exemplars: 0 across 69k words) ----------
 @check("no_hype", hard=True)
 def _hype():

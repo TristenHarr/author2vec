@@ -20,6 +20,7 @@ Each is a named check; the process exits non-zero if any **HARD** check fails.
 | `no_placeholders` | ✓ | no TODO/TKTK/FIXME/`\cite{`/`???` debris |
 | `section_refs_resolve` | ✓ | every `§X.Y` points at a real heading |
 | `ledger_fresh` | ✓ | committed `ledger.json` equals a fresh `build_ledger.py` run |
+| `method_map_accurate` | ✓ | every `file:line` in `method_map.md` points at the named function (no stale audit trail) |
 | `numbers_traceable` | ✓ | **every result number is in the ledger or `derivations.json`** — nothing invented |
 | `no_hype` | ✓ | zero hype superlatives (landmark papers use them 0× in 69k words) |
 | `intensifier_budget` | ✓ | ≤ 1.5 intensifiers / 1k words (landmark max) |
