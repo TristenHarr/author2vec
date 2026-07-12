@@ -150,29 +150,29 @@ def fig4_fingerprint():
         thr = led(ds, "fingerprint_threshold")
         b = load_bundle(f"person2vec-fingerprint-{ds}.json")
         cents = [a["centroid"] for a in b["authors"]]
-        known_x, known_y, ood_x, ood_y = [], [], [], []
         import random
         random.seed(0)
+        # position/colour by GROUND TRUTH (probe provenance), not by the threshold decision,
+        # so any misclassification (a known below the bar, or an OOD above it) is visible.
+        known_y, ood_y = [], []
         for p in b["probes"]:
             cos = max(sum(a * c for a, c in zip(p["vec"], cen)) for cen in cents)
-            if cos >= thr:
-                known_x.append(0 + random.uniform(-0.06, 0.06)); known_y.append(cos)
-            else:
-                ood_x.append(1 + random.uniform(-0.06, 0.06)); ood_y.append(cos)
+            (known_y if "held-out" in p["label"] else ood_y).append(cos)
         ax.axhline(thr, ls="--", lw=1.3, color=INK)
-        ax.text(-0.42, thr + 0.015, f"bar {thr:.2f}", va="bottom", ha="left",
+        ax.text(-0.42, thr + 0.015, f"decision bar {thr:.2f}", va="bottom", ha="left",
                 color=INK, fontsize=8)
-        ax.scatter(known_x, known_y, s=70, color=AUTHORS, zorder=3,
-                   label="KNOWN fingerprint", edgecolor="white", linewidth=0.8)
-        ax.scatter(ood_x, ood_y, s=70, color=NEG, zorder=3, marker="D",
-                   label="blank space (OOD)", edgecolor="white", linewidth=0.8)
+        ax.scatter([random.uniform(-0.06, 0.06) for _ in known_y], known_y, s=70, color=AUTHORS,
+                   zorder=3, label=f"known author (held-out, n={len(known_y)})", edgecolor="white", linewidth=0.8)
+        ax.scatter([1 + random.uniform(-0.06, 0.06) for _ in ood_y], ood_y, s=70, color=NEG,
+                   zorder=3, marker="D", label=f"stranger (OOD text, n={len(ood_y)})", edgecolor="white", linewidth=0.8)
         ax.set_title(title.split(" (")[0])
-        ax.set_xticks([0, 1]); ax.set_xticklabels(["known", "stranger"])
+        ax.set_xticks([0, 1]); ax.set_xticklabels(["known\nauthor", "stranger\n(OOD)"])
         ax.set_xlim(-0.5, 1.5); ax.set_ylim(0, 1)
         ax.set_ylabel("nearest-centroid cosine")
-    axes[0].legend(loc="upper right")
-    fig.suptitle("Is the fingerprint in the weights? Known identities vs. blank space",
-                 fontsize=12, fontweight="bold", y=1.02)
+    axes[0].legend(loc="center right", fontsize=8)
+    fig.suptitle("Is the fingerprint in the weights? Known identities vs. blank space\n"
+                 "(x = ground-truth provenance; a point on the wrong side of the bar is an error)",
+                 fontsize=11.5, fontweight="bold", y=1.06)
     save(fig, "fig4_fingerprint.png")
 
 
@@ -416,8 +416,45 @@ def fig11_negative_control():
     save(fig, "fig11_negative_control.png")
 
 
+def fig9_ai_fingerprint():
+    """AI-model code fingerprint — house-styled, reproducible, with the permutation null + CI.
+
+    Left: task effect (same task, different model) vs. model effect (same model, different task) —
+    the task dominates. Right: task-controlled model ID with its Wilson 95% CI, against the
+    within-task shuffle null and chance — a faint but real (p<0.001) fingerprint.
+    """
+    b = load_bundle("person2vec-aifp.json")
+    te, me = led("ai", "aifp_task_effect") * 100, led("ai", "aifp_model_effect") * 100
+    idacc = led("ai", "aifp_task_controlled_model_id") * 100
+    null = led("ai", "aifp_task_controlled_null_mean") * 100
+    chance = b["chance"] * 100
+    lo, hi = [v * 100 for v in led("ai", "ci_aifp_model_id")]
+    fig, axes = plt.subplots(1, 2, figsize=(9, 3.6))
+    ax = axes[0]
+    ax.bar([0, 1], [te, me], color=[CODERS, "#b9b9d0"], width=0.62, zorder=3)
+    for x, v in zip([0, 1], [te, me]):
+        ax.text(x, v + 2, f"{v:.0f}", ha="center", fontsize=10, color=INK)
+    ax.set_xticks([0, 1]); ax.set_xticklabels(["same task,\ndiff. model", "same model,\ndiff. task"])
+    ax.set_ylabel("mean cosine (×100)"); ax.set_ylim(0, 100)
+    ax.set_title("The task, not the model,\ndrives the embedding")
+    ax = axes[1]
+    ax.bar([0], [idacc], color=CODERS, width=0.5, zorder=3,
+           yerr=[[idacc - lo], [hi - idacc]], error_kw=dict(ecolor=INK, elinewidth=1.2, capsize=4))
+    ax.axhline(chance, ls=":", color=MUTED, lw=1.4, label=f"chance {chance:.0f}%")
+    ax.axhline(null, ls="--", color=NEG, lw=1.4, label=f"shuffle null {null:.0f}%")
+    ax.text(0, hi + 2, f"{idacc:.0f}%", ha="center", fontsize=10, color=INK)
+    ax.set_xticks([0]); ax.set_xticklabels(["task-controlled\nmodel ID (n=149)"])
+    ax.set_xlim(-0.7, 1.0); ax.set_ylim(0, 62)
+    ax.set_ylabel("accuracy (%)"); ax.legend(fontsize=8, loc="upper right")
+    ax.set_title("A faint but real model fingerprint\n(Wilson 95% CI; p<0.001, 1000-perm)")
+    fig.suptitle("Do the AI models have code fingerprints? Task dominates; a faint model signal survives",
+                 fontsize=11.5, fontweight="bold", y=1.04)
+    save(fig, "fig9_ai_fingerprint.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
+    fig9_ai_fingerprint()
     fig11_negative_control()
     fig10_bigfive()
     fig8_coders_recognizability()
