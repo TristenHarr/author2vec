@@ -26,7 +26,8 @@ layer Jacobian onto empirically-recovered, human-interpretable identity axes ins
 token vocabulary. On a 6-layer prose encoder (MiniLM) and a 12-layer code encoder (JinaBERT)
 we find that **author identity is a computed intermediate, decodable above chance at every
 layer** (not merely an output artifact). The two encoder depths expose different low-rank
-"workspace" geometry, and the identity direction is both a **detector** (is a person's
+"workspace-like" geometry (a bottleneck with depth-localized separability — we do not claim the
+full tripartition), and the identity direction is both a **detector** (is a person's
 fingerprint in the weights at all?) and a **causal lever** (steering). We further run an
 **identity-ignition** experiment (does the representation commit to a single individual at a
 characteristic depth?), a **decoder** track, and a **directed-steering** experiment. We then
@@ -67,6 +68,13 @@ and about what we **do not** claim: no "IQ", no consciousness.
    than assertion.
 9. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
    code), with a faithfulness gate and a full audit ledger.
+
+*To be precise about the delta: the genuinely new **method** is narrow — the δ-broadcast reduction
+(1) and the embedding-space projection (2), which make the averaged-Jacobian lens run on a pooled
+encoder at all. Contributions 3–7 apply established techniques (difference-of-means directions,
+linear probing across depth, the ignition design) to a new **target** — authorship identity read
+through the layer Jacobian — and 8–9 are the measured-population validation and the open
+reimplementation. We flag this so the novelty is not oversold.*
 
 ---
 
@@ -119,12 +127,16 @@ onto interpretable directions — the piece that is new here.
 **Steering and concept directions.** Activation addition [@turner2023actadd] and contrastive
 activation addition [@rimsky2024caa] steer generation by adding a direction to the residual
 stream; representation engineering [@zou2023repe] extracts such directions, often as a
-difference of class means. Our identity axes are exactly difference-of-means (Fisher)
+difference of class means. A single such direction can be a causal lever — as in refusal, which
+is mediated by one direction [@arditi2024] — and causal-mediation analysis localizes where a
+direction acts [@vig2020]. Our identity axes are exactly difference-of-means (Fisher)
 directions, used both to *read* (§4.5) and to *steer* (§5.4); the novelty is not the technique
 but the target — personal authorship identity — and reading it *through the layer Jacobian*.
 
 **Probing and representational geometry.** Linear probes [@alain2017probing;
-@hewitt2019structural] test what a layer linearly encodes; we use leave-one-out nearest-centroid
+@hewitt2019structural] test what a layer linearly encodes; because above-chance probing need not
+imply the model *uses* the information [@hewittliang2019], we pair every decode with
+control-direction and shuffled-label nulls. We use leave-one-out nearest-centroid
 decoding as a probe of *identity* across depth (§5.1). Linear CKA [@kornblith2019cka] compares
 representations between layers, which we apply to J-lens readout geometry (§4.7). Sparse
 dictionary learning / SAEs [@bricken2023monosemanticity] decompose activations into
@@ -135,8 +147,11 @@ theory [@baars1988workspace] and the "ignition" of conscious access [@dehaene201
 borrow the *ignition* experimental design (§5.2) but point it at identity, and we make no claim
 about consciousness. Our substrate is Sentence-BERT-style embeddings [@reimers2019sbert], and
 the downstream question — attributing text to its author from style — is classical authorship
-attribution / stylometry, here recast as a question about *where in a network* identity is
-computed. Throughout, the J-lens, J-space, and structural signatures are the paper's; our
+attribution / stylometry [@mostellerwallace1964; @stamatatos2009], now often approached with
+learned authorship embeddings [@riverasoto2021], here recast as a question about *where in a
+network* identity is computed. A known hazard is the content–style confound — apparent authorship
+signal can be topic signal [@wegmann2022] — which we control on the model side (§5.10) and flag as
+a limitation on the prose side (§7). Throughout, the J-lens, J-space, and structural signatures are the paper's; our
 contribution is their transplant to open encoders, the style-lens readout, the identity target,
 and full reproducibility.
 
@@ -180,8 +195,8 @@ gap — and §5.2, §5.5–5.7 are our attempts at the behavioral half the encod
 ## 4. Method
 
 **Setup.** We study two open **embedding encoders**: `sentence-transformers/all-MiniLM-L6-v2`
-(prose; 6 layers, $d=384$, vocab 30{,}522) and `jinaai/jina-embeddings-v2-base-code` (code;
-12 layers, $d=768$, vocab 61{,}056). Each maps a passage to one **masked-mean-pooled**,
+[@wang2020minilm] (prose; 6 layers, $d=384$, vocab 30{,}522) and
+`jinaai/jina-embeddings-v2-base-code` [@gunther2023jina] (code; 12 layers, $d=768$, vocab 61{,}056). Each maps a passage to one **masked-mean-pooled**,
 L2-normalized vector $p$. A **faithfulness gate** (`bin/spike`) asserts our native candle
 forward reproduces the shipped fastembed embeddings at cosine $>0.99$ before any Jacobian is
 trusted.
@@ -263,7 +278,7 @@ consequence of blending inputs. The **ignition index** (transition sharpness, $0
 = all-or-none) climbs from $0.09$ at the input — where the readout is, correctly, linear in the
 blended input — to $0.73$–$0.74$ by mid-depth and holds. In short: *shallow layers hold a graded
 mixture; by the middle of the network the representation has snapped to a single author.* The
-mid-network peak echoes the low-rank "workspace" bottleneck we see structurally (§5.3).
+mid-network peak echoes the low-rank "workspace-like" bottleneck we see structurally (§5.3).
 
 **The same holds for code, more strongly.** On the 12-layer code encoder the ignition index
 climbs from $0.09$ at the input to a peak of $0.82$ (depth 11 of 12). Through the early-mid layers
@@ -333,7 +348,7 @@ the late layers**, marking the "motor" regime where representations turn toward 
 **not** expect the clean sensory→workspace→motor tripartition: GPT-2 is 12 layers, far short of
 the paper's ~100, so we report the raw series and let it say what it says.
 
-**Method.** GPT-2 (`openai-community/gpt2`; 12 layers, $d{=}768$), the δ-broadcast averaged
+**Method.** GPT-2 [@radford2019gpt2] (`openai-community/gpt2`; 12 layers, $d{=}768$), the δ-broadcast averaged
 Jacobian made **causal** — perturb every position, read the *last* position (the next-token
 driver) — over prose prompts, with the four signatures computed by the *same* `lib.rs` functions
 as the encoders and verbalizability read through GPT-2's **real** tied unembedding (no
@@ -412,8 +427,9 @@ baseline, so we also check each trait's Wilson 95% interval against its majority
 clears it comfortably ($58.3\%$, $[56.3, 60.2]$ vs. $51.5\%$), but Agreeableness only marginally
 ($55.3\%$, $[53.3, 57.2]$ vs. $53.1\%$) — its lower bound barely exceeds the baseline. The lift over
 majority is genuinely weak for the lowest traits, as expected.
-This is exactly the *weak-but-real* ceiling the personality-from-text literature reports, and
-Openness-leads-the-pack is its standard finding. It is a genuine positive result on a measured
+This is exactly the *weak-but-real* ceiling the personality-from-text literature reports
+[@mairesse2007], and Openness-leads-the-pack is a standard finding at social-media scale
+[@schwartz2013]. It is a genuine positive result on a measured
 population: author2vec, trained for nothing of the kind, carries a faint but real trace of who the
 writer is.
 
@@ -465,7 +481,10 @@ weekend near or below chance.
 
 ### 5.9 Does the model know some coders better than others? And is style homogenizing?
 
-The 15-developer code roster lets us ask two questions the prose side cannot.
+The 15-developer code roster lets us ask two questions the prose side cannot. (That developers are
+identifiable from code style at all is established — code stylometry de-anonymizes programmers
+[@caliskan2015]; our question is instead *where in the network*, and *how much*, that identity is
+legible.)
 
 **Some developers are far more recognizable than others.** Same-file recognition accuracy (Wilson
 95% CIs, $n{=}126$ files/developer) spans a wide range — from **Jeremy Ashkenas at 89.7%**
@@ -597,6 +616,30 @@ frontier model trained on someone's millions of words holds a sharp, personal fi
 individual* is a well-motivated extrapolation, not something these data settle. The behavioral half
 of the paper (§5.6–5.7) is the hardest to carry over and is where a small open decoder's limited
 capability bites — we state results there as directional, with negative results reported as such.
+
+**Content vs. style (prose).** Our public-domain authors write about different subjects, so some
+prose "identity" signal is inevitably topic, not style [@wegmann2022]. Unlike the code side, where
+we control the task explicitly (§5.10), we do not fully disentangle the two on the prose side; prose
+identity should be read as *style-or-topic* fingerprinting, not pure style.
+
+### Ethics and broader impact
+
+This work shows that authorship identity and correlates of demographic and psychological attributes
+(gender, region, age, Big Five personality) are linearly recoverable from prose and code
+embeddings, and that these directions are causally steerable. The apparatus is **dual-use**: the
+same machinery can support **de-anonymization** of pseudonymous authors — including developers from
+name-scrubbed code [@caliskan2015; @narayanan2012] — and **non-consensual inference of sensitive
+attributes**, enabling surveillance or profiling [@hovyspruit2016]. We take three positions.
+**Consent and scope:** our prose subjects are public-domain authors and our developer corpus is
+public, git-attributed, and name-scrubbed; we make no per-individual attribution claim and
+explicitly decline the AI-usage and "intelligence" inferences the method could invite (§5.7, §5.9).
+**Construct restraint:** the astrological-sign negative control ($p=0.96$) is included precisely to
+show that a recovered signal must be validated against a real construct before use, and to caution
+against reading weak correlational demographic signals as ground truth. **Mitigation:** the
+demographic directions we find can also be *removed* — nullspace projection / INLP [@ravfogel2020] —
+and we regard attribute erasure and stylistic obfuscation as the appropriate defensive counterpart
+to this analysis. We release only open models and public corpora, and no tool aimed at identifying
+specific private individuals.
 
 ## 8. Reproducibility
 
