@@ -253,11 +253,19 @@ depth-wise sharpening reflects generic late-layer nonlinearity. We report the ra
 
 ![Layer-to-layer readout geometry (linear CKA).](figures/fig3_cka.png)
 
-Effective dimension rises with depth (prose $73\!\to\!205$). Prose **stable rank is lowest at
-the very first layer** ($22.1$, rising to $106.9$); the deeper code model instead has a genuine
-**mid-network low-rank bottleneck** (stable rank minimum $10.9$ at layer 5 of 12). The
-mid-network "workspace" geometry the paper reports in deep models appears here only once there
-is depth to spare. _[autocorrelation panel pending T1.4]._
+Effective dimension rises with depth in both models (prose $73\!\to\!205$; code $80\!\to\!184$).
+The **stable rank** tells the sharper story: in the 6-layer prose model it is **lowest at the
+very first layer** ($22.1$, rising monotonically to $106.9$) — the network compresses to a
+low-rank readout immediately — whereas the 12-layer code model has a genuine **mid-network
+low-rank bottleneck** (minimum $21.0$ at layer 5 of 12, with a matching dip in effective
+dimension). The mid-network "workspace" geometry the paper reports in deep models appears here
+**only once there is depth to spare**. The fourth signature, **autocorrelation** (persistence of
+the readout across positions), completes the picture: near zero or negative at the shallowest
+layers and rising through the middle (prose peaks at $0.12$ around layer 4; code climbs to
+$\approx 0.09$ by layers 8–9), the workspace-persistence signature of [@workspace2026] surfacing
+even on these shallow encoders. We do **not** see the paper's clean sensory→workspace→motor
+tripartition — 6–12 layers is too shallow — and we report the raw depth series rather than
+forcing that reading.
 
 ### 5.4 Fingerprint presence and causal steering
 
