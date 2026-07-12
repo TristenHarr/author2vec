@@ -1,7 +1,6 @@
 # Author2vec: A Jacobian Lens for Authorship Identity in Embedding Encoders
 
 **Tristen Harr** · Brahmastra Labs · [author2vec.com](https://author2vec.com)
-**Alexander Stepanov** · UC Berkeley
 
 > **Status: complete draft (autonomous research build), not yet shipped.** All experiments
 > (Phases 0–5) have been run; every quantitative *result* is machine-extracted into the audit
