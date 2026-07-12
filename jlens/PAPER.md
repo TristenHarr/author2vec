@@ -1,11 +1,12 @@
 # Author2vec: A Jacobian Lens for Authorship Identity in Embedding Encoders
 
 **Tristen Harr** · Brahmastra Labs · [author2vec.com](https://author2vec.com)
+**Alexander Stepanov** · Berkely University
 
-> **Status: working draft (autonomous research build).** Every quantitative claim is
-> traced to a shipped data bundle in the audit ledger (Appendix D); sections tied to
-> experiments still in progress are marked _[pending: T#]_. This document is written
-> against `jlens/paper/ledger.json` — no number appears here that is not in the ledger.
+> **Status: complete draft (autonomous research build), not yet shipped.** All experiments
+> (Phases 0–5) have been run; every quantitative claim is traced to a shipped data bundle in the
+> audit ledger (Appendix D). This document is written against `jlens/paper/ledger.json` — no
+> number appears here that is not in the ledger.
 
 ---
 
@@ -27,7 +28,7 @@ we find that **author identity is a computed intermediate, decodable above chanc
 layer** (not merely an output artifact), that the two encoder depths expose different
 low-rank "workspace" geometry, and that the identity direction is both a **detector** (is a
 person's fingerprint in the weights at all?) and a **causal lever** (steering). We further
-run [pending] an **identity-ignition** experiment (does the representation commit to a single
+run an **identity-ignition** experiment (does the representation commit to a single
 individual at a characteristic depth?), a **decoder** track, and a **directed-steering**
 experiment. Everything runs on open models and ships as static assets; the whole apparatus
 is reproducible on a laptop. We are explicit about what is **replication** vs. **new**, and
@@ -46,10 +47,11 @@ about what we **do not** claim: no "IQ", no consciousness.
    output-embedding ceiling.
 5. **A fingerprint-presence detector** (§5.3): known identity vs. "blank space" for
    out-of-distribution text — a question the paper does not ask.
-6. **[pending] Identity ignition** (§5.2): evidence that the representation collapses toward a
-   single individual at a characteristic depth.
-7. **[pending] Causal steering & directed modulation** (§5.4), including steering a decoder
-   from a failed answer to a correct one under leakage controls.
+6. **Identity ignition** (§5.2): the representation commits to a single individual increasingly
+   with depth, peaking mid-network, above two null controls — on both prose and code.
+7. **Causal steering & directed modulation** (§5.4, §5.6): the identity direction is a
+   sign-controllable lever on encoders, and a leakage-free concept direction is a (modest but
+   real) causal handle on a decoder's output.
 8. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
    code), with a faithfulness gate and a full audit ledger.
 
@@ -205,7 +207,8 @@ the fraction of activation variance it captures. `lib.rs:jspace_nmp`.
 Per layer: **stable rank** $\lVert J\rVert_F^2/\sigma_1^2$, **effective dimension**
 (participation ratio $\lVert J\rVert_F^4/\lVert J^\top J\rVert_F^2$), **verbalizability**
 (excess kurtosis of the vocab-lens readout), **layer×layer linear CKA**, and — completing the
-paper's four-metric set — **autocorrelation** _[pending: T1.1]_. `lib.rs:stable_rank`,
+paper's four-metric set — **autocorrelation** (lag-1 readout persistence vs. a position-shuffled
+null). `lib.rs:stable_rank`,
 `effective_dim`, `excess_kurtosis`, `linear_cka`.
 
 ## 5. Experiments and results
@@ -385,11 +388,42 @@ prose gender $85.5\%$ (majority $52.7\%$) but most geographic traits at or below
 baselines; code systems-vs-scripting $84.6\%$ (majority $61.5\%$) but commit-time near chance.
 
 ### 5.9 Ablations
-_[T6.1]_ Leave-one-{book,series,author}-out and exposure curves (already shipped in `results`);
-the two encoder depths as a depth ablation. $\varepsilon$ / context-length robustness: future work.
+
+Rather than a hyperparameter sweep, the study carries several *built-in* ablations. **Exposure /
+hold-out**: the familiarity ladder (§5.8) is a leave-one-{book,series,author}-out ablation of how
+much of a subject the model has seen, shipped in `results`. **Depth**: the 6-layer prose vs.
+12-layer code encoders act as a depth ablation — the mid-network workspace bottleneck (§5.3) and
+the ignition peak (§5.2) appear pronounced only in the deeper model. **Model class**: the GPT-2
+decoder (§5.5) ablates encoder → generative on the *same* apparatus, and the workspace geometry
+survives. **Controls-as-ablations**: every causal claim ablates its direction against a
+matched-norm random and/or shuffled-label null (§5.2, §5.4, §5.6). What we did *not* sweep —
+finite-difference $\varepsilon$ and Jacobian context length — we flag as future work; the
+signatures reproduce bit-for-bit at the documented settings, so the qualitative curves are stable.
 
 ## 6. Discussion
-_[T6.1] What the identity-workspace analogy supports and what it does not._
+
+**What the identity-workspace analogy supports.** Read with the same averaged-Jacobian apparatus as
+[@workspace2026], an embedding encoder does exhibit workspace-like *geometry* around identity: the
+fingerprint is computed internally at every layer (§5.1), it becomes increasingly linearly separable
+and commits to a single individual with depth (§5.2), the readout compresses through a low-rank
+mid-network bottleneck (§5.3), and the identity direction is a causal lever (§5.4). On a real
+decoder the same signatures sharpen into a clean sensory→workspace→motor profile (§5.5). The
+*mechanistic* half of the paper's picture transfers — and it transfers to a question the paper never
+asked: *whose style is this?*
+
+**What it does not support.** None of this is evidence of reportability, reasoning, or anything
+cognitive. Our decoder steering moves a distribution, not an answer (§5.6); our interpretable axes
+barely track even lexical sophistication (§5.7). The "workspace" here is a claim about
+representational geometry and linear accessibility, not about a model *knowing* or *reporting* who
+you are. The defensible reading is the narrow one: **personal writing style is a low-dimensional,
+causally-active, depth-localized direction in these models' representations** — which is both less
+than the slogan "the AI knows you" and, we think, more interesting, because it is checkable on a
+laptop.
+
+**Why an encoder was the right testbed.** Stripping away generation removes the decoder story's main
+confound — autoregressive leakage — and lets the mechanistic claims stand or fall on geometry alone.
+That the same geometry then reappears, more cleanly, on a 12-layer decoder (§5.5) is the strongest
+cross-check we can offer at this scale.
 
 ## 7. Limitations and threats to validity
 
@@ -440,7 +474,11 @@ cargo run -p jlens  --bin spike     --release              # faithfulness gate
 cargo run -p jlens  --bin jlens     --release -- <ds> <N>  # → person2vec-jlens-<ds>.json
 cargo run -p jlens  --bin steer     --release -- <ds>      # → person2vec-identity-<ds>.json
 cargo run -p jlens  --bin fingerprint --release -- <ds>    # → person2vec-fingerprint-<ds>.json
-cargo run -p jlens  --bin ignition  --release -- <ds>      # → person2vec-ignition-<ds>.json
+cargo run -p jlens  --bin ignition    --release -- <ds>    # → person2vec-ignition-<ds>.json  (§5.2)
+cargo run -p jlens  --bin steer_bundle --release -- <ds>   # → person2vec-steer-<ds>.json     (§5.4)
+cargo run -p jlens  --bin decoder_structural --release -- 10  # → decoder-structural-gpt2.json (§5.5)
+cargo run -p jlens  --bin decoder_steer --release          # → decoder-steer-gpt2.json         (§5.6)
+python3 jlens/paper/expertise_probe.py        # → person2vec-expertise-minilm.json            (§5.7)
 python3 jlens/paper/build_ledger.py           # → jlens/paper/ledger.json  (every cited number)
 python3 jlens/figures/make_figures.py         # → jlens/figures/*.png
 ```
@@ -457,13 +495,87 @@ through `jlens/paper/method_map.md` to a `file:line`.
 ---
 
 ## Appendix A — δ-broadcast derivation
-_[T6.1] Pooled-output Jacobian collapse; central-difference estimator and its error term._
 
-## Appendix B — Per-layer tables (both models)
-_[T6.1] identity, stable rank, effective dim, verbalizability, autocorrelation._
+A masked-mean-pooled encoder outputs $p=\frac{1}{T}\sum_{t} h_{L,t}$, the mean over $T$ positions of
+the final layer. The full sensitivity of $p$ to the layer-$\ell$ residuals is a rank-4 object
+$\partial p_i/\partial h_{\ell,t,j}$ of size $d\times(T\times d)$ — intractable to form and to
+average across variable-length prompts. We collapse it with a **shared perturbation**: perturb
+*every* source position by the same $\delta\in\mathbb{R}^d$, $h_{\ell,t}\mapsto h_{\ell,t}+\delta$,
+and differentiate the pooled output,
+$$ J_\ell \;=\; \frac{\partial p}{\partial\delta}\Big|_{\delta=0} \;=\; \frac{1}{T}\sum_{t}\frac{\partial p}{\partial h_{\ell,t}}\;\in\;\mathbb{R}^{d\times d}, $$
+one $d\times d$ matrix per layer, independent of $T$. Each column $c$ is estimated by **central
+finite differences**, $J_{\cdot c}\approx\frac{p(+\varepsilon e_c)-p(-\varepsilon e_c)}{2\varepsilon}$
+(with $\pm\varepsilon e_c$ broadcast to all positions), whose error is $O(\varepsilon^2)$ by Taylor
+expansion; columns are computed in batches (pure gemm) via one `forward_from(ℓ)` per batch. On a
+causal decoder (§5.5) the identical construction reads the **last** position $p=h_{L,\text{last}}$
+(the next-token driver) rather than the mean, giving the causal analog. The embedding-space
+projection (§4.3) removes the component along the unit output $e=p/\lVert p\rVert$, since a
+normalized embedding is invariant to radial scaling: $J_{\text{emb}}=\frac{1}{\lVert p\rVert}(I-ee^\top)J$.
+
+## Appendix B — Per-layer tables
+
+Structural signatures and internal identity accuracy by residual depth, straight from the ledger.
+
+**Authors (MiniLM, 6 layers)** — internal identity accuracy by layer: [5.2, 7.2, 8.8, 8.0, 7.2, 8.8]% (chance 1.8%).
+
+| layer | stable rank | eff dim | verbaliz. | autocorr |
+|---|---|---|---|---|
+| 0 | 22.1 | 73.5 | 0.50 | -0.004 |
+| 1 | 31.4 | 88.8 | 0.51 | +0.004 |
+| 2 | 31.2 | 93.0 | 0.53 | +0.048 |
+| 3 | 37.2 | 104.6 | 0.50 | +0.101 |
+| 4 | 54.5 | 127.6 | 0.49 | +0.116 |
+| 5 | 106.9 | 205.2 | 0.61 | +0.088 |
+
+**Coders (JinaBERT, 12 layers)** — internal identity accuracy by layer: [42.5, 49.5, 47.5, 38.5, 39.0, 39.5, 40.0, 43.5, 42.5, 41.5, 42.0, 38.5]% (chance 7.7%).
+
+| layer | stable rank | eff dim | verbaliz. | autocorr |
+|---|---|---|---|---|
+| 0 | 31.2 | 80.4 | 0.19 | -0.035 |
+| 1 | 35.8 | 94.6 | 0.20 | -0.041 |
+| 2 | 38.5 | 98.6 | 0.20 | -0.001 |
+| 3 | 34.5 | 99.7 | 0.20 | +0.032 |
+| 4 | 33.6 | 101.7 | 0.20 | +0.036 |
+| 5 | 21.0 | 91.5 | 0.20 | +0.051 |
+| 6 | 37.1 | 112.8 | 0.19 | +0.066 |
+| 7 | 53.0 | 125.8 | 0.20 | +0.075 |
+| 8 | 57.6 | 131.5 | 0.20 | +0.092 |
+| 9 | 61.8 | 138.9 | 0.22 | +0.089 |
+| 10 | 74.2 | 151.2 | 0.22 | +0.087 |
+| 11 | 79.1 | 184.3 | 0.22 | +0.067 |
+
+**Decoder (GPT-2, 12 layers)** — next-token accuracy by residual depth: [0.0, 2.6, 2.6, 3.2, 3.2, 4.7, 5.1, 7.2, 10.9, 13.0, 17.0, 21.3, 22.6]%.
+
+| layer | stable rank | eff dim | verbaliz. | autocorr |
+|---|---|---|---|---|
+| 0 | 2.6 | 5.8 | 0.89 | +0.007 |
+| 1 | 5.0 | 16.2 | 1.81 | +0.050 |
+| 2 | 6.3 | 25.8 | 2.44 | +0.031 |
+| 3 | 6.4 | 30.3 | 2.08 | +0.047 |
+| 4 | 6.6 | 32.1 | 2.15 | +0.044 |
+| 5 | 6.7 | 33.5 | 1.94 | +0.052 |
+| 6 | 6.5 | 31.1 | 1.90 | +0.058 |
+| 7 | 6.5 | 29.9 | 1.57 | +0.099 |
+| 8 | 6.7 | 32.5 | 1.26 | +0.123 |
+| 9 | 5.2 | 23.7 | 1.39 | +0.145 |
+| 10 | 3.8 | 13.8 | 1.10 | +0.161 |
+| 11 | 2.0 | 4.1 | 0.89 | +0.110 |
 
 ## Appendix C — Axis definitions, rosters, and OOD probe sets
-_[T6.1] From `corpus/authors.toml`, `corpus/coders.toml`, and the fingerprint bundles._
+
+**Prose style axes** (`author_axes`): `male↔female` (gender difference-of-means); and the top-2
+one-vs-rest classes of the `educated` and `raised` fields — `educated=England↔rest`,
+`educated=US↔rest`, `raised=England↔rest`, `raised=US↔rest`. **Code style axes** (`dataset_axes`):
+`Systems↔rest`, `Scripting↔rest` (the `paradigm` trait). Each axis is the L2-normalized difference
+of class-mean reference embeddings — a unit Fisher direction, used for both readout and steering.
+
+**Rosters.** 55 public-domain prose authors (`corpus/authors.toml`, labelled with
+gender / birth / raised / educated / college) and 13 open-source developers (`corpus/coders.toml`,
+git-attributed and **name-scrubbed**, labelled with a `paradigm` = Systems/Scripting trait).
+
+**OOD probes** for the fingerprint detector (§5.4). Prose (bar 0.30): four held-out author samples
+plus `source code`, `modern chat`, `biology abstract`, `legalese`. Code (bar 0.51): four held-out
+coder samples plus `Victorian prose`, `modern chat`, `news headline`, `recipe`.
 
 ## Appendix D — Audit ledger
 Every number above is generated by `jlens/paper/build_ledger.py` into

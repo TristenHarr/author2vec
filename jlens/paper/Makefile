@@ -13,7 +13,7 @@
 PAPER   := ../PAPER.md
 OUT     := paper.pdf
 BIB     := refs.bib
-ENGINE  ?= xelatex
+ENGINE  ?= tectonic
 
 .PHONY: pdf clean check
 
@@ -24,6 +24,7 @@ $(OUT): $(PAPER) $(BIB)
 	  --from=gfm+tex_math_dollars \
 	  --citeproc --bibliography=$(BIB) \
 	  --pdf-engine=$(ENGINE) \
+	  --resource-path=..:. \
 	  -V geometry:margin=1in -V fontsize=10pt -V linkcolor=blue \
 	  -V colorlinks=true \
 	  --toc \
