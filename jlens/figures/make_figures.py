@@ -309,7 +309,7 @@ def fig10_bigfive():
     traits = ["Openness", "Neuroticism", "Conscientiousness", "Extraversion", "Agreeableness"]
     rows = []
     for t in traits:
-        acc, maj, lift, null = led("minilm", f"bigfive::{t}")
+        acc, maj, lift, null = led("minilm", f"bigfive::{t}")[:4]
         rows.append((t, acc * 100, maj * 100, null * 100, lift * 100))
     rows.sort(key=lambda r: r[4])  # ascending lift -> best on top
     names = [r[0] for r in rows]
@@ -353,31 +353,32 @@ def fig11_negative_control():
     labelmap = {"gender": "Gender (2-way)", "age": "Age band (3-way)", "zodiac": "Zodiac (12-way)"}
     rows = []
     for a in order:
-        acc, maj, null, lift = led("minilm", f"blog::{a}")
-        rows.append((labelmap[a], lift * 100, acc * 100, null * 100, a == "zodiac"))
+        acc, maj, null, lift, p = led("minilm", f"blog::{a}")[:5]
+        rows.append((labelmap[a], lift * 100, acc * 100, null * 100, p, a == "zodiac"))
     rows = rows[::-1]  # zodiac at bottom
     names = [r[0] for r in rows]
     lifts = [r[1] for r in rows]
     y = list(range(len(names)))
-    colors = [MUTED if r[4] else AUTHORS for r in rows]
-    fig, ax = plt.subplots(figsize=(7.4, 3.3))
+    colors = [MUTED if r[5] else AUTHORS for r in rows]
+    fig, ax = plt.subplots(figsize=(7.6, 3.4))
     ax.axvline(0, color="#33333f", lw=1.2, zorder=2)
     ax.barh(y, lifts, color=colors, height=0.62, zorder=3)
-    for yi, (nm, lift, acc, null, isneg) in zip(y, rows):
+    for yi, (nm, lift, acc, null, p, isneg) in zip(y, rows):
+        psig = "p<.001" if p <= 0.001 else f"p={p:.2f}"
         # positive bars: label just past the tip; negative bars: label in the empty
         # region right of 0 so it never collides with the y-axis tick labels.
-        xtext = (lift + 0.5) if lift >= 0 else 0.5
-        ax.text(xtext, yi, f"{acc:.0f}% vs {null:.0f}% null", va="center", ha="left",
+        xtext = (lift + 0.6) if lift >= 0 else 0.6
+        ax.text(xtext, yi, f"{acc:.0f}% vs {null:.0f}% null  ({psig})", va="center", ha="left",
                 fontsize=8.5, color=INK)
     ax.set_yticks(y)
     ax.set_yticklabels(names, fontsize=9.5)
     ax.set_ylim(-0.6, len(names) - 0.4)
     lo = min(lifts + [0]) - 2
-    hi = max(lifts + [0]) + 13
+    hi = max(lifts + [0]) + 22
     ax.set_xlim(lo, hi)
     ax.set_xlabel("recovery lift over shuffled-label null (percentage points)")
-    ax.set_title("Real constructs recover; the negative control (zodiac) does not\n"
-                 "Blog Authorship Corpus — same corpus, same author-level pipeline",
+    ax.set_title("The method recovers real constructs, not noise\n"
+                 "Age recovers (p<.001); the astrological negative control does not (p=.96)",
                  fontsize=11.5, fontweight="bold")
     from matplotlib.patches import Patch
     ax.legend(handles=[Patch(color=AUTHORS, label="real construct (positive control)"),

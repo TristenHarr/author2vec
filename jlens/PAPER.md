@@ -32,8 +32,9 @@ run an **identity-ignition** experiment (does the representation commit to a sin
 individual at a characteristic depth?), a **decoder** track, and a **directed-steering**
 experiment, and we **validate the embeddings against a measured population** — recovering
 self-reported Big Five personality from prose above chance (Openness $+6.8$ points over the
-majority baseline, shuffled-label null flat), a weak-but-real signal that is also *why* we make
-no cognitive-capacity claim. Everything runs on open models and ships as static assets; the whole
+majority baseline, all five traits $p<0.001$), with an astrological-sign *negative control* that
+recovers nothing ($p=0.96$) — a weak-but-real signal that is also *why* we make no
+cognitive-capacity claim. Everything runs on open models and ships as static assets; the whole
 apparatus is reproducible on a laptop. We are explicit about what is **replication** vs. **new**,
 and about what we **do not** claim: no "IQ", no consciousness.
 
@@ -57,10 +58,11 @@ and about what we **do not** claim: no "IQ", no consciousness.
    real) causal handle on a decoder's output.
 8. **A measured-population validation with a negative control** (§5.7): on 2,467
    psychometrically-labelled essays the same embeddings recover self-reported Big Five personality
-   above chance on all five traits (mean $+4.6$ points; Openness $+6.8$) with a flat shuffled-label
-   null; and on the Blog Authorship Corpus, gender and age recover while an astrological-sign
-   *negative control* does not — real constructs register, a meaningless one stays silent. This
-   grounds our refusal to make an "IQ" claim in evidence rather than assertion.
+   above chance on all five traits (mean $+4.6$ points; Openness $+6.8$; all five $p<0.001$ by a
+   1000-permutation test); and on the Blog Authorship Corpus, writer age is recovered ($p<0.001$)
+   while an astrological-sign *negative control* is not ($p=0.96$) — a real construct registers, a
+   meaningless one stays silent. This grounds our refusal to make an "IQ" claim in evidence rather
+   than assertion.
 9. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
    code), with a faithfulness gate and a full audit ledger.
 
@@ -389,8 +391,9 @@ shuffled-label null.
 **Result: all five traits are recovered above chance, and the null is flat.** Openness is
 strongest at $58.3\%$ (majority $51.5\%$; $+6.8$ points), then Neuroticism $56.3\%$ ($+6.3$),
 Conscientiousness $55.1\%$ ($+4.3$), Extraversion $55.4\%$ ($+3.6$), Agreeableness $55.3\%$
-($+2.2$) — a mean lift of $+4.6$ points. Under shuffled labels every trait collapses to
-$48.7\%$–$50.6\%$, confirming the lift is real signal rather than an artifact of the classifier.
+($+2.2$) — a mean lift of $+4.6$ points. A 1000-permutation test puts **all five traits at
+$p<0.001$** (the shuffled-label null sits at chance, $49.9$–$50.1\%$), so the lift is real signal,
+not an artifact of the classifier.
 This is exactly the *weak-but-real* ceiling the personality-from-text literature reports, and
 Openness-leads-the-pack is its standard finding. It is a genuine positive result on a measured
 population: author2vec, trained for nothing of the kind, carries a faint but real trace of who the
@@ -404,15 +407,18 @@ linguistic correlates, the third has none. We pool posts to the author level (13
 known sign; each author is the mean of their post embeddings) and run the *identical*
 leave-one-author-out nearest-centroid classifier on all three, each against a shuffled-label null.
 
-![Construct validity on one corpus: gender and age recover above their shuffled-label nulls; the astrological-sign negative control does not.](figures/fig11_negative_control.png)
+![Construct validity on one corpus (author-level, 1000-permutation test): writer age recovers ($p<0.001$) and the astrological-sign negative control does not ($p=0.96$); gender is directionally positive but not significant at this sample ($p=0.08$).](figures/fig11_negative_control.png)
 
-**That is exactly what happens.** Gender recovers at $56.5\%$ (majority $52.2\%$, shuffled null
-$47.7\%$) and age band at $53.6\%$ (majority $43.5\%$, null $25.9\%$) — both clearly above their
-nulls — while astrological sign lands at $4.3\%$, *at or below* both its majority baseline
-($11.6\%$) and its own shuffled-label null ($9.1\%$): no recoverable signal. Same corpus, same
-author-level pipeline; the method recovers the two constructs with a linguistic basis and stays
-silent on the one without. This is the honest boundary a "measured population" is *for* — evidence
-that the recovered signal is real where a real construct exists, and absent where none does.
+**That is exactly what happens.** Age band recovers strongly and significantly — $53.6\%$ against
+a $31.6\%$ shuffled-label null, $p<0.001$ over 1000 permutations — while astrological sign shows
+*nothing*: $4.3\%$, *below* both its majority baseline ($11.6\%$) and its shuffled null ($8.2\%$),
+$p=0.96$ (the real labels do worse than $96\%$ of random relabelings). Gender lands in between —
+directionally positive but **not significant at this modest sample**, $56.5\%$ against a $49.7\%$
+null, $p=0.08$ — consistent with a real-but-weak signal that $138$ author-level points are
+underpowered to confirm. The contrast that matters is unambiguous: the *exact* pipeline that
+recovers a construct with a genuine linguistic basis (age) finds nothing in the astrological
+control. This is the honest boundary a "measured population" is *for* — evidence that the recovered
+signal is real where a real construct exists, and absent where none does.
 
 Those two results together are **why we make no "IQ" claim.** A validated psychometric construct tops out a
 few points over chance; a loaded, poorly-operationalized one like "intelligence" would fare no

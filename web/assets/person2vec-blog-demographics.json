@@ -8,27 +8,30 @@
    "classes": 2,
    "loo_acc": 0.565,
    "majority": 0.522,
-   "shuffled_null": 0.477,
+   "shuffled_null": 0.497,
    "lift_over_majority": 0.043,
-   "lift_over_null": 0.088
+   "lift_over_null": 0.068,
+   "p_value": 0.0819
   },
   "age": {
    "n": 138,
    "classes": 3,
    "loo_acc": 0.536,
    "majority": 0.435,
-   "shuffled_null": 0.259,
+   "shuffled_null": 0.316,
    "lift_over_majority": 0.101,
-   "lift_over_null": 0.277
+   "lift_over_null": 0.22,
+   "p_value": 0.001
   },
   "zodiac": {
    "n": 138,
    "classes": 12,
    "loo_acc": 0.043,
    "majority": 0.116,
-   "shuffled_null": 0.091,
+   "shuffled_null": 0.082,
    "lift_over_majority": -0.072,
-   "lift_over_null": -0.048
+   "lift_over_null": -0.039,
+   "p_value": 0.958
   }
  }
 }

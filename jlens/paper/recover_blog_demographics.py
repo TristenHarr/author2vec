@@ -26,40 +26,46 @@ ids = [i for i in emb if i in labels]
 X = np.array([emb[i] for i in ids])            # already L2-normalized
 
 
-def loo_nc(X, y):
-    """Leave-one-out nearest-centroid accuracy, multiclass. cosine==dot (unit vecs)."""
-    classes = sorted(set(y))
-    idx = {c: (y == c) for c in classes}
-    sums = {c: X[idx[c]].sum(0) for c in classes}
-    cnts = {c: int(idx[c].sum()) for c in classes}
-    correct = 0
-    for i in range(len(y)):
-        ci = y[i]
-        best, bp = -9.0, None
-        for c in classes:
-            denom = cnts[c] - 1 if c == ci else cnts[c]
-            if denom <= 0:
-                continue
-            cent = (sums[c] - X[i]) / denom if c == ci else sums[c] / denom
-            s = float(X[i] @ cent)
-            if s > best:
-                best, bp = s, c
-        correct += bp == ci
-    return correct / len(y)
+def loo_nc(Xk, y):
+    """Vectorized multiclass leave-one-out nearest-centroid accuracy (cosine==dot; unit vecs).
+
+    Own-class centroid with i removed reduces to (D[i,c]-1)/(n_c-1), D = Xk @ S^T. Fully
+    vectorized so a 1000-permutation null is fast even for a 12-way label.
+    """
+    classes, yi = np.unique(y, return_inverse=True)
+    k = len(classes)
+    S = np.zeros((k, Xk.shape[1]))
+    for c in range(k):
+        S[c] = Xk[yi == c].sum(0)
+    cnt = np.bincount(yi, minlength=k).astype(float)
+    D = Xk @ S.T
+    with np.errstate(divide="ignore", invalid="ignore"):
+        score = D / cnt[None, :]
+    n = len(y)
+    rows = np.arange(n)
+    score[rows, yi] = (D[rows, yi] - 1.0) / np.maximum(cnt[yi] - 1.0, 1.0)
+    score[:, cnt == 0] = -9.0
+    return (score.argmax(1) == yi).mean()
 
 
-def evaluate(name, y, n_null=5):
+N_PERM = 1000
+
+
+def evaluate(name, y):
     y = np.array(y)
     keep = y != None  # noqa: E711
-    acc = loo_nc(X[keep], y[keep])
-    yk = y[keep]
+    Xk, yk = X[keep], y[keep]
+    acc = loo_nc(Xk, yk)
     _, counts = np.unique(yk, return_counts=True)
     maj = counts.max() / counts.sum()
     rng = np.random.default_rng(0)
-    null = float(np.mean([loo_nc(X[keep], rng.permutation(yk)) for _ in range(n_null)]))
+    perm = np.array([loo_nc(Xk, rng.permutation(yk)) for _ in range(N_PERM)])
+    null = float(perm.mean())
+    p = float((np.sum(perm >= acc) + 1) / (N_PERM + 1))
     return {"n": int(keep.sum()), "classes": int(len(set(yk))), "loo_acc": round(acc, 3),
             "majority": round(float(maj), 3), "shuffled_null": round(null, 3),
-            "lift_over_majority": round(acc - maj, 3), "lift_over_null": round(acc - null, 3)}
+            "lift_over_majority": round(acc - maj, 3), "lift_over_null": round(acc - null, 3),
+            "p_value": round(p, 4)}
 
 
 def age_bracket(a):
@@ -75,14 +81,14 @@ age = [age_bracket(labels[i].get("age")) for i in ids]
 out = {"n_authors": len(ids), "model": "sentence-transformers/all-MiniLM-L6-v2",
        "note": "author-level leave-one-out nearest-centroid; zodiac is the negative control",
        "attributes": {}}
-print(f"=== Blog corpus demographics: {len(ids)} authors, author-level LOO ===")
-print(f"{'attribute':<14} {'k':>2} {'LOO':>7} {'major':>7} {'null':>7} {'lift/maj':>9} {'lift/null':>10}")
+print(f"=== Blog corpus demographics: {len(ids)} authors, author-level LOO ({N_PERM} perms) ===")
+print(f"{'attribute':<14} {'k':>2} {'LOO':>7} {'major':>7} {'null':>7} {'lift/null':>10} {'p':>8}")
 for nm, y in [("gender", gender), ("age", age), ("zodiac", sign)]:
     r = evaluate(nm, y)
     out["attributes"][nm] = r
     tag = "  <- NEGATIVE CONTROL" if nm == "zodiac" else ""
     print(f"{nm:<14} {r['classes']:>2} {r['loo_acc']*100:>6.1f}% {r['majority']*100:>6.1f}% "
-          f"{r['shuffled_null']*100:>6.1f}% {r['lift_over_majority']*100:>+8.1f} {r['lift_over_null']*100:>+9.1f}{tag}")
+          f"{r['shuffled_null']*100:>6.1f}% {r['lift_over_null']*100:>+9.1f} {r['p_value']:>8.4f}{tag}")
 
 json.dump(out, open(os.path.join(ASSETS, "person2vec-blog-demographics.json"), "w"), indent=1)
 print("\nwrote person2vec-blog-demographics.json")

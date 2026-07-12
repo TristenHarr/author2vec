@@ -245,9 +245,9 @@ if bf:
         "Pennebaker & King labelled essays")
     for tname, t in bf["traits"].items():
         add("minilm", f"bigfive::{tname}",
-            [t["loo_acc"], t["majority"], t["lift"], t["shuffled_null"]], fn,
-            "traits[].[loo_acc, majority, lift, shuffled_null]",
-            "leave-one-out nearest-centroid vs majority; shuffled-label null")
+            [t["loo_acc"], t["majority"], t["lift"], t["shuffled_null"], t.get("p_value")], fn,
+            "traits[].[loo_acc, majority, lift, shuffled_null, p_value]",
+            f"leave-one-out nearest-centroid vs majority; {bf.get('n_perm', 0)}-perm null")
     add("minilm", "bigfive_best_trait", bf["best_trait"], fn, "best_trait", "")
     add("minilm", "bigfive_mean_lift", bf["mean_lift"], fn, "mean_lift",
         "mean lift over majority across 5 traits")
@@ -261,9 +261,9 @@ if bd:
     for aname, a in bd["attributes"].items():
         note = "NEGATIVE CONTROL (should be ~chance)" if aname == "zodiac" else "positive control"
         add("minilm", f"blog::{aname}",
-            [a["loo_acc"], a["majority"], a["shuffled_null"], a["lift_over_null"]], fn,
-            "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
-            f"{a['classes']}-way author-level LOO; {note}")
+            [a["loo_acc"], a["majority"], a["shuffled_null"], a["lift_over_null"], a.get("p_value")], fn,
+            "attributes[].[loo_acc, majority, shuffled_null, lift_over_null, p_value]",
+            f"{a['classes']}-way author-level LOO, 1000-perm p; {note}")
 
 # ---- homogenization over time (coders) ----
 hg = load("person2vec-homogenization-coders.json")

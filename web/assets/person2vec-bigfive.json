@@ -1,36 +1,42 @@
 {
  "n_essays": 2467,
  "model": "sentence-transformers/all-MiniLM-L6-v2",
+ "n_perm": 1000,
  "traits": {
   "Extraversion": {
    "loo_acc": 0.554,
    "majority": 0.517,
    "lift": 0.036,
-   "shuffled_null": 0.506
+   "shuffled_null": 0.5,
+   "p_value": 0.001
   },
   "Neuroticism": {
    "loo_acc": 0.563,
    "majority": 0.5,
    "lift": 0.063,
-   "shuffled_null": 0.498
+   "shuffled_null": 0.499,
+   "p_value": 0.001
   },
   "Agreeableness": {
    "loo_acc": 0.553,
    "majority": 0.531,
    "lift": 0.022,
-   "shuffled_null": 0.487
+   "shuffled_null": 0.501,
+   "p_value": 0.001
   },
   "Conscientiousness": {
    "loo_acc": 0.551,
    "majority": 0.508,
    "lift": 0.043,
-   "shuffled_null": 0.501
+   "shuffled_null": 0.5,
+   "p_value": 0.001
   },
   "Openness": {
    "loo_acc": 0.583,
    "majority": 0.515,
    "lift": 0.068,
-   "shuffled_null": 0.497
+   "shuffled_null": 0.5,
+   "p_value": 0.001
   }
  },
  "best_trait": "Openness",

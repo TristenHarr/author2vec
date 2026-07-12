@@ -1664,11 +1664,12 @@
       0.554,
       0.517,
       0.036,
-      0.506
+      0.5,
+      0.001
     ],
     "asset": "person2vec-bigfive.json",
-    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
-    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null, p_value]",
+    "note": "leave-one-out nearest-centroid vs majority; 1000-perm null"
   },
   {
     "dataset": "minilm",
@@ -1677,11 +1678,12 @@
       0.563,
       0.5,
       0.063,
-      0.498
+      0.499,
+      0.001
     ],
     "asset": "person2vec-bigfive.json",
-    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
-    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null, p_value]",
+    "note": "leave-one-out nearest-centroid vs majority; 1000-perm null"
   },
   {
     "dataset": "minilm",
@@ -1690,11 +1692,12 @@
       0.553,
       0.531,
       0.022,
-      0.487
+      0.501,
+      0.001
     ],
     "asset": "person2vec-bigfive.json",
-    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
-    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null, p_value]",
+    "note": "leave-one-out nearest-centroid vs majority; 1000-perm null"
   },
   {
     "dataset": "minilm",
@@ -1703,11 +1706,12 @@
       0.551,
       0.508,
       0.043,
-      0.501
+      0.5,
+      0.001
     ],
     "asset": "person2vec-bigfive.json",
-    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
-    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null, p_value]",
+    "note": "leave-one-out nearest-centroid vs majority; 1000-perm null"
   },
   {
     "dataset": "minilm",
@@ -1716,11 +1720,12 @@
       0.583,
       0.515,
       0.068,
-      0.497
+      0.5,
+      0.001
     ],
     "asset": "person2vec-bigfive.json",
-    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
-    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null, p_value]",
+    "note": "leave-one-out nearest-centroid vs majority; 1000-perm null"
   },
   {
     "dataset": "minilm",
@@ -1752,12 +1757,13 @@
     "value": [
       0.565,
       0.522,
-      0.477,
-      0.088
+      0.497,
+      0.068,
+      0.0819
     ],
     "asset": "person2vec-blog-demographics.json",
-    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
-    "note": "2-way author-level LOO; positive control"
+    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null, p_value]",
+    "note": "2-way author-level LOO, 1000-perm p; positive control"
   },
   {
     "dataset": "minilm",
@@ -1765,12 +1771,13 @@
     "value": [
       0.536,
       0.435,
-      0.259,
-      0.277
+      0.316,
+      0.22,
+      0.001
     ],
     "asset": "person2vec-blog-demographics.json",
-    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
-    "note": "3-way author-level LOO; positive control"
+    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null, p_value]",
+    "note": "3-way author-level LOO, 1000-perm p; positive control"
   },
   {
     "dataset": "minilm",
@@ -1778,12 +1785,13 @@
     "value": [
       0.043,
       0.116,
-      0.091,
-      -0.048
+      0.082,
+      -0.039,
+      0.958
     ],
     "asset": "person2vec-blog-demographics.json",
-    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
-    "note": "12-way author-level LOO; NEGATIVE CONTROL (should be ~chance)"
+    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null, p_value]",
+    "note": "12-way author-level LOO, 1000-perm p; NEGATIVE CONTROL (should be ~chance)"
   },
   {
     "dataset": "coders",
