@@ -309,10 +309,32 @@ laptop-scale models prove the *mechanism*, not a sharp personal fingerprint of a
 individual — that remains a well-motivated extrapolation.
 
 ## 8. Reproducibility
-_[T6.1]_ Commands (`cargo run -p corpus --release`; `cargo run -p jlens --bin {spike,jlens,steer,fingerprint} --release`),
-model ids, seeds, env vars (`JLENS_DEVICE/JAC_LEN/CHUNK`); the claim→asset map (Appendix D /
-`jlens/paper/method_map.md`). All similarity math runs client-side (WASM); the viewer does no
-linear algebra.
+
+**Models.** `sentence-transformers/all-MiniLM-L6-v2` (prose; 6 layers, $d{=}384$) and
+`jinaai/jina-embeddings-v2-base-code` (code; 12 layers, $d{=}768$), loaded natively via candle
+and gated (`bin/spike`) to reproduce the shipped fastembed embeddings at cosine $>0.99$.
+
+**Pipeline.**
+```
+cargo run -p corpus --release                 # prose corpus → person2vec-minilm.{json,bin}
+cargo run -p corpus --bin coders --release    # code corpus  → person2vec-coders.{json,bin}
+cargo run -p jlens  --bin spike     --release              # faithfulness gate
+cargo run -p jlens  --bin jlens     --release -- <ds> <N>  # → person2vec-jlens-<ds>.json
+cargo run -p jlens  --bin steer     --release -- <ds>      # → person2vec-identity-<ds>.json
+cargo run -p jlens  --bin fingerprint --release -- <ds>    # → person2vec-fingerprint-<ds>.json
+cargo run -p jlens  --bin ignition  --release -- <ds>      # → person2vec-ignition-<ds>.json
+python3 jlens/paper/build_ledger.py           # → jlens/paper/ledger.json  (every cited number)
+python3 jlens/figures/make_figures.py         # → jlens/figures/*.png
+```
+`<ds>` ∈ {`minilm`, `coders`}. Env vars: `JLENS_DEVICE` (`metal`|`cpu`), `JLENS_JAC_LEN`
+(Jacobian context, default 64), `JLENS_CHUNK` (finite-difference batch; smaller = less GPU
+memory, **identical numbers**). Determinism: the structural signatures reproduce bit-for-bit
+across runs (verified); the ignition null uses a fixed splitmix64 seed. The `/jlens` viewer does
+**no** linear algebra — all quantities are precomputed offline and shipped as static JSON.
+
+**Auditability.** Every quantitative claim resolves through the audit ledger (Appendix D,
+`jlens/paper/build_ledger.py`) to a source bundle and JSON path; every method claim resolves
+through `jlens/paper/method_map.md` to a `file:line`.
 
 ---
 
