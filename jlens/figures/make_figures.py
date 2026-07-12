@@ -93,13 +93,17 @@ def fig2_structural():
     metrics = [("stable_rank", "stable rank"),
                ("effective_dim", "effective dim"),
                ("verbalizability", "verbalizability (kurtosis)")]
-    # autocorrelation added by T1.4 once shipped
-    if ("minilm", "structural::autocorrelation") in LED:
+    # autocorrelation (paper's 4th signature) — included once any dataset has it;
+    # datasets still lacking it (mid-regen) are simply skipped on that panel.
+    if any((ds, "structural::autocorrelation") in LED for ds, _, _ in DS):
         metrics.append(("autocorrelation", "autocorrelation"))
     fig, axes = plt.subplots(1, len(metrics), figsize=(3.1 * len(metrics), 3.2))
     for ax, (mk, mlabel) in zip(axes, metrics):
         for ds, title, color in DS:
-            vals = led(ds, f"structural::{mk}")
+            key = (ds, f"structural::{mk}")
+            if key not in LED:
+                continue
+            vals = LED[key]
             n = len(vals)
             xs = [i / (n - 1) for i in range(n)]
             ax.plot(xs, vals, "-o", color=color, lw=2, ms=4,
