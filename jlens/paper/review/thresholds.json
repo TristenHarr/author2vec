@@ -1,0 +1,10 @@
+{
+  "_source": "Empirical bands from 8 landmark papers (Attention, BERT, SBERT, Tuned Lens, RepE, GPT-3, RoBERTa, ELMo); see exemplar_norms.md. Caps are set at or inside the observed landmark range so our paper reads like they do.",
+  "hype_words": ["revolutionary", "groundbreaking", "unprecedented", "world-class",
+                 "cutting-edge", "paradigm-shifting", "game-changing", "seminal"],
+  "intensifier_words": ["very", "really", "extremely", "incredibly", "hugely", "massively",
+                        "truly", "absolutely", "remarkably", "super", "vastly", "enormously"],
+  "intensifier_per_1k": 1.5,
+  "novel_per_1k": 0.6,
+  "number_density_floor_per_1k": 15.0
+}

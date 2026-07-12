@@ -302,11 +302,11 @@ $0.54$–$0.70$, OOD $0.17$–$0.49$ — "modern chat" sits just under the bar.
 **The identity direction is a causal lever, not just a readable one.** Forming the residual
 steering direction $\hat\delta=\widehat{J_{\text{emb}}^{\top}A}$ and injecting $\alpha\hat\delta$
 at the mid layer drives the output's loading on axis $A$ through a **large, sign-controllable
-swing — from $\approx-0.5$ (at $\alpha=-6$) through $\approx0$ (unperturbed) to $\approx+0.5$ (at
-$\alpha=+6$)**, saturating (and for gender slightly reversing) at the extreme $\alpha$. The
-effect has the **same sign across all five** prose identity axes (gender, education, upbringing),
-though not the same magnitude — the gender axis swings least ($\approx0.80$), the others
-$\approx1.05$–$1.11$. A **matched-norm random direction**, injected identically, leaves the
+swing** that runs monotonically from negative (at $\alpha=-6$) through zero (unperturbed) to
+positive (at $\alpha=+6$), saturating (and for gender slightly reversing) at the extreme $\alpha$.
+The effect has the **same sign across all five** prose identity axes (gender, education,
+upbringing), though not the same magnitude — the gender axis swings least ($0.80$), the other four
+up to $1.11$. A **matched-norm random direction**, injected identically, leaves the
 loading essentially flat (total drift $\le 0.16$ over the same sweep). So the layer
 holds the identity direction as something the rest of the network *acts on*, not merely
 correlates with.
@@ -366,8 +366,9 @@ concept direction extracted purely from context is a genuine, sign-controllable 
 decoder's output distribution — the prerequisite the paper's behavioral experiments rely on.
 
 *Honesty — this is the prerequisite, not the headline.* The effect is small: it shifts the
-*distribution* (concept tokens go from $\approx e^{-10}$ to $\approx e^{-9.75}$) but does **not flip
-the model's actual output**, and it rests on only 3 concepts × 6 prompts. It is **not** the paper's
+*distribution* — raising concept-token log-probability by $+0.25$ on average (mean $\Delta$; a
+matched-norm random control gives $\approx 0$) — but does **not flip the model's actual output**,
+and it rests on only 3 concepts × 6 prompts. It is **not** the paper's
 "can't→can" reasoning result, and we do not claim it is. Redirecting a *reasoning intermediate* to
 change a final answer needs a model that can reason; GPT-2 shows the handle exists and is causal,
 and marks exactly where a capable open decoder (e.g. Qwen2.5) is required to go further. We regard
@@ -380,7 +381,7 @@ sharpest test of whether these embeddings carry real psychological signal is to 
 population whose attributes were **measured by someone else, with a validated instrument**, and
 ask whether the signal survives. **Hypothesis:** if prose style encodes personality at all, an
 embedding built with no knowledge of psychology should recover self-reported Big Five traits above
-chance. **Method:** the Pennebaker & King stream-of-consciousness corpus — $2{,}467$ essays, each
+chance. **Method:** the Pennebaker & King stream-of-consciousness corpus [@pennebaker1999] — $2{,}467$ essays, each
 labelled with the writer's Big Five traits from a self-assessment questionnaire (ground truth, not
 our guess) — embedded with the *same* MiniLM used throughout. For each trait we run leave-one-out
 nearest-centroid classification (high vs. low group) against the majority-class baseline, with a

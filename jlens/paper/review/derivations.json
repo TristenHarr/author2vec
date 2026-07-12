@@ -1,0 +1,3 @@
+{
+  "0.99": "Faithfulness-gate threshold (jlens/src/bin/spike.rs): the native candle forward reproduces the shipped fastembed embeddings at cosine > 0.99. A stated method/reproducibility constant, not an extracted result number."
+}

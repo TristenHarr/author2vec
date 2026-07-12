@@ -1,0 +1,178 @@
+{
+  "papers": [
+    {
+      "name": "Attention Is All You Need",
+      "arxiv_id": "1706.03762",
+      "word_count": 5227,
+      "sentence_count": 342,
+      "mean_sentence_len": 15.28,
+      "hedge_rate": 0.0,
+      "intensifier_rate": 0.765,
+      "superlative_slop_rate": 2.487,
+      "first_person_rate": 23.532,
+      "citation_count": 63,
+      "figure_count": 5,
+      "number_density": 37.306
+    },
+    {
+      "name": "BERT",
+      "arxiv_id": "1810.04805",
+      "word_count": 6774,
+      "sentence_count": 315,
+      "mean_sentence_len": 21.5,
+      "hedge_rate": 0.59,
+      "intensifier_rate": 1.181,
+      "superlative_slop_rate": 2.067,
+      "first_person_rate": 20.077,
+      "citation_count": 74,
+      "figure_count": 5,
+      "number_density": 34.839
+    },
+    {
+      "name": "Sentence-BERT",
+      "arxiv_id": "1908.10084",
+      "word_count": 3858,
+      "sentence_count": 241,
+      "mean_sentence_len": 16.01,
+      "hedge_rate": 1.296,
+      "intensifier_rate": 0.259,
+      "superlative_slop_rate": 4.147,
+      "first_person_rate": 20.736,
+      "citation_count": 49,
+      "figure_count": 2,
+      "number_density": 27.216
+    },
+    {
+      "name": "Tuned Lens",
+      "arxiv_id": "2303.08112",
+      "word_count": 7428,
+      "sentence_count": 327,
+      "mean_sentence_len": 22.72,
+      "hedge_rate": 2.289,
+      "intensifier_rate": 0.539,
+      "superlative_slop_rate": 0.942,
+      "first_person_rate": 27.464,
+      "citation_count": 109,
+      "figure_count": 19,
+      "number_density": 12.251
+    },
+    {
+      "name": "Representation Engineering",
+      "arxiv_id": "2310.01405",
+      "word_count": 16618,
+      "sentence_count": 780,
+      "mean_sentence_len": 21.31,
+      "hedge_rate": 1.083,
+      "intensifier_rate": 0.963,
+      "superlative_slop_rate": 0.542,
+      "first_person_rate": 23.168,
+      "citation_count": 118,
+      "figure_count": 19,
+      "number_density": 10.892
+    },
+    {
+      "name": "GPT-3 (Few-Shot Learners)",
+      "arxiv_id": "2005.14165",
+      "word_count": 19286,
+      "sentence_count": 786,
+      "mean_sentence_len": 24.54,
+      "hedge_rate": 1.97,
+      "intensifier_rate": 1.504,
+      "superlative_slop_rate": 1.607,
+      "first_person_rate": 21.57,
+      "citation_count": 203,
+      "figure_count": 89,
+      "number_density": 32.77
+    },
+    {
+      "name": "RoBERTa",
+      "arxiv_id": "1907.11692",
+      "word_count": 4618,
+      "sentence_count": 247,
+      "mean_sentence_len": 18.7,
+      "hedge_rate": 0.0,
+      "intensifier_rate": 0.65,
+      "superlative_slop_rate": 3.032,
+      "first_person_rate": 35.946,
+      "citation_count": 62,
+      "figure_count": 0,
+      "number_density": 35.73
+    },
+    {
+      "name": "ELMo (Deep Contextualized)",
+      "arxiv_id": "1802.05365",
+      "word_count": 5623,
+      "sentence_count": 259,
+      "mean_sentence_len": 21.71,
+      "hedge_rate": 0.356,
+      "intensifier_rate": 1.067,
+      "superlative_slop_rate": 4.624,
+      "first_person_rate": 16.895,
+      "citation_count": 130,
+      "figure_count": 2,
+      "number_density": 27.743
+    }
+  ],
+  "aggregate": {
+    "word_count": {
+      "min": 3858,
+      "median": 6198.5,
+      "max": 19286,
+      "mean": 8679
+    },
+    "sentence_count": {
+      "min": 241,
+      "median": 321.0,
+      "max": 786,
+      "mean": 412.125
+    },
+    "mean_sentence_len": {
+      "min": 15.28,
+      "median": 21.405,
+      "max": 24.54,
+      "mean": 20.221
+    },
+    "hedge_rate": {
+      "min": 0.0,
+      "median": 0.837,
+      "max": 2.289,
+      "mean": 0.948
+    },
+    "intensifier_rate": {
+      "min": 0.259,
+      "median": 0.864,
+      "max": 1.504,
+      "mean": 0.866
+    },
+    "superlative_slop_rate": {
+      "min": 0.542,
+      "median": 2.277,
+      "max": 4.624,
+      "mean": 2.431
+    },
+    "first_person_rate": {
+      "min": 16.895,
+      "median": 22.369,
+      "max": 35.946,
+      "mean": 23.674
+    },
+    "citation_count": {
+      "min": 49,
+      "median": 91.5,
+      "max": 203,
+      "mean": 101
+    },
+    "figure_count": {
+      "min": 0,
+      "median": 5.0,
+      "max": 89,
+      "mean": 17.625
+    },
+    "number_density": {
+      "min": 10.892,
+      "median": 30.257,
+      "max": 37.306,
+      "mean": 27.343
+    }
+  }
+}

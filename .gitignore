@@ -16,6 +16,9 @@
 # fastembed model cache (auto-downloaded)
 .fastembed_cache
 
+# Downloaded reference-paper source tarballs for empirical style norms (large; re-fetched on demand)
+jlens/paper/review/references/
+
 # macOS junk
 .DS_Store
 **/.DS_Store

@@ -4,20 +4,25 @@
 # This target is optional: it produces a typeset arXiv-style PDF via pandoc.
 #
 # Requires: pandoc + a LaTeX engine (xelatex/pdflatex) or tectonic.
-#   macOS:  brew install pandoc && brew install --cask mactex-no-gui
-#           (or:  brew install pandoc tectonic  and set PDF_ENGINE=tectonic)
+#   macOS:  brew install pandoc tectonic   (ENGINE defaults to tectonic)
 #
-# NOTE: as of this writing the dev environment has neither pandoc nor LaTeX, so
-# `make pdf` is BLOCKED here; the files are staged so it works once installed.
+# `make review` runs the peer-review test harness (invariants + self-test) — the quality gate.
+# `make gate`   runs review, then builds the PDF only if the paper passes.
 
 PAPER   := ../PAPER.md
 OUT     := paper.pdf
 BIB     := refs.bib
 ENGINE  ?= tectonic
 
-.PHONY: pdf clean check
+.PHONY: pdf clean check review gate
 
 pdf: $(OUT)
+
+review:
+	python3 review/check_paper.py
+	python3 review/selftest.py
+
+gate: review pdf
 
 $(OUT): $(PAPER) $(BIB)
 	pandoc $(PAPER) \
