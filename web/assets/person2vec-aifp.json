@@ -1,6 +1,9 @@
 {
  "n_samples": 149,
+ "n_grid": 160,
  "n_tasks": 40,
+ "n_tasks_canonical": 24,
+ "n_tasks_open_ended": 16,
  "models": [
   "claude-opus-4.8",
   "deepseek-chat",
@@ -10,6 +13,8 @@
  "task_effect": 0.711,
  "model_effect": 0.197,
  "task_controlled_model_id": 0.423,
+ "task_controlled_null_mean": 0.244,
+ "task_controlled_p": 0.001,
  "chance": 0.25,
  "verdict": "task dominates; faint but real model fingerprint"
 }

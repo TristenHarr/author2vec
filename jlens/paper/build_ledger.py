@@ -294,13 +294,20 @@ if core_c and "results" in core_c and core_c["results"].get("per_author"):
 aifp = load("person2vec-aifp.json")
 if aifp:
     fn = "person2vec-aifp.json"
-    add("ai", "aifp_n_samples", aifp["n_samples"], fn, "n_samples", "")
+    add("ai", "aifp_n_samples", aifp["n_samples"], fn, "n_samples", "valid embedded cells")
+    add("ai", "aifp_n_grid", aifp.get("n_grid"), fn, "n_grid", "models x tasks grid")
     add("ai", "aifp_n_tasks", aifp["n_tasks"], fn, "n_tasks", "")
+    add("ai", "aifp_n_tasks_canonical", aifp.get("n_tasks_canonical"), fn, "n_tasks_canonical", "")
+    add("ai", "aifp_n_tasks_open_ended", aifp.get("n_tasks_open_ended"), fn, "n_tasks_open_ended", "")
     add("ai", "aifp_models", aifp["models"], fn, "models", "")
     add("ai", "aifp_task_effect", aifp["task_effect"], fn, "task_effect", "same-task, different-model cosine")
     add("ai", "aifp_model_effect", aifp["model_effect"], fn, "model_effect", "same-model, different-task cosine")
     add("ai", "aifp_task_controlled_model_id", aifp["task_controlled_model_id"], fn,
         "task_controlled_model_id", f"leave-one-task-out; chance {aifp['chance']}")
+    add("ai", "aifp_task_controlled_null_mean", aifp.get("task_controlled_null_mean"), fn,
+        "task_controlled_null_mean", "within-task model-label permutation null")
+    add("ai", "aifp_task_controlled_p", aifp.get("task_controlled_p"), fn,
+        "task_controlled_p", "1000-permutation p-value")
     add("ai", "aifp_verdict", aifp["verdict"], fn, "verdict", "")
 
 out = os.path.join(HERE, "ledger.json")

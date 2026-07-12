@@ -1,3 +1,5 @@
 {
-  "0.99": "Faithfulness-gate threshold (jlens/src/bin/spike.rs): the native candle forward reproduces the shipped fastembed embeddings at cosine > 0.99. A stated method/reproducibility constant, not an extracted result number."
+  "0.99": "Faithfulness-gate threshold (jlens/src/bin/spike.rs): the native candle forward reproduces the shipped fastembed embeddings at cosine > 0.99. A stated method/reproducibility constant, not an extracted result number.",
+  "0.05": "Finite-difference epsilon for the delta-broadcast averaged Jacobian (jlens/src/lib.rs, layer_jacobian; PAPER.md 4.2). A method constant, not a result.",
+  "250": "Leave-one-out identity-decode sample size n_align (jlens/src/bin/steer.rs:27 default), used by the reproducibility command; the per-layer identity accuracies are computed over these 250 evenly-spread non-mystery passages."
 }

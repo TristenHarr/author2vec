@@ -1890,7 +1890,15 @@
     "value": 149,
     "asset": "person2vec-aifp.json",
     "path": "n_samples",
-    "note": ""
+    "note": "valid embedded cells"
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_n_grid",
+    "value": 160,
+    "asset": "person2vec-aifp.json",
+    "path": "n_grid",
+    "note": "models x tasks grid"
   },
   {
     "dataset": "ai",
@@ -1898,6 +1906,22 @@
     "value": 40,
     "asset": "person2vec-aifp.json",
     "path": "n_tasks",
+    "note": ""
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_n_tasks_canonical",
+    "value": 24,
+    "asset": "person2vec-aifp.json",
+    "path": "n_tasks_canonical",
+    "note": ""
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_n_tasks_open_ended",
+    "value": 16,
+    "asset": "person2vec-aifp.json",
+    "path": "n_tasks_open_ended",
     "note": ""
   },
   {
@@ -1936,6 +1960,22 @@
     "asset": "person2vec-aifp.json",
     "path": "task_controlled_model_id",
     "note": "leave-one-task-out; chance 0.25"
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_task_controlled_null_mean",
+    "value": 0.244,
+    "asset": "person2vec-aifp.json",
+    "path": "task_controlled_null_mean",
+    "note": "within-task model-label permutation null"
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_task_controlled_p",
+    "value": 0.001,
+    "asset": "person2vec-aifp.json",
+    "path": "task_controlled_p",
+    "note": "1000-permutation p-value"
   },
   {
     "dataset": "ai",

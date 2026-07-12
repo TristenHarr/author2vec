@@ -46,38 +46,81 @@ model_eff = [cos(E[(m, t)], E[(m, t2)]) for m in models for i, t in enumerate(ta
              for t2 in tasks[i + 1:] if (m, t) in E and (m, t2) in E]
 
 # leave-one-task-out model ID (controls task: held-out task's samples classified by
-# model centroids built from all OTHER tasks).
-correct = tot = 0
-for t in tasks:
-    for m in models:
-        if (m, t) not in E:
-            continue
-        cents = {}
-        for mm in models:
-            others = [E[(mm, tt)] for tt in tasks if tt != t and (mm, tt) in E]
-            if others:
-                cents[mm] = unit(np.mean(others, 0))
-        pred = max(cents, key=lambda mm: cos(E[(m, t)], cents[mm]))
-        correct += pred == m
+# model centroids built from all OTHER tasks). `assign` maps (model,task)->label so we can
+# recompute the exact statistic under a permutation null.
+cells = list(E.keys())  # (model, task) cells that actually embedded
+
+
+def ctrl_accuracy(assign):
+    correct = tot = 0
+    for (m, t) in cells:
+        # build a centroid per assigned label from all cells NOT in task t
+        acc_sum, acc_cnt = {}, {}
+        for (x, tt) in cells:
+            if tt == t:
+                continue
+            lab = assign[(x, tt)]
+            if lab in acc_sum:
+                acc_sum[lab] = acc_sum[lab] + E[(x, tt)]
+                acc_cnt[lab] += 1
+            else:
+                acc_sum[lab] = E[(x, tt)].copy()
+                acc_cnt[lab] = 1
+        cents = {lab: unit(acc_sum[lab] / acc_cnt[lab]) for lab in acc_sum}
+        pred = max(cents, key=lambda L: cos(E[(m, t)], cents[L]))
+        correct += pred == assign[(m, t)]
         tot += 1
-ctrl_acc = correct / tot
+    return correct / tot
+
+
+true_assign = {k: k[0] for k in E}
+ctrl_acc = ctrl_accuracy(true_assign)
+
+# Permutation null: within each task, shuffle which model each sample is attributed to. This
+# keeps the task x model grid intact but breaks the true model->style association. p = fraction
+# of relabelings that match or beat the observed accuracy.
+rng = np.random.default_rng(0)
+N_PERM = 1000
+null = []
+by_task = {t: [m for m in models if (m, t) in E] for t in tasks}
+for _ in range(N_PERM):
+    perm = {}
+    for t in tasks:
+        ms = by_task[t]
+        shuf = list(ms)
+        rng.shuffle(shuf)
+        for m, lab in zip(ms, shuf):
+            perm[(m, t)] = lab
+    null.append(ctrl_accuracy(perm))
+null = np.array(null)
+p_val = float((np.sum(null >= ctrl_acc) + 1) / (N_PERM + 1))
+
+# grid accounting: 40 tasks x 4 models = 160 cells; empty generations drop out
+n_grid = len(models) * len(tasks)
+n_valid = len(E)
 
 print("=== AI MODEL FINGERPRINT (task-controlled) ===")
-print(f"{len(E)} samples, {len(models)} models, {len(tasks)} tasks")
+print(f"{len(E)}/{n_grid} valid cells, {len(models)} models, {len(tasks)} tasks")
 print(f"task effect  (same task, diff model): {np.mean(task_eff):.3f}")
 print(f"model effect (same model, diff task): {np.mean(model_eff):.3f}")
 print(f"-> {'TASK dominates' if np.mean(task_eff) > np.mean(model_eff) else 'MODEL dominates'}")
-print(f"task-controlled model ID: {ctrl_acc*100:.1f}%  (chance {100/len(models):.0f}%)")
+print(f"task-controlled model ID: {ctrl_acc*100:.1f}%  (chance {100/len(models):.0f}%), "
+      f"null mean {null.mean()*100:.1f}%, p={p_val:.4f}")
 
 out = {
-    "n_samples": len(E),
+    "n_samples": n_valid,
+    "n_grid": n_grid,
     "n_tasks": len(tasks),
+    "n_tasks_canonical": 24,
+    "n_tasks_open_ended": 16,
     "models": [short[m] for m in models],
     "task_effect": round(float(np.mean(task_eff)), 3),
     "model_effect": round(float(np.mean(model_eff)), 3),
     "task_controlled_model_id": round(ctrl_acc, 3),
+    "task_controlled_null_mean": round(float(null.mean()), 3),
+    "task_controlled_p": round(p_val, 4),
     "chance": round(1 / len(models), 3),
-    "verdict": "task dominates; faint but real model fingerprint" if ctrl_acc > 1.2 / len(models)
+    "verdict": "task dominates; faint but real model fingerprint" if p_val < 0.05
     else "no model fingerprint above chance",
 }
 json.dump(out, open(os.path.join(ASSETS, "person2vec-aifp.json"), "w"), indent=1)

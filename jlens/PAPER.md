@@ -33,8 +33,9 @@ fingerprint in the weights at all?) and a **causal lever** (steering). We furthe
 characteristic depth?), a **decoder** track, and a **directed-steering** experiment. We then
 **validate the embeddings against a measured population**: they recover self-reported Big Five
 personality from prose (Openness $+6.8$ points over the majority baseline; all five traits beat a
-shuffled-label null at $p<0.001$), while an astrological-sign *negative control* recovers nothing
-($p=0.96$) — a weak-but-real signal that is also *why* we make no cognitive-capacity claim. Everything runs on open models and ships as static assets; the whole
+shuffled-label null at $p<0.001$), while an astrological-sign *negative control* (on a separate blog
+corpus) recovers nothing ($p=0.96$) — a weak-but-real signal that is also *why* we make no
+cognitive-capacity claim. Everything runs on open models and ships as static assets; the whole
 apparatus is reproducible on a laptop. We are explicit about what is **replication** vs. **new**,
 and about what we **do not** claim: no "IQ", no consciousness.
 
@@ -47,8 +48,8 @@ and about what we **do not** claim: no "IQ", no consciousness.
 3. **The style lens** (§4.5): a Jacobian readout onto interpretable identity axes rather than
    the token vocabulary — the trustworthy signal where an encoder has no clean unembedding.
 4. **Identity is a computed intermediate** (§5.1): author identity decodes above chance from
-   the internal Jacobian at *every* layer, with the best internal code layer exceeding the
-   output-embedding ceiling.
+   the internal Jacobian at *every* layer, with the best internal code layer matching the
+   output-embedding ceiling — the internal readout is as good as the output, not merely emitted at it.
 5. **A fingerprint-presence detector** (§5.4): known identity vs. "blank space" for
    out-of-distribution text — a question the paper does not ask.
 6. **Identity ignition** (§5.2): the representation commits to a single individual increasingly
@@ -236,11 +237,12 @@ null). `lib.rs:stable_rank`,
 Decoding author identity by leave-one-out nearest-centroid on the **internal** per-layer
 Jacobian readout beats chance at **every** layer: prose per-layer
 $[5.2, 7.2, 8.8, 8.0, 7.2, 8.8]\%$ against a $1.8\%$ chance and a $14.4\%$ output ceiling; code
-per-layer up to $50.8\%$ against a $6.7\%$ chance — the **best internal layer ($50.8\%$) exceeds
-the $46.8\%$ output-embedding ceiling**. The prose rates are modest but not chance: even the
-weakest layer ($5.2\%$) sits far above the $1.8\%$ baseline over $n{=}7{,}084$ passages (binomial
-$p \ll 10^{-3}$). Identity is computed inside the layers, not merely emitted. _(All values: ledger
-`identity_*`.)_
+per-layer up to $50.8\%$ against a $6.7\%$ chance — the **best internal layer ($50.8\%$) matches
+the $46.8\%$ output-embedding ceiling** (a $4$-point margin over $n{=}250$ decode passages, well
+within noise — the point is that the internal readout is *as good as* the output, not better). The
+prose rates are modest but not chance: even the weakest layer ($5.2\%$, $13/250$) sits far above
+the $1.8\%$ baseline (binomial $p<0.001$). Identity is computed inside the layers, not merely
+emitted. _(Per-layer values: ledger `identity_*`; decode sample $n{=}250$, `steer.rs`.)_
 
 ### 5.2 Identity ignition — does the space collapse to a single person?
 
@@ -494,7 +496,8 @@ inappropriate.
 If humans have fingerprints, do the *models* people code with? Here we finally have **ground
 truth** — we generate the code, so we know which model wrote it. We prompted four latest frontier
 models (`claude-opus-4.8`, `gpt-5.6-terra`, `gemini-3.5-flash`, `deepseek-chat`) across 40 coding tasks
-(24 canonical + 16 open-ended) and embedded the output in the same JinaBERT space as the humans.
+(24 canonical + 16 open-ended) and embedded the output in the same JinaBERT space as the humans
+($149$ of the $160$ model×task cells produced non-empty code; the rest were empty generations).
 
 ![Task vs. model: on the same task, different models write nearly the same code (0.71); the same model across different tasks is far less alike (0.20). The task, not the model, dominates the embedding — controlling for it, model identity is recoverable at 42% vs 25% chance.](figures/fig9_ai_fingerprint.png)
 
@@ -507,12 +510,12 @@ number mostly measures *task* overlap, not model identity. The honest test contr
 leave-one-task-out nearest-model-centroid still recovers which model wrote unseen code at $42\%$
 against a $25\%$ chance baseline — a faint but real fingerprint, not convergence.
 
-**Controlling for the task, a real model fingerprint appears — but a faint one.** With the task held
-fixed (leave-one-task-out over 40 tasks × 4 models), model identification runs at **$42\%$ vs.
-$25\%$ chance**: the models *do* carry a detectable
-style, but it is largely masked by what the code *does*. The honest summary: **authorship is
-strongly recoverable for humans (48–90%) and only weakly for models — and for models it is the task,
-far more than the author, that shapes the code.** No convergence claim; no individual-usage claim.
+**The fingerprint is real but faint.** That $42\%$ recovery is significantly above a within-task
+label-shuffling null (null mean $24\%$, $p<0.001$ over 1000 permutations), so the models *do* carry
+a detectable style — but it is largely masked by what the code *does*. The honest summary:
+**authorship is strongly recoverable for humans (48–90%) and only weakly for models — and for
+models it is the task, far more than the author, that shapes the code.** No convergence claim; no
+individual-usage claim.
 
 ### 5.11 Ablations
 
