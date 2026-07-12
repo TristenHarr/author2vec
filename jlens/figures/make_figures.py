@@ -68,11 +68,14 @@ def fig1_identity():
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.4))
     for ax, (ds, title, color) in zip(axes, DS):
         pl = [v * 100 for v in led(ds, "identity_per_layer")]
+        lo = [v * 100 for v in led(ds, "ci_identity_per_layer_lo")]
+        hi = [v * 100 for v in led(ds, "ci_identity_per_layer_hi")]
         chance = led(ds, "identity_chance") * 100
         ceil = led(ds, "identity_output_acc") * 100
         x = list(range(len(pl)))
         ax.axhline(ceil, ls="--", lw=1.3, color=MUTED)
         ax.axhline(chance, ls=":", lw=1.3, color=MUTED)
+        ax.fill_between(x, lo, hi, color=color, alpha=0.16, lw=0)  # Wilson 95% CI (n=250)
         ax.plot(x, pl, "-o", color=color, lw=2, ms=5)
         ax.text(x[-1], ceil, f" output ceiling {ceil:.1f}%", va="bottom",
                 ha="right", color=MUTED, fontsize=8)
@@ -83,8 +86,9 @@ def fig1_identity():
         ax.set_xticks(x)
         ax.set_ylim(bottom=0)
     axes[0].set_ylabel("nearest-centroid identity accuracy (%)")
-    fig.suptitle("Identity is decodable from the internal Jacobian at every layer",
-                 fontsize=12, fontweight="bold", y=1.02)
+    fig.suptitle("Identity is decodable from the internal Jacobian at every layer\n"
+                 "(shaded = Wilson 95% CI, n=250 decode passages)",
+                 fontsize=12, fontweight="bold", y=1.06)
     save(fig, "fig1_identity.png")
 
 
@@ -119,8 +123,8 @@ def fig2_structural():
 
 # ---- Fig 3: layer x layer CKA ----
 def fig3_cka():
-    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.7))
-    for ax, (ds, title, _) in zip(axes, DS):
+    fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.7))
+    for i, (ax, (ds, title, _)) in enumerate(zip(axes, DS)):
         b = load_bundle(f"person2vec-jlens-{ds}.json")
         cka = b["structural"]["cka"]
         im = ax.imshow(cka, cmap=PURPLE_SEQ, vmin=0.5, vmax=1.0, aspect="equal")
@@ -129,7 +133,11 @@ def fig3_cka():
         ax.set_ylabel("layer")
         ax.set_xticks(range(len(cka)))
         ax.set_yticks(range(len(cka)))
-        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="linear CKA")
+        # only the rightmost colorbar carries the label, so it can't collide with the
+        # neighbouring panel's y-axis "layer" label
+        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04,
+                     label="linear CKA" if i == len(DS) - 1 else "")
+    fig.subplots_adjust(wspace=0.35)
     fig.suptitle("Layer-to-layer readout geometry (CKA)",
                  fontsize=12, fontweight="bold", y=1.03)
     save(fig, "fig3_cka.png")
@@ -182,9 +190,11 @@ def fig5_style():
         ax.axhline(0, lw=1, color=MUTED, alpha=0.6)
         for t, col in zip(ranked, pair):
             nm = axes_names[t["axis"]]
+            # clean, full (non-truncated) legend labels
+            nm = (nm.replace("United States", "US").replace("England", "UK")
+                    .replace(" ↔ rest", "").replace("?", "").replace("=", ": "))
             x = list(range(len(t["per_layer"])))
-            ax.plot(x, t["per_layer"], "-o", color=col, lw=2, ms=4,
-                    label=nm[:26])
+            ax.plot(x, t["per_layer"], "-o", color=col, lw=2, ms=4, label=nm)
         ax.set_title(f"{title.split(' (')[0]} · '{ex['author']}'")
         ax.set_xlabel("layer")
         ax.legend(loc="best")
@@ -204,7 +214,8 @@ def fig6_ignition(ds="minilm", dslabel="Authors (prose)"):
     alphas, depths = b["alphas"], b["depths"]
     commit = b["example"]["commitment"]  # [depth][alpha]
     nd = len(depths)
-    fig, axes = plt.subplots(1, 3, figsize=(12.5, 3.5))
+    fig, axes = plt.subplots(1, 3, figsize=(13.2, 3.5))
+    fig.subplots_adjust(wspace=0.42)
 
     # A: commitment curves colored by depth (graded shallow → snap deep)
     ax = axes[0]
@@ -218,14 +229,16 @@ def fig6_ignition(ds="minilm", dslabel="Authors (prose)"):
     sm = plt.cm.ScalarMappable(cmap=PURPLE_SEQ, norm=plt.Normalize(0, nd - 1))
     fig.colorbar(sm, ax=ax, label="depth", fraction=0.046, pad=0.04)
 
-    # B: separation vs depth, real vs two nulls
+    # B: separation vs depth, real vs two nulls. Band = ±SEM (std/√n_pairs) — the right
+    # quantity for "the MEAN separation exceeds the null"; the raw pair-to-pair SD is far larger.
     ax = axes[1]
     m = np.array(b["separation_mean"]); sd = np.array(b["separation_std"])
-    ax.fill_between(depths, m - sd, m + sd, color=AUTHORS, alpha=0.15)
-    ax.plot(depths, m, "-o", color=AUTHORS, lw=2, label="identity axis")
+    sem = sd / np.sqrt(b["n_pairs"])
+    ax.fill_between(depths, m - sem, m + sem, color=AUTHORS, alpha=0.18)
+    ax.plot(depths, m, "-o", color=AUTHORS, lw=2, label="identity axis (±SEM)")
     ax.plot(depths, b["separation_null_shuffled_mean"], "--s", color=MUTED, lw=1.5, label="shuffled-label null")
     ax.plot(depths, b["separation_null_random_mean"], ":^", color=NEG, lw=1.5, label="random-direction null")
-    ax.set_title("Endpoint separation vs depth")
+    ax.set_title(f"Endpoint separation vs depth (n={b['n_pairs']} pairs)")
     ax.set_xlabel("depth"); ax.set_ylabel("A–vs–B separation")
     ax.legend(fontsize=8)
 
@@ -283,19 +296,25 @@ def fig8_coders_recognizability():
     names = [names[i] for i in order]
     accs = [accs[i] for i in order]
     chance = 100.0 / len(b["authors"])
+    cis = {r["name"]: (r["lo"] * 100, r["hi"] * 100)
+           for r in load_bundle("person2vec-cis.json").get("coders_recognizability", [])}
     colors = [CODERS if ("Kelley" in n or "Sumner" in n) else "#b9b9d0" for n in names]
-    fig, ax = plt.subplots(figsize=(7.5, 5.2))
+    xerr = [[a - cis[n][0] for n, a in zip(names, accs)],
+            [cis[n][1] - a for n, a in zip(names, accs)]]
+    fig, ax = plt.subplots(figsize=(7.6, 5.2))
     y = list(range(len(names)))
-    ax.barh(y, accs, color=colors, height=0.72, zorder=3)
+    ax.barh(y, accs, color=colors, height=0.72, zorder=3,
+            xerr=xerr, error_kw=dict(ecolor="#5c5c6b", elinewidth=1.0, capsize=2.5, zorder=4))
     ax.axvline(chance, ls=":", color=NEG, lw=1.4, label=f"chance {chance:.1f}%")
     for yi, (n, a) in enumerate(zip(names, accs)):
-        ax.text(a + 0.8, yi, f"{a:.0f}%", va="center", fontsize=8, color=INK)
+        ax.text(cis[n][1] + 1.2, yi, f"{a:.0f}%", va="center", fontsize=8, color=INK)
     ax.set_yticks(y)
     ax.set_yticklabels(names, fontsize=8)
     ax.set_xlabel("same-file recognition accuracy (%)")
-    ax.set_xlim(0, 100)
-    ax.set_title("The model knows some coders better than others\n(Kelley / Sumner highlighted)",
-                 fontsize=12, fontweight="bold")
+    ax.set_xlim(0, 104)
+    ax.set_title("Some developers are far more recognizable than others\n"
+                 "(bars = Wilson 95% CI, n=126 files; adjacent ranks overlap — only top vs. bottom is separable)",
+                 fontsize=11, fontweight="bold")
     ax.legend(loc="lower right", fontsize=8)
     save(fig, "fig8_coders_recognizability.png")
 
@@ -354,36 +373,46 @@ def fig11_negative_control():
     rows = []
     for a in order:
         acc, maj, null, lift, p = led("minilm", f"blog::{a}")[:5]
-        rows.append((labelmap[a], lift * 100, acc * 100, null * 100, p, a == "zodiac"))
+        rows.append((labelmap[a], lift * 100, acc * 100, maj * 100, null * 100, p, a == "zodiac"))
     rows = rows[::-1]  # zodiac at bottom
     names = [r[0] for r in rows]
     lifts = [r[1] for r in rows]
     y = list(range(len(names)))
-    colors = [MUTED if r[5] else AUTHORS for r in rows]
-    fig, ax = plt.subplots(figsize=(7.6, 3.4))
+    # color: negative control grey; significant positive control purple; n.s. -> faded + hatched
+    colors, hatches = [], []
+    for r in rows:
+        if r[6]:
+            colors.append(MUTED); hatches.append("")
+        elif r[5] <= 0.05:
+            colors.append(AUTHORS); hatches.append("")
+        else:
+            colors.append("#c9c4ef"); hatches.append("////")
+    fig, ax = plt.subplots(figsize=(7.8, 3.4))
     ax.axvline(0, color="#33333f", lw=1.2, zorder=2)
-    ax.barh(y, lifts, color=colors, height=0.62, zorder=3)
-    for yi, (nm, lift, acc, null, p, isneg) in zip(y, rows):
+    bars = ax.barh(y, lifts, color=colors, height=0.62, zorder=3)
+    for bar, h in zip(bars, hatches):
+        if h:
+            bar.set_hatch(h); bar.set_edgecolor("white")
+    for yi, (nm, lift, acc, maj, null, p, isneg) in zip(y, rows):
         psig = "p<.001" if p <= 0.001 else f"p={p:.2f}"
-        # positive bars: label just past the tip; negative bars: label in the empty
-        # region right of 0 so it never collides with the y-axis tick labels.
         xtext = (lift + 0.6) if lift >= 0 else 0.6
-        ax.text(xtext, yi, f"{acc:.0f}% vs {null:.0f}% null  ({psig})", va="center", ha="left",
-                fontsize=8.5, color=INK)
+        ax.text(xtext, yi, f"{acc:.0f}%  (maj {maj:.0f}, null {null:.0f})  {psig}",
+                va="center", ha="left", fontsize=8.3, color=INK)
     ax.set_yticks(y)
     ax.set_yticklabels(names, fontsize=9.5)
     ax.set_ylim(-0.6, len(names) - 0.4)
     lo = min(lifts + [0]) - 2
-    hi = max(lifts + [0]) + 22
+    hi = max(lifts + [0]) + 24
     ax.set_xlim(lo, hi)
     ax.set_xlabel("recovery lift over shuffled-label null (percentage points)")
     ax.set_title("The method recovers real constructs, not noise\n"
                  "Age recovers (p<.001); the astrological negative control does not (p=.96)",
                  fontsize=11.5, fontweight="bold")
     from matplotlib.patches import Patch
-    ax.legend(handles=[Patch(color=AUTHORS, label="real construct (positive control)"),
+    ax.legend(handles=[Patch(color=AUTHORS, label="real construct (significant)"),
+                       Patch(facecolor="#c9c4ef", hatch="////", edgecolor="white", label="positive but n.s. (gender, p=.08)"),
                        Patch(color=MUTED, label="negative control")],
-              loc="lower right", fontsize=8.5)
+              loc="lower right", fontsize=8)
     save(fig, "fig11_negative_control.png")
 
 
