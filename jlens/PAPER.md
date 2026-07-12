@@ -234,14 +234,14 @@ null). `lib.rs:stable_rank`,
 ![Identity accuracy decoded from the internal Jacobian at each layer, vs. chance (dotted) and the output-embedding ceiling (dashed).](figures/fig1_identity.png)
 
 Decoding author identity by leave-one-out nearest-centroid on the **internal** per-layer
-Jacobian readout beats chance at **every** layer: prose per-layer
-$[5.2, 7.2, 8.8, 8.0, 7.2, 8.8]\%$ against a $1.8\%$ chance and a $14.4\%$ output ceiling; code
-per-layer up to $50.8\%$ against a $6.7\%$ chance — the **best internal layer ($50.8\%$) matches
-the $46.8\%$ output-embedding ceiling** (a $4$-point margin over $n{=}250$ decode passages, well
-within noise — the point is that the internal readout is *as good as* the output, not better). The
-prose rates are modest but not chance: even the weakest layer ($5.2\%$, $13/250$) sits far above
-the $1.8\%$ baseline (binomial $p<0.001$). Identity is computed inside the layers, not merely
-emitted. _(Per-layer values: ledger `identity_*`; decode sample $n{=}250$, `steer.rs`.)_
+Jacobian readout beats chance at **every** layer. For prose, the per-layer rates
+$[5.2, 7.2, 8.8, 8.0, 7.2, 8.8]\%$ all clear the $1.8\%$ chance (output ceiling $14.4\%$); even the
+weakest ($5.2\%$, Wilson $[3.1, 8.7]$, $n{=}250$) excludes chance (binomial $p<0.001$). For code the
+rates run far higher, up to $50.8\%$ against a $6.7\%$ chance. The **best internal code layer**
+($50.8\%$, $[44.6, 56.9]$) **matches the output-embedding ceiling** ($46.8\%$, $[40.7, 53.0]$): the
+intervals overlap by $\sim\!9$ points, so the internal readout is demonstrably *as good as* the
+output, not better. Identity is computed inside the layers, not merely emitted. _(Wilson 95% CIs,
+decode sample $n{=}250$; per-layer values in ledger `identity_*`, bounds in `ci_identity_*`.)_
 
 ### 5.2 Identity ignition — does the space collapse to a single person?
 
@@ -256,9 +256,9 @@ graded layer ramps linearly in $\alpha$; an *ignited* layer snaps.
 
 **The representation commits to one author, increasingly with depth.** Endpoint separation along
 the identity axis rises from $0.36$ at the input to a **mid-network peak of $0.95$ at depth 4**
-(of 6), then eases to $0.54$ at the output — and it dominates both controls at every depth: the
-random-direction null sits at $0.06$–$0.14$ (a $\sim\!7\times$ margin at the peak) and the
-shuffled-label null at $0.12$–$0.47$. So the effect is **identity-specific**, not a generic
+(of 6; $\pm0.19$ SEM over $15$ author pairs), then eases to $0.54$ at the output. It dominates both
+controls at every depth: the random-direction null sits at $0.06$–$0.14$ (a $\sim\!7\times$ margin
+at the peak) and the shuffled-label null at $0.12$–$0.47$. So the effect is **identity-specific**, not a generic
 consequence of blending inputs. The **ignition index** (transition sharpness, $0$ = graded, $1$
 = all-or-none) climbs from $0.09$ at the input — where the readout is, correctly, linear in the
 blended input — to $0.73$–$0.74$ by mid-depth and holds. In short: *shallow layers hold a graded
@@ -266,13 +266,13 @@ mixture; by the middle of the network the representation has snapped to a single
 mid-network peak echoes the low-rank "workspace" bottleneck we see structurally (§5.3).
 
 **The same holds for code, more strongly.** On the 12-layer code encoder the ignition index
-climbs from $0.09$ at the input to a peak of $0.82$ (depth 11 of 12), and the
-identity axis separates coders far above the random-direction null through the early-mid layers —
-a $\sim\!13\times$ margin at depth 4 ($1.21$ vs $0.09$; the raw separation peaks slightly earlier,
-$1.56$ at depth 3) — a sharper version of the same effect, consistent with code identity being
-more linearly accessible overall (§5.1). (Separation spikes higher still at the final layer,
-$2.33$, but that depth is noisy — its null jumps too — so we feature the stable early-mid layers.) Both modalities show the representation committing to one individual with
-depth.
+climbs from $0.09$ at the input to a peak of $0.82$ (depth 11 of 12). Through the early-mid layers
+the identity axis separates developers far above the random-direction null — a $\sim\!13\times$
+margin at depth 4 ($1.21$ vs $0.09$; raw separation peaks slightly earlier, $1.56\pm0.22$ at depth
+3). It is a sharper version of the same effect, consistent with code identity being more linearly
+accessible overall (§5.1). Separation spikes higher still at the final layer ($2.33$), but that
+depth is noisy — its wide $\pm0.53$ SEM and a jumping null are why we feature the stable early-mid
+layers. Both modalities show the representation committing to one individual with depth.
 
 *Honesty.* This is a 6-layer encoder and 15 pairs; the sharpening is measured *along an axis the
 separation control proves is identity-specific*, but we cannot fully exclude that some of the
@@ -408,8 +408,10 @@ Conscientiousness $55.1\%$ ($+4.3$), Extraversion $55.4\%$ ($+3.6$), Agreeablene
 shuffles the trait labels and re-runs the whole classifier — puts **all five traits at $p<0.001$
 against that null** (which sits at chance, $49.9$–$50.1\%$): the classifier is extracting real trait
 signal, not fitting noise. The permutation test is against label-shuffling, not the majority
-baseline; the *lift over majority* is the effect size, and for the two weakest traits (Agreeableness
-$+2.2$, Extraversion $+3.6$) it is only a few points — genuinely weak, as expected.
+baseline, so we also check each trait's Wilson 95% interval against its majority class: Openness
+clears it comfortably ($58.3\%$, $[56.3, 60.2]$ vs. $51.5\%$), but Agreeableness only marginally
+($55.3\%$, $[53.3, 57.2]$ vs. $53.1\%$) — its lower bound barely exceeds the baseline. The lift over
+majority is genuinely weak for the lowest traits, as expected.
 This is exactly the *weak-but-real* ceiling the personality-from-text literature reports, and
 Openness-leads-the-pack is its standard finding. It is a genuine positive result on a measured
 population: author2vec, trained for nothing of the kind, carries a faint but real trace of who the
@@ -465,13 +467,17 @@ weekend near or below chance.
 
 The 15-developer code roster lets us ask two questions the prose side cannot.
 
-**Some coders are far more recognizable than others.** Same-file recognition accuracy spans a wide
-range across developers — from **Jeremy Ashkenas at 89.7%** (a highly idiosyncratic
-CoffeeScript/Backbone style) down to **Armin Ronacher at 48.4%**, a **41-point spread**, all far
-above the $6.7\%$ chance floor. The two developers we added to probe the tails — **Andrew Kelley**
-(Zig) and **Jarred Sumner** (Bun) — land at $72.2\%$ (mid-pack) and $54.0\%$ (near the bottom).
-We report this as *measured recognizability* and resist over-reading it: a lower score reflects
-how stylistically distinctive a developer's *attributed, name-scrubbed* code is in this corpus,
+**Some developers are far more recognizable than others.** Same-file recognition accuracy (Wilson
+95% CIs, $n{=}126$ files/developer) spans a wide range — from **Jeremy Ashkenas at 89.7%**
+$[83.1, 93.9]$ (a highly idiosyncratic CoffeeScript/Backbone style) down to **Armin Ronacher at
+48.4%** $[39.9, 57.1]$, all far above the $6.7\%$ chance floor. The top and bottom are genuinely
+separated: Ashkenas's and Ronacher's intervals are disjoint, so the ~41-point extreme spread is
+real, not sampling noise. The *fine* ranking is not: the two developers we added to probe the tails
+— **Andrew Kelley** (Zig, $72.2\%$ $[63.8, 79.3]$) and **Jarred Sumner** (Bun, $54.0\%$
+$[45.3, 62.4]$) — have intervals that overlap much of the middle of the roster, so we read only the
+*coarse* structure (top vs. bottom third) as reliable, not any individual's exact rank. We report
+this as *measured recognizability* and resist over-reading it: a lower score reflects how
+stylistically distinctive a developer's *attributed, name-scrubbed* code is in this corpus,
 confounded by codebase heterogeneity (Bun mixes Zig, C++, and generated code across many hands) —
 **not** a verdict on the person.
 
@@ -509,8 +515,9 @@ number mostly measures *task* overlap, not model identity. The honest test contr
 leave-one-task-out nearest-model-centroid still recovers which model wrote unseen code at $42\%$
 against a $25\%$ chance baseline — a faint but real fingerprint, not convergence.
 
-**The fingerprint is real but faint.** That $42\%$ recovery is significantly above a within-task
-label-shuffling null (null mean $24\%$, $p<0.001$ over 1000 permutations), so the models *do* carry
+**The fingerprint is real but faint.** That $42\%$ recovery ($[34.6, 50.3]$ Wilson, $n{=}149$) is
+significantly above a within-task label-shuffling null (null mean $24\%$, $p<0.001$ over 1000
+permutations), so the models *do* carry
 a detectable style — but it is largely masked by what the code *does*. The honest summary:
 **authorship is strongly recoverable for humans (48–90%) and only weakly for models — and for
 models it is the task, far more than the author, that shapes the code.** No convergence claim; no
