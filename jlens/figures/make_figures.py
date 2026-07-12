@@ -241,6 +241,35 @@ def fig6_ignition(ds="minilm", dslabel="Authors (prose)"):
     save(fig, "fig6_ignition.png")
 
 
+# ---- Fig 7: decoder structural signatures (GPT-2) ----
+def fig7_decoder():
+    path = os.path.join(ASSETS, "person2vec-decoder-structural-gpt2.json")
+    if not os.path.exists(path):
+        print("  (skip fig7: decoder bundle not present yet)")
+        return
+    b = json.load(open(path))
+    DEC = "#c2410c"  # decoder = deep orange, distinct from encoder purple/teal
+    nl = b["layers"]
+    xJ, xN = list(range(nl)), list(range(nl + 1))
+    panels = [
+        ("next-token acc\n(logit lens)", xN, [v * 100 for v in b["next_token_acc"]], "%"),
+        ("stable rank", xJ, b["stable_rank"], ""),
+        ("effective dim", xJ, b["effective_dim"], ""),
+        ("verbalizability", xJ, b["verbalizability"], ""),
+        ("autocorrelation", xJ, b["autocorrelation"], ""),
+    ]
+    fig, axes = plt.subplots(1, 5, figsize=(15.5, 3.1))
+    for ax, (label, xs, ys, unit) in zip(axes, panels):
+        ax.plot(xs, ys, "-o", color=DEC, lw=2, ms=4)
+        ax.set_title(label)
+        ax.set_xlabel("depth")
+        if unit == "%":
+            ax.set_ylabel("%")
+    fig.suptitle(f"Decoder structural signatures — GPT-2 ({nl} layers, {b['prompts']} prompts)",
+                 fontsize=12, fontweight="bold", y=1.05)
+    save(fig, "fig7_decoder.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
     fig1_identity()
@@ -249,4 +278,5 @@ if __name__ == "__main__":
     fig4_fingerprint()
     fig5_style()
     fig6_ignition()
+    fig7_decoder()
     print("done.")

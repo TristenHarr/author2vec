@@ -292,8 +292,27 @@ sign and magnitude across all five prose identity axes (gender, education, upbri
 holds the identity direction as something the rest of the network *acts on*, not merely
 correlates with.
 
-### 5.5 Decoder track — structure on a generative model
-_[pending: Phase 3]_ ![placeholder](figures/fig7_decoder.png)
+### 5.5 Decoder track — does the structure hold on a generative model?
+
+Everything above is on *encoders*. If the depth-wise workspace geometry is a real property of the
+J-lens apparatus and not an artifact of masked-mean pooling, then reading a genuine **generative
+decoder** with the *same* averaged-Jacobian machinery should reproduce the paper's Figure-28 depth
+signatures. **Hypothesis:** on an open decoder we will see (i) the four Jacobian signatures vary
+with depth, and (ii) a decoder-only signature — next-token logit-lens accuracy — rise **sharply in
+the late layers**, marking the "motor" regime where representations turn toward the output. We do
+**not** expect the clean sensory→workspace→motor tripartition: GPT-2 is 12 layers, far short of
+the paper's ~100, so we report the raw series and let it say what it says.
+
+**Method.** GPT-2 (`openai-community/gpt2`; 12 layers, $d{=}768$), the δ-broadcast averaged
+Jacobian made **causal** — perturb every position, read the *last* position (the next-token
+driver) — over prose prompts, with the four signatures computed by the *same* `lib.rs` functions
+as the encoders and verbalizability read through GPT-2's **real** tied unembedding (no
+approximation). This is the paper's mechanistic apparatus on an open model that actually generates.
+
+![Decoder structural signatures on GPT-2 (Figure-28 series + next-token accuracy).](figures/fig7_decoder.png)
+
+_[results pending: Phase 3 run in progress — the numbers here will be filled from the ledger, and
+the honest verdict on (i)/(ii) stated, whatever it is.]_
 
 ### 5.6 Behavioral steering — can't-answer → can-answer
 _[pending: Phase 4]_ ![placeholder](figures/fig8_behavioral.png)
@@ -321,14 +340,39 @@ the two encoder depths as a depth ablation. $\varepsilon$ / context-length robus
 _[T6.1] What the identity-workspace analogy supports and what it does not._
 
 ## 7. Limitations and threats to validity
-_[T6.1]_ **Replication vs. novel:** the J-lens, J-space, and structural metrics are the
-paper's; ours is the adaptation + target + reproducibility. **Not built:** the paper's
-behavioral half on a decoder (verbal report, reasoning swaps, ablation-kills-reasoning) — see
-Phases 3–5. **Construct honesty:** we measure identity commitment and expertise register, **not
-IQ, not consciousness.** The single-averaged, single-direction lens is lossy; the vocab lens is
-noisy (no MLM head); finite-difference $\varepsilon$ introduces error. 55 authors / 13 coders on
-laptop-scale models prove the *mechanism*, not a sharp personal fingerprint of any specific
-individual — that remains a well-motivated extrapolation.
+
+**Replication vs. novel.** The J-lens, J-space decomposition, and the four structural signatures
+are the paper's [@workspace2026]; our contribution is the encoder adaptation, the style-lens
+readout, the identity target, and reproducibility. We are careful not to claim the apparatus.
+
+**Construct honesty.** We measure *identity commitment* and (§5.7) an *expertise/lexical register*
+— **not IQ, not consciousness.** We borrow the *ignition* experimental design, not the conclusion.
+
+**The ignition result needs its caveat stated plainly.** The ignition index rising with depth
+(§5.2) is measured *along an axis the separation control proves is identity-specific* (real
+separation runs $\sim\!7$–$17\times$ above a random-direction null). But we cannot fully exclude
+that *some* of the depth-wise sharpening is generic late-layer nonlinearity: any readout of a
+linearly-blended input can become more nonlinear with depth. What the controls establish is that
+the *axis* carries identity; the raw sharpening curve should be read as suggestive, not decisive.
+Our shuffled-label null is also imperfect (its two groups still contain real passages, so it sits
+above zero); the random-direction null is the cleaner floor.
+
+**Statistical power.** Ignition uses 15 author/coder pairs and a 7- or 11-point α grid; structural
+signatures average over 32–96 passages. These are small. We report standard deviations and the raw
+per-depth series rather than smoothed summaries.
+
+**Reproducibility caveats.** Encoder structural signatures reproduce bit-for-bit on MiniLM across
+runs; the deeper JinaBERT numbers differ from an earlier site build generated with different
+(undocumented) settings — we report the values from a run with **documented** settings
+(`JLENS_JAC_LEN=64`) and have not re-verified GPU-reduction determinism on the 12-layer model. The
+single-averaged, single-direction lens is lossy; the vocab lens is noisy on encoders (no trained
+MLM head); finite-difference $\varepsilon$ introduces $O(\varepsilon^2)$ error.
+
+**Scope.** 55 authors / 13 coders on laptop-scale models demonstrate the *mechanism*; that a
+frontier model trained on someone's millions of words holds a sharp, personal fingerprint of *that
+individual* is a well-motivated extrapolation, not something these data settle. The behavioral half
+of the paper (§5.6–5.7) is the hardest to carry over and is where a small open decoder's limited
+capability bites — we state results there as directional, with negative results reported as such.
 
 ## 8. Reproducibility
 
