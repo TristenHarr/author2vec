@@ -1650,6 +1650,95 @@
     "note": ""
   },
   {
+    "dataset": "minilm",
+    "metric": "bigfive_n_essays",
+    "value": 2467,
+    "asset": "person2vec-bigfive.json",
+    "path": "n_essays",
+    "note": "Pennebaker & King labelled essays"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive::Extraversion",
+    "value": [
+      0.554,
+      0.517,
+      0.036,
+      0.506
+    ],
+    "asset": "person2vec-bigfive.json",
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
+    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive::Neuroticism",
+    "value": [
+      0.563,
+      0.5,
+      0.063,
+      0.498
+    ],
+    "asset": "person2vec-bigfive.json",
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
+    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive::Agreeableness",
+    "value": [
+      0.553,
+      0.531,
+      0.022,
+      0.487
+    ],
+    "asset": "person2vec-bigfive.json",
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
+    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive::Conscientiousness",
+    "value": [
+      0.551,
+      0.508,
+      0.043,
+      0.501
+    ],
+    "asset": "person2vec-bigfive.json",
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
+    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive::Openness",
+    "value": [
+      0.583,
+      0.515,
+      0.068,
+      0.497
+    ],
+    "asset": "person2vec-bigfive.json",
+    "path": "traits[].[loo_acc, majority, lift, shuffled_null]",
+    "note": "leave-one-out nearest-centroid vs majority; shuffled-label null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive_best_trait",
+    "value": "Openness",
+    "asset": "person2vec-bigfive.json",
+    "path": "best_trait",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "bigfive_mean_lift",
+    "value": 0.046,
+    "asset": "person2vec-bigfive.json",
+    "path": "mean_lift",
+    "note": "mean lift over majority across 5 traits"
+  },
+  {
     "dataset": "coders",
     "metric": "homogenization_pre2021",
     "value": 0.5683,

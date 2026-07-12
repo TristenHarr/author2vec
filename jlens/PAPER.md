@@ -30,9 +30,12 @@ low-rank "workspace" geometry, and that the identity direction is both a **detec
 person's fingerprint in the weights at all?) and a **causal lever** (steering). We further
 run an **identity-ignition** experiment (does the representation commit to a single
 individual at a characteristic depth?), a **decoder** track, and a **directed-steering**
-experiment. Everything runs on open models and ships as static assets; the whole apparatus
-is reproducible on a laptop. We are explicit about what is **replication** vs. **new**, and
-about what we **do not** claim: no "IQ", no consciousness.
+experiment, and we **validate the embeddings against a measured population** — recovering
+self-reported Big Five personality from prose above chance (Openness $+6.8$ points over the
+majority baseline, shuffled-label null flat), a weak-but-real signal that is also *why* we make
+no cognitive-capacity claim. Everything runs on open models and ships as static assets; the whole
+apparatus is reproducible on a laptop. We are explicit about what is **replication** vs. **new**,
+and about what we **do not** claim: no "IQ", no consciousness.
 
 ## Contributions
 
@@ -52,7 +55,11 @@ about what we **do not** claim: no "IQ", no consciousness.
 7. **Causal steering & directed modulation** (§5.4, §5.6): the identity direction is a
    sign-controllable lever on encoders, and a leakage-free concept direction is a (modest but
    real) causal handle on a decoder's output.
-8. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
+8. **A measured-population validation** (§5.7): on 2,467 psychometrically-labelled essays, the
+   same embeddings recover self-reported Big Five personality above chance on all five traits
+   (mean $+4.6$ points; Openness $+6.8$) with a flat shuffled-label null — a validated,
+   weak-but-real signal that grounds our refusal to make an "IQ" claim.
+9. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
    code), with a faithfulness gate and a full audit ledger.
 
 ---
@@ -362,24 +369,42 @@ change a final answer needs a model that can reason; GPT-2 shows the handle exis
 and marks exactly where a capable open decoder (e.g. Qwen2.5) is required to go further. We regard
 that as the honest next step, not a result we have.
 
-### 5.7 Expertise / lexical sophistication — why we make no "IQ" claim
+### 5.7 A measured population: Big Five personality — and why we still make no "IQ" claim
 
-We were asked whether the method can support "IQ" claims. It cannot, and this small experiment is
-*why* we say so rather than merely asserting it. **Hypothesis:** if the recovered *education* style
-axis were a proxy for lexical sophistication — a defensible construct, unlike "IQ" — then an
-author's projection onto it should correlate with concrete lexical metrics. **Method:** over all 55
-authors, correlate the education-axis projection with mean word length, type-token ratio, and the
-fraction of long ($\ge 8$-character) words.
+Every attribute so far (gender, region, systems-vs-scripting) is a *label we assigned*. The
+sharpest test of whether these embeddings carry real psychological signal is to hand them a
+population whose attributes were **measured by someone else, with a validated instrument**, and
+ask whether the signal survives. **Hypothesis:** if prose style encodes personality at all, an
+embedding built with no knowledge of psychology should recover self-reported Big Five traits above
+chance. **Method:** the Pennebaker & King stream-of-consciousness corpus — $2{,}467$ essays, each
+labelled with the writer's Big Five traits from a self-assessment questionnaire (ground truth, not
+our guess) — embedded with the *same* MiniLM used throughout. For each trait we run leave-one-out
+nearest-centroid classification (high vs. low group) against the majority-class baseline, with a
+shuffled-label null.
 
-**Result: only weak positive correlations** — $r = +0.10$ (mean word length), $+0.11$ (type-token
-ratio), $+0.20$ (long-word fraction). The interpretable education axis is *faintly* related to
-lexical sophistication and is plainly not dominated by it, let alone by anything one could call
-intelligence. We therefore make **no IQ claim**: even a labelled, human-interpretable identity axis
-only weakly tracks a concrete lexical proxy, so attaching a loaded cognitive construct to any
-recovered direction would be unsupported by the data. Whether one can steer a genuine *capability*
-score — a vocabulary test administered to a decoder — is a question for a capable model with careful
-construct validation. That is future work, not a result we have, and we decline to dress up a style
-direction as "intelligence."
+![Big Five recovery from prose: leave-one-out accuracy vs. majority baseline, with the shuffled-label null flat at chance.](figures/fig10_bigfive.png)
+
+**Result: all five traits are recovered above chance, and the null is flat.** Openness is
+strongest at $58.3\%$ (majority $51.5\%$; $+6.8$ points), then Neuroticism $56.3\%$ ($+6.3$),
+Conscientiousness $55.1\%$ ($+4.3$), Extraversion $55.4\%$ ($+3.6$), Agreeableness $55.3\%$
+($+2.2$) — a mean lift of $+4.6$ points. Under shuffled labels every trait collapses to
+$48.7\%$–$50.6\%$, confirming the lift is real signal rather than an artifact of the classifier.
+This is exactly the *weak-but-real* ceiling the personality-from-text literature reports, and
+Openness-leads-the-pack is its standard finding. It is a genuine positive result on a measured
+population: author2vec, trained for nothing of the kind, carries a faint but real trace of who the
+writer is.
+
+That same ceiling is **why we make no "IQ" claim.** A validated psychometric construct tops out a
+few points over chance; a loaded, poorly-operationalized one like "intelligence" would fare no
+better and would invite far worse misreading. A companion check makes the point concretely: if the
+recovered *education* style axis were a proxy for lexical sophistication, an author's projection
+onto it should correlate with concrete lexical metrics — yet over all 55 authors it yields **only
+weak positive correlations**, $r = +0.10$ (mean word length), $+0.11$ (type-token ratio), $+0.20$
+(long-word fraction). Even a labelled, human-interpretable identity axis only faintly tracks a
+concrete lexical proxy. Whether one can steer a genuine *capability* score — a vocabulary test
+administered to a decoder — is a question for a capable model with careful construct validation.
+That is future work, not a result we have, and we decline to dress up a style direction as
+"intelligence."
 
 ### 5.8 The authorship study (context) & style trajectories
 
@@ -541,6 +566,8 @@ cargo run -p jlens  --bin steer_bundle --release -- <ds>   # -> person2vec-steer
 cargo run -p jlens  --bin decoder_structural --release -- 10  # -> decoder-structural-gpt2.json (sec 5.5)
 cargo run -p jlens  --bin decoder_steer --release          # -> decoder-steer-gpt2.json         (sec 5.6)
 python3 jlens/paper/expertise_probe.py        # -> person2vec-expertise-minilm.json            (sec 5.7)
+./target/release/embed_texts minilm essays_in.json essays_out.json   # embed Pennebaker essays (sec 5.7)
+python3 jlens/paper/recover_bigfive.py        # -> person2vec-bigfive.json  (Big Five recovery)  (sec 5.7)
 python3 jlens/paper/build_ledger.py           # -> jlens/paper/ledger.json  (every cited number)
 python3 jlens/figures/make_figures.py         # -> jlens/figures/*.png
 ```

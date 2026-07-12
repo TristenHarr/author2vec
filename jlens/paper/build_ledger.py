@@ -237,6 +237,21 @@ if exp:
     add("minilm", "expertise_r_long_word", exp["r_education_axis_vs_long_word_frac"], fn,
         "r_education_axis_vs_long_word_frac", "")
 
+# ---- Big Five recovery from prose (measured-population validation) ----
+bf = load("person2vec-bigfive.json")
+if bf:
+    fn = "person2vec-bigfive.json"
+    add("minilm", "bigfive_n_essays", bf["n_essays"], fn, "n_essays",
+        "Pennebaker & King labelled essays")
+    for tname, t in bf["traits"].items():
+        add("minilm", f"bigfive::{tname}",
+            [t["loo_acc"], t["majority"], t["lift"], t["shuffled_null"]], fn,
+            "traits[].[loo_acc, majority, lift, shuffled_null]",
+            "leave-one-out nearest-centroid vs majority; shuffled-label null")
+    add("minilm", "bigfive_best_trait", bf["best_trait"], fn, "best_trait", "")
+    add("minilm", "bigfive_mean_lift", bf["mean_lift"], fn, "mean_lift",
+        "mean lift over majority across 5 traits")
+
 # ---- homogenization over time (coders) ----
 hg = load("person2vec-homogenization-coders.json")
 if hg:

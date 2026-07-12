@@ -300,8 +300,51 @@ def fig8_coders_recognizability():
     save(fig, "fig8_coders_recognizability.png")
 
 
+def fig10_bigfive():
+    """Measured-population validation: Big Five recovery from prose.
+
+    Dumbbell (not zero-baseline bars) so the small-but-real lift is shown honestly:
+    muted dot = majority baseline, purple dot = leave-one-out accuracy, x = shuffled null.
+    """
+    traits = ["Openness", "Neuroticism", "Conscientiousness", "Extraversion", "Agreeableness"]
+    rows = []
+    for t in traits:
+        acc, maj, lift, null = led("minilm", f"bigfive::{t}")
+        rows.append((t, acc * 100, maj * 100, null * 100, lift * 100))
+    rows.sort(key=lambda r: r[4])  # ascending lift -> best on top
+    names = [r[0] for r in rows]
+    y = list(range(len(names)))
+    fig, ax = plt.subplots(figsize=(7.4, 3.9))
+    ax.axvline(50, ls=":", color=MUTED, lw=1.3, zorder=1, label="chance (50%)")
+    for yi, (t, acc, maj, null, lift) in zip(y, rows):
+        ax.plot([maj, acc], [yi, yi], color="#c9c4ef", lw=3.0, zorder=2, solid_capstyle="round")
+        ax.scatter([null], [yi], marker="x", s=34, color=MUTED, lw=1.6, zorder=3)
+        ax.scatter([maj], [yi], s=58, color="#b9b9d0", zorder=4, edgecolor="white", linewidth=1.0)
+        ax.scatter([acc], [yi], s=78, color=AUTHORS, zorder=5, edgecolor="white", linewidth=1.0)
+        ax.text(acc + 0.35, yi, f"+{lift:.1f}", va="center", ha="left", fontsize=8.5,
+                color=AUTHORS, fontweight="bold")
+    ax.set_yticks(y)
+    ax.set_yticklabels(names, fontsize=9.5)
+    ax.set_ylim(-0.6, len(names) - 0.4)
+    ax.set_xlim(47.5, 60.5)
+    ax.set_xlabel("leave-one-out recovery accuracy (%)")
+    ax.set_title("Personality is weakly-but-really recoverable from prose\n"
+                 "Pennebaker essays (n=2,467), MiniLM — validated psychometric labels",
+                 fontsize=11.5, fontweight="bold")
+    # legend proxies
+    from matplotlib.lines import Line2D
+    handles = [
+        Line2D([0], [0], marker="o", color="w", markerfacecolor=AUTHORS, markersize=9, label="recovered (LOO)"),
+        Line2D([0], [0], marker="o", color="w", markerfacecolor="#b9b9d0", markersize=9, label="majority baseline"),
+        Line2D([0], [0], marker="x", color=MUTED, markersize=8, lw=0, label="shuffled-label null"),
+    ]
+    ax.legend(handles=handles, loc="lower right", fontsize=8.5)
+    save(fig, "fig10_bigfive.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
+    fig10_bigfive()
     fig8_coders_recognizability()
     fig1_identity()
     fig2_structural()
