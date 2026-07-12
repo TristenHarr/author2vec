@@ -1,0 +1,11 @@
+{
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "n_authors": 55,
+  "r_education_axis_vs_mean_word_length": 0.101,
+  "r_education_axis_vs_type_token_ratio": 0.107,
+  "r_education_axis_vs_long_word_frac": 0.198,
+  "mean_word_length_range": [
+    3.87,
+    4.51
+  ]
+}

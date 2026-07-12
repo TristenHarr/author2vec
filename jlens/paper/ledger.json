@@ -1616,5 +1616,37 @@
     "asset": "person2vec-decoder-steer-gpt2.json",
     "path": "[+\u03b4 \u0394, \u2212\u03b4 \u0394, random \u0394]",
     "note": "war/military"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "expertise_n_authors",
+    "value": 55,
+    "asset": "person2vec-expertise-minilm.json",
+    "path": "n_authors",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "expertise_r_word_length",
+    "value": 0.101,
+    "asset": "person2vec-expertise-minilm.json",
+    "path": "r_education_axis_vs_mean_word_length",
+    "note": "education axis vs lexical sophistication (weak)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "expertise_r_ttr",
+    "value": 0.107,
+    "asset": "person2vec-expertise-minilm.json",
+    "path": "r_education_axis_vs_type_token_ratio",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "expertise_r_long_word",
+    "value": 0.198,
+    "asset": "person2vec-expertise-minilm.json",
+    "path": "r_education_axis_vs_long_word_frac",
+    "note": ""
   }
 ]

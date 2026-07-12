@@ -225,6 +225,18 @@ if sti:
             [r3(c["steer_pos"] - c["base"]), r3(c["steer_neg"] - c["base"]), r3(c["random"] - c["base"])],
             fn, "[+δ Δ, −δ Δ, random Δ]", c["name"])
 
+# ---- expertise / lexical-sophistication probe (encoder-side) ----
+exp = load("person2vec-expertise-minilm.json")
+if exp:
+    fn = "person2vec-expertise-minilm.json"
+    add("minilm", "expertise_n_authors", exp["n_authors"], fn, "n_authors", "")
+    add("minilm", "expertise_r_word_length", exp["r_education_axis_vs_mean_word_length"], fn,
+        "r_education_axis_vs_mean_word_length", "education axis vs lexical sophistication (weak)")
+    add("minilm", "expertise_r_ttr", exp["r_education_axis_vs_type_token_ratio"], fn,
+        "r_education_axis_vs_type_token_ratio", "")
+    add("minilm", "expertise_r_long_word", exp["r_education_axis_vs_long_word_frac"], fn,
+        "r_education_axis_vs_long_word_frac", "")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

@@ -354,9 +354,24 @@ change a final answer needs a model that can reason; GPT-2 shows the handle exis
 and marks exactly where a capable open decoder (e.g. Qwen2.5) is required to go further. We regard
 that as the honest next step, not a result we have.
 
-### 5.7 Expertise / lexical sophistication
-_[pending: Phase 5 — the "IQ" reframe; construct honesty; likely mixed/negative result]_
-![placeholder](figures/fig9_expertise.png)
+### 5.7 Expertise / lexical sophistication — why we make no "IQ" claim
+
+We were asked whether the method can support "IQ" claims. It cannot, and this small experiment is
+*why* we say so rather than merely asserting it. **Hypothesis:** if the recovered *education* style
+axis were a proxy for lexical sophistication — a defensible construct, unlike "IQ" — then an
+author's projection onto it should correlate with concrete lexical metrics. **Method:** over all 55
+authors, correlate the education-axis projection with mean word length, type-token ratio, and the
+fraction of long ($\ge 8$-character) words.
+
+**Result: only weak positive correlations** — $r = +0.10$ (mean word length), $+0.11$ (type-token
+ratio), $+0.20$ (long-word fraction). The interpretable education axis is *faintly* related to
+lexical sophistication and is plainly not dominated by it, let alone by anything one could call
+intelligence. We therefore make **no IQ claim**: even a labelled, human-interpretable identity axis
+only weakly tracks a concrete lexical proxy, so attaching a loaded cognitive construct to any
+recovered direction would be unsupported by the data. Whether one can steer a genuine *capability*
+score — a vocabulary test administered to a decoder — is a question for a capable model with careful
+construct validation. That is future work, not a result we have, and we decline to dress up a style
+direction as "intelligence."
 
 ### 5.8 The authorship study (context) & style trajectories
 
