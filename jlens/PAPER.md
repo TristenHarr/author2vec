@@ -26,11 +26,10 @@ layer Jacobian onto empirically-recovered, human-interpretable identity axes ins
 token vocabulary. On a 6-layer prose encoder (MiniLM) and a 12-layer code encoder (JinaBERT)
 we find that **author identity is a computed intermediate, decodable above chance at every
 layer** (not merely an output artifact). The two encoder depths expose different low-rank
-"workspace-like" geometry (a bottleneck with depth-localized separability — we do not claim the
-full tripartition), and the identity direction is both a **detector** (is a person's
-fingerprint in the weights at all?) and a **causal lever** (steering). We further run an
-**identity-ignition** experiment (does the representation commit to a single individual at a
-characteristic depth?), a **decoder** track, and a **directed-steering** experiment. We then
+"workspace-like" geometry (a bottleneck with depth-localized separability, not the full
+tripartition), and the identity direction is both a **detector** (is a person's fingerprint in the
+weights at all?) and a **causal lever** (steering); we further test it with an identity-**ignition**
+experiment and on a generative **decoder**. We then
 **validate the embeddings against a measured population**: they recover self-reported Big Five
 personality from prose (Openness $+6.8$ points over the majority baseline; all five traits beat a
 shuffled-label null at $p<0.001$), while an astrological-sign *negative control* (on a separate blog
@@ -109,10 +108,10 @@ two-author input causes the internal representation to **commit to a single auth
 with depth**, peaking at a characteristic depth (mid-network for prose, late for code) and
 surviving two null controls (§5.2, ignition); that
 the same geometry yields a **fingerprint-presence detector** distinguishing a known identity from
-"blank space" (§5.4); and that these signatures hold across two modalities, prose and code. We are
-explicit throughout about what is a faithful **replication** of the paper's apparatus versus what
-is **new** here, and about what we deliberately do **not** claim: no "IQ", no consciousness. The
-contributions are listed above; every result number is machine-extracted into the audit ledger (Appendix D) and gated by the review harness.
+"blank space" (§5.4); and that these signatures hold across two modalities, prose and code. We keep
+the **replication**-vs.-**new** boundary sharp throughout and are explicit about what we do **not**
+claim (§7); every result number is machine-extracted into the audit ledger (Appendix D) and gated
+by the review harness.
 
 ## 2. Related work
 
