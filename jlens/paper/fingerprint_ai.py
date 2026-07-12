@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""AI-model fingerprint analysis: do frontier models have distinct code styles, and how do they
-relate to human coders? Clean ground truth (we know which model wrote each sample).
+"""AI-model fingerprint — the HONEST, task-controlled version.
 
-Inputs (scratchpad): ai_embed_out.json ([{id:'model##idx', vec:[768]}]).
-Human coders: web/assets/person2vec-coders.{json,bin}. Writes person2vec-aifp.json + prints.
+Naive cross-model similarity is dominated by the task (same task from different models looks
+near-identical), so it CANNOT support a 'models converged' claim. We instead report:
+  (1) task effect  = mean cos(same task, different model)
+  (2) model effect = mean cos(same model, different task)
+  (3) task-controlled model ID = leave-one-task-out nearest-model-centroid accuracy
+A model fingerprint exists iff (3) beats chance. Ground truth: we generated the code.
+
+Inputs: scratchpad/ai_corpus.json + ai_embed_out.json. Writes person2vec-aifp.json + prints.
 """
 import json
 import os
@@ -19,70 +24,61 @@ def unit(v):
     return v / (np.linalg.norm(v) + 1e-9)
 
 
-emb = json.load(open(os.path.join(SCRATCH, "ai_embed_out.json")))
-X = np.array([e["vec"] for e in emb])
-models = [e["id"].split("##")[0] for e in emb]
-uniq = sorted(set(models))
-short = {m: m.split("/")[-1] for m in uniq}
-midx = np.array([uniq.index(m) for m in models])
+emb = {e["id"]: unit(e["vec"]) for e in json.load(open(os.path.join(SCRATCH, "ai_embed_out.json")))}
+corp = json.load(open(os.path.join(SCRATCH, "ai_corpus.json")))
+E = {}  # (model, task) -> unit vec
+for i, x in enumerate(corp):
+    k = f"{x['model']}##{i}"
+    if k in emb:
+        E[(x["model"], x["task"])] = emb[k]
+models = sorted({m for m, _ in E})
+tasks = sorted({t for _, t in E})
+short = {m: m.split("/")[-1] for m in models}
 
-# ---- 1. model separability: leave-one-out nearest-model-centroid (ground truth = model) ----
-correct = 0
-for i in range(len(X)):
-    best, bi = -2, -1
-    for k, m in enumerate(uniq):
-        sel = (midx == k) & (np.arange(len(X)) != i)
-        if sel.sum() == 0:
+
+def cos(a, b):
+    return float(a @ b)
+
+
+task_eff = [cos(E[(m, t)], E[(m2, t)]) for t in tasks for i, m in enumerate(models)
+            for m2 in models[i + 1:] if (m, t) in E and (m2, t) in E]
+model_eff = [cos(E[(m, t)], E[(m, t2)]) for m in models for i, t in enumerate(tasks)
+             for t2 in tasks[i + 1:] if (m, t) in E and (m, t2) in E]
+
+# leave-one-task-out model ID (controls task: held-out task's samples classified by
+# model centroids built from all OTHER tasks).
+correct = tot = 0
+for t in tasks:
+    for m in models:
+        if (m, t) not in E:
             continue
-        c = unit(X[sel].mean(0))
-        s = float(unit(X[i]) @ c)
-        if s > best:
-            best, bi = s, k
-    if bi == midx[i]:
-        correct += 1
-acc = correct / len(X)
-print("=== AI MODEL FINGERPRINTS ===")
-print(f"samples: {len(X)} across {len(uniq)} models")
-print(f"leave-one-out model ID accuracy: {acc*100:.1f}%   (chance {100/len(uniq):.1f}%)  <- can we tell which AI wrote it?")
+        cents = {}
+        for mm in models:
+            others = [E[(mm, tt)] for tt in tasks if tt != t and (mm, tt) in E]
+            if others:
+                cents[mm] = unit(np.mean(others, 0))
+        pred = max(cents, key=lambda mm: cos(E[(m, t)], cents[mm]))
+        correct += pred == m
+        tot += 1
+ctrl_acc = correct / tot
 
-# ---- 2. cross-model centroid similarity (do the AIs cluster / how distinct) ----
-cents = {m: unit(X[midx == k].mean(0)) for k, m in enumerate(uniq)}
-print("\ncross-model centroid cosine (1.0 = identical style):")
-print("        " + "  ".join(f"{short[m][:10]:>10}" for m in uniq))
-for a in uniq:
-    row = "  ".join(f"{float(cents[a]@cents[b]):>10.2f}" for b in uniq)
-    print(f"{short[a][:8]:>8} {row}")
-
-# ---- 3. AI vs human: nearest human coder to each model ----
-cj = json.load(open(os.path.join(ASSETS, "person2vec-coders.json")))
-dim = cj["dim"]
-cvec = np.fromfile(os.path.join(ASSETS, "person2vec-coders.bin"), dtype="<f4").reshape(-1, dim)
-aid = np.array([p["author_id"] for p in cj["passages"]])
-coders = {cj["authors"][a]["name"]: unit(cvec[aid == a].mean(0)) for a in range(len(cj["authors"]))}
-hmean = unit(np.mean(list(coders.values()), 0))
-print("\nnearest HUMAN coder to each model (and AI-vs-human-centroid gap):")
-for m in uniq:
-    sims = sorted(((float(cents[m] @ hv), n) for n, hv in coders.items()), reverse=True)
-    near = sims[0]
-    to_human = float(cents[m] @ hmean)
-    print(f"  {short[m]:<22} nearest coder: {near[1]:<20} ({near[0]:.2f})   sim-to-human-avg {to_human:.2f}")
-
-# ---- 4. are AI samples separable from human samples? ----
-ai_centroid = unit(X.mean(0))
-ai_to_ai = float(np.mean([unit(x) @ ai_centroid for x in X]))
-# human passages' cosine to the AI centroid vs to their own human mean
-h_to_ai = float(np.mean([unit(cvec[i]) @ ai_centroid for i in range(0, len(cvec), 5)]))
-print(f"\nAI samples' mean cosine to AI centroid: {ai_to_ai:.3f}")
-print(f"human samples' mean cosine to AI centroid: {h_to_ai:.3f}   (gap => AI code occupies its own region)")
+print("=== AI MODEL FINGERPRINT (task-controlled) ===")
+print(f"{len(E)} samples, {len(models)} models, {len(tasks)} tasks")
+print(f"task effect  (same task, diff model): {np.mean(task_eff):.3f}")
+print(f"model effect (same model, diff task): {np.mean(model_eff):.3f}")
+print(f"-> {'TASK dominates' if np.mean(task_eff) > np.mean(model_eff) else 'MODEL dominates'}")
+print(f"task-controlled model ID: {ctrl_acc*100:.1f}%  (chance {100/len(models):.0f}%)")
 
 out = {
-    "n_samples": len(X),
-    "models": [short[m] for m in uniq],
-    "model_id_accuracy": round(acc, 3),
-    "chance": round(1 / len(uniq), 3),
-    "cross_model_cosine": {short[a]: {short[b]: round(float(cents[a] @ cents[b]), 3) for b in uniq} for a in uniq},
-    "nearest_coder": {short[m]: max(coders.items(), key=lambda kv: float(cents[m] @ kv[1]))[0] for m in uniq},
-    "ai_vs_human": {"ai_to_ai": round(ai_to_ai, 3), "human_to_ai": round(h_to_ai, 3)},
+    "n_samples": len(E),
+    "n_tasks": len(tasks),
+    "models": [short[m] for m in models],
+    "task_effect": round(float(np.mean(task_eff)), 3),
+    "model_effect": round(float(np.mean(model_eff)), 3),
+    "task_controlled_model_id": round(ctrl_acc, 3),
+    "chance": round(1 / len(models), 3),
+    "verdict": "task dominates; faint but real model fingerprint" if ctrl_acc > 1.2 / len(models)
+    else "no model fingerprint above chance",
 }
 json.dump(out, open(os.path.join(ASSETS, "person2vec-aifp.json"), "w"), indent=1)
-print("\nwrote person2vec-aifp.json")
+print("wrote person2vec-aifp.json")

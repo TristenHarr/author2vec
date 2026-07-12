@@ -740,7 +740,7 @@
   {
     "dataset": "coders",
     "metric": "n_identities",
-    "value": 13,
+    "value": 15,
     "asset": "person2vec-coders.json",
     "path": "authors[]",
     "note": "Coders (code)"
@@ -748,7 +748,7 @@
   {
     "dataset": "coders",
     "metric": "n_passages",
-    "value": 1690,
+    "value": 1950,
     "asset": "person2vec-coders.json",
     "path": "passages[]",
     "note": "Coders (code)"
@@ -756,7 +756,7 @@
   {
     "dataset": "coders",
     "metric": "chance",
-    "value": 0.077,
+    "value": 0.067,
     "asset": "person2vec-coders.json",
     "path": "1/len(authors)",
     "note": "blind-guess baseline"
@@ -772,7 +772,7 @@
   {
     "dataset": "coders",
     "metric": "rung::Blind guessing",
-    "value": 0.077,
+    "value": 0.067,
     "asset": "person2vec-coders.json",
     "path": "results.rungs[].accuracy",
     "note": "no information"
@@ -788,7 +788,7 @@
   {
     "dataset": "coders",
     "metric": "rung::Never seen this repo",
-    "value": 0.295,
+    "value": 0.262,
     "asset": "person2vec-coders.json",
     "path": "results.rungs[].accuracy",
     "note": "has read their code in other repos"
@@ -796,7 +796,7 @@
   {
     "dataset": "coders",
     "metric": "rung::Never seen this file",
-    "value": 0.736,
+    "value": 0.703,
     "asset": "person2vec-coders.json",
     "path": "results.rungs[].accuracy",
     "note": "has read the coder's other files in this repo"
@@ -804,7 +804,7 @@
   {
     "dataset": "coders",
     "metric": "rung::Read this file",
-    "value": 0.746,
+    "value": 0.711,
     "asset": "person2vec-coders.json",
     "path": "results.rungs[].accuracy",
     "note": "has seen other lines from the same file"
@@ -812,7 +812,7 @@
   {
     "dataset": "coders",
     "metric": "headline_correct",
-    "value": 1222,
+    "value": 1344,
     "asset": "person2vec-coders.json",
     "path": "results.headline_correct",
     "note": "same-unit reveal"
@@ -820,7 +820,7 @@
   {
     "dataset": "coders",
     "metric": "headline_total",
-    "value": 1638,
+    "value": 1890,
     "asset": "person2vec-coders.json",
     "path": "results.headline_total",
     "note": ""
@@ -828,7 +828,7 @@
   {
     "dataset": "coders",
     "metric": "reel_hits_seen",
-    "value": 38,
+    "value": 45,
     "asset": "person2vec-coders.json",
     "path": "results.reel_hits_seen",
     "note": "predict new passage, author read"
@@ -844,7 +844,7 @@
   {
     "dataset": "coders",
     "metric": "reel_total",
-    "value": 52,
+    "value": 60,
     "asset": "person2vec-coders.json",
     "path": "results.reel_total",
     "note": ""
@@ -852,7 +852,7 @@
   {
     "dataset": "coders",
     "metric": "trained_sim",
-    "value": 0.58,
+    "value": 0.585,
     "asset": "person2vec-coders.json",
     "path": "results.trained_sim",
     "note": "cosine to own centroid"
@@ -860,7 +860,7 @@
   {
     "dataset": "coders",
     "metric": "untrained_sim",
-    "value": 0.461,
+    "value": 0.467,
     "asset": "person2vec-coders.json",
     "path": "results.untrained_sim",
     "note": "cosine to global centroid"
@@ -868,7 +868,7 @@
   {
     "dataset": "coders",
     "metric": "per_author_acc_min",
-    "value": 0.516,
+    "value": 0.484,
     "asset": "person2vec-coders.json",
     "path": "min results.per_author[].accuracy",
     "note": ""
@@ -884,7 +884,7 @@
   {
     "dataset": "coders",
     "metric": "per_author_acc_mean",
-    "value": 0.746,
+    "value": 0.711,
     "asset": "person2vec-coders.json",
     "path": "mean results.per_author[].accuracy",
     "note": ""
@@ -892,7 +892,7 @@
   {
     "dataset": "coders",
     "metric": "attr::When was it written?::fair",
-    "value": 0.355,
+    "value": 0.394,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].fair_accuracy",
     "note": "leave-one-author-out"
@@ -900,7 +900,7 @@
   {
     "dataset": "coders",
     "metric": "attr::When was it written?::leaky",
-    "value": 0.675,
+    "value": 0.664,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].leaky_accuracy",
     "note": "identity-leaking"
@@ -908,7 +908,7 @@
   {
     "dataset": "coders",
     "metric": "attr::When was it written?::majority",
-    "value": 0.369,
+    "value": 0.429,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].baseline",
     "note": "majority-class"
@@ -924,7 +924,7 @@
   {
     "dataset": "coders",
     "metric": "attr::Weekend or weekday?::fair",
-    "value": 0.52,
+    "value": 0.497,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].fair_accuracy",
     "note": "leave-one-author-out"
@@ -932,7 +932,7 @@
   {
     "dataset": "coders",
     "metric": "attr::Weekend or weekday?::leaky",
-    "value": 0.624,
+    "value": 0.601,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].leaky_accuracy",
     "note": "identity-leaking"
@@ -940,7 +940,7 @@
   {
     "dataset": "coders",
     "metric": "attr::Weekend or weekday?::majority",
-    "value": 0.796,
+    "value": 0.793,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].baseline",
     "note": "majority-class"
@@ -956,7 +956,7 @@
   {
     "dataset": "coders",
     "metric": "attr::Systems or scripting?::fair",
-    "value": 0.846,
+    "value": 0.8,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].fair_accuracy",
     "note": "leave-one-author-out"
@@ -964,7 +964,7 @@
   {
     "dataset": "coders",
     "metric": "attr::Systems or scripting?::leaky",
-    "value": 0.923,
+    "value": 0.933,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].leaky_accuracy",
     "note": "identity-leaking"
@@ -972,7 +972,7 @@
   {
     "dataset": "coders",
     "metric": "attr::Systems or scripting?::majority",
-    "value": 0.615,
+    "value": 0.533,
     "asset": "person2vec-coders.json",
     "path": "results.attributes[].baseline",
     "note": "majority-class"
@@ -1048,18 +1048,18 @@
     "dataset": "coders",
     "metric": "structural::stable_rank",
     "value": [
-      31.186,
-      35.775,
-      38.502,
-      34.532,
-      33.573,
-      21.035,
-      37.117,
-      52.952,
-      57.565,
-      61.79,
-      74.21,
-      79.058
+      30.614,
+      36.749,
+      38.586,
+      35.572,
+      33.383,
+      20.33,
+      37.875,
+      54.267,
+      59.505,
+      61.73,
+      73.276,
+      79.034
     ],
     "asset": "person2vec-jlens-coders.json",
     "path": "structural.stable_rank",
@@ -1069,18 +1069,18 @@
     "dataset": "coders",
     "metric": "structural::effective_dim",
     "value": [
-      80.369,
-      94.642,
-      98.644,
-      99.736,
-      101.698,
-      91.489,
-      112.75,
-      125.85,
-      131.49,
-      138.896,
-      151.19,
-      184.305
+      79.626,
+      95.209,
+      98.947,
+      100.665,
+      102.433,
+      91.243,
+      113.81,
+      126.367,
+      131.982,
+      139.028,
+      151.314,
+      184.978
     ],
     "asset": "person2vec-jlens-coders.json",
     "path": "structural.effective_dim",
@@ -1090,18 +1090,18 @@
     "dataset": "coders",
     "metric": "structural::verbalizability",
     "value": [
+      0.191,
+      0.202,
+      0.208,
+      0.209,
+      0.209,
+      0.213,
       0.189,
-      0.196,
-      0.199,
+      0.203,
       0.204,
-      0.198,
-      0.201,
-      0.192,
-      0.205,
-      0.201,
-      0.217,
-      0.221,
-      0.223
+      0.224,
+      0.232,
+      0.221
     ],
     "asset": "person2vec-jlens-coders.json",
     "path": "structural.verbalizability",
@@ -1111,18 +1111,18 @@
     "dataset": "coders",
     "metric": "structural::autocorrelation",
     "value": [
-      -0.035,
-      -0.041,
+      -0.033,
+      -0.03,
       -0.001,
+      0.023,
       0.032,
-      0.036,
-      0.051,
-      0.066,
-      0.075,
-      0.092,
-      0.089,
-      0.087,
-      0.067
+      0.039,
+      0.062,
+      0.071,
+      0.086,
+      0.085,
+      0.088,
+      0.075
     ],
     "asset": "person2vec-jlens-coders.json",
     "path": "structural.autocorrelation",
@@ -1131,7 +1131,7 @@
   {
     "dataset": "coders",
     "metric": "cka_offdiag_mean",
-    "value": 0.809,
+    "value": 0.779,
     "asset": "person2vec-jlens-coders.json",
     "path": "mean off-diag structural.cka",
     "note": ""
@@ -1139,7 +1139,7 @@
   {
     "dataset": "coders",
     "metric": "cka_offdiag_min",
-    "value": 0.696,
+    "value": 0.648,
     "asset": "person2vec-jlens-coders.json",
     "path": "min off-diag structural.cka",
     "note": ""
@@ -1208,7 +1208,7 @@
   {
     "dataset": "coders",
     "metric": "fingerprint_n_identities",
-    "value": 13,
+    "value": 15,
     "asset": "person2vec-fingerprint-coders.json",
     "path": "len(authors)",
     "note": ""
@@ -1311,19 +1311,19 @@
     "dataset": "coders",
     "metric": "ignition_separation_mean",
     "value": [
-      0.914,
-      0.861,
-      1.386,
-      1.848,
-      1.476,
-      1.2,
-      0.995,
-      1.034,
-      1.015,
-      1.121,
-      0.986,
-      0.584,
-      3.457
+      0.839,
+      0.778,
+      1.187,
+      1.557,
+      1.205,
+      0.93,
+      0.752,
+      0.714,
+      0.686,
+      0.768,
+      0.657,
+      0.39,
+      2.329
     ],
     "asset": "person2vec-ignition-coders.json",
     "path": "separation_mean",
@@ -1333,19 +1333,19 @@
     "dataset": "coders",
     "metric": "ignition_separation_null_random",
     "value": [
-      0.118,
-      0.131,
-      0.113,
-      0.105,
-      0.087,
-      0.169,
+      0.109,
+      0.142,
+      0.136,
+      0.121,
       0.09,
-      0.143,
-      0.135,
-      0.096,
-      0.146,
-      0.059,
-      0.459
+      0.155,
+      0.106,
+      0.107,
+      0.155,
+      0.098,
+      0.154,
+      0.044,
+      0.452
     ],
     "asset": "person2vec-ignition-coders.json",
     "path": "separation_null_random_mean",
@@ -1355,19 +1355,19 @@
     "dataset": "coders",
     "metric": "ignition_separation_null_shuffled",
     "value": [
-      0.289,
-      0.245,
-      0.335,
-      0.507,
-      0.318,
-      0.394,
-      0.335,
-      0.332,
-      0.324,
-      0.283,
-      0.386,
-      0.226,
-      1.884
+      0.316,
+      0.232,
+      0.355,
+      0.371,
+      0.301,
+      0.327,
+      0.361,
+      0.433,
+      0.406,
+      0.396,
+      0.358,
+      0.187,
+      1.488
     ],
     "asset": "person2vec-ignition-coders.json",
     "path": "separation_null_shuffled_mean",
@@ -1378,18 +1378,18 @@
     "metric": "ignition_index_mean",
     "value": [
       0.091,
-      0.345,
-      0.558,
-      0.624,
-      0.612,
-      0.682,
-      0.664,
-      0.65,
-      0.664,
-      0.733,
-      0.733,
-      0.879,
-      0.805
+      0.418,
+      0.58,
+      0.636,
+      0.675,
+      0.655,
+      0.636,
+      0.636,
+      0.702,
+      0.727,
+      0.727,
+      0.818,
+      0.792
     ],
     "asset": "person2vec-ignition-coders.json",
     "path": "ignition_index_mean",
@@ -1398,7 +1398,7 @@
   {
     "dataset": "coders",
     "metric": "ignition_depth",
-    "value": 11,
+    "value": 12,
     "asset": "person2vec-ignition-coders.json",
     "path": "ignition_depth",
     "note": ""
@@ -1406,7 +1406,7 @@
   {
     "dataset": "coders",
     "metric": "ignition_separation_peak",
-    "value": 3.457,
+    "value": 2.329,
     "asset": "person2vec-ignition-coders.json",
     "path": "max separation_mean",
     "note": "peak at depth 12"
@@ -1647,6 +1647,134 @@
     "value": 0.198,
     "asset": "person2vec-expertise-minilm.json",
     "path": "r_education_axis_vs_long_word_frac",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_pre2021",
+    "value": 0.5683,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "cross_sim_pre2021",
+    "note": "mean cross-coder sim, AI-free era"
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_post2022",
+    "value": 0.5737,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "cross_sim_post2022",
+    "note": "mean cross-coder sim, AI era"
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_delta",
+    "value": 0.0054,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "convergence_delta",
+    "note": "+ = converged"
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_p_two_sided",
+    "value": 0.958,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "p_two_sided",
+    "note": "500-sample permutation null"
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_within_consistency",
+    "value": 0.774,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "within_coder_consistency",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_n_coders",
+    "value": 9,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "n_coders_both_eras",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "recognizability_spread",
+    "value": [
+      0.484,
+      0.897
+    ],
+    "asset": "person2vec-coders.json",
+    "path": "min/max results.per_author[].accuracy",
+    "note": "some coders known better than others"
+  },
+  {
+    "dataset": "coders",
+    "metric": "recognizability::Andrew Kelley",
+    "value": 0.722,
+    "asset": "person2vec-coders.json",
+    "path": "results.per_author[].accuracy",
+    "note": "same-file"
+  },
+  {
+    "dataset": "coders",
+    "metric": "recognizability::Jarred Sumner",
+    "value": 0.54,
+    "asset": "person2vec-coders.json",
+    "path": "results.per_author[].accuracy",
+    "note": "same-file"
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_n_samples",
+    "value": 90,
+    "asset": "person2vec-aifp.json",
+    "path": "n_samples",
+    "note": ""
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_models",
+    "value": [
+      "claude-opus-4.8",
+      "deepseek-chat",
+      "gemini-3.5-flash",
+      "gpt-5.6-terra"
+    ],
+    "asset": "person2vec-aifp.json",
+    "path": "models",
+    "note": ""
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_model_id_accuracy",
+    "value": 0.078,
+    "asset": "person2vec-aifp.json",
+    "path": "model_id_accuracy",
+    "note": "LOO model ID; chance 0.25 (below chance = not separable)"
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_cross_model_cosine_mean",
+    "value": 0.897,
+    "asset": "person2vec-aifp.json",
+    "path": "mean off-diagonal cross_model_cosine",
+    "note": "frontier models are ~identical in style"
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_ai_to_ai",
+    "value": 0.463,
+    "asset": "person2vec-aifp.json",
+    "path": "ai_vs_human.ai_to_ai",
+    "note": ""
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_human_to_ai",
+    "value": 0.275,
+    "asset": "person2vec-aifp.json",
+    "path": "ai_vs_human.human_to_ai",
     "note": ""
   }
 ]

@@ -434,14 +434,15 @@ models (`claude-opus-4.8`, `gpt-5.6`, `gemini-3.5-flash`, `deepseek-chat`) acros
 **A tempting wrong claim, and the control that kills it.** Raw cross-model style cosine is high
 ($\approx 0.9$), which *looks* like "the frontier models have converged to one style." **We do not
 make that claim**, because a control refutes it: **same-task / different-model** similarity is
-$0.73$, while **same-model / different-task** similarity is only $0.20$ — the **task, not the model,
+$0.71$, while **same-model / different-task** similarity is only $0.20$ — the **task, not the model,
 drives the embedding.** On a canonical "implement an LRU cache" everyone writes the textbook answer,
 so the high cross-model number mostly measures *task* overlap; comparing it to humans' diverse-code
 similarity ($0.62$) would be apples-to-oranges. (This is exactly the artifact a skeptic should
 catch — and it does not survive scrutiny.)
 
 **Controlling for the task, a real model fingerprint appears — but a faint one.** With the task held
-fixed, model identification runs at **$43\%$ vs. $25\%$ chance**: the models *do* carry a detectable
+fixed (leave-one-task-out over 40 tasks × 4 models), model identification runs at **$42\%$ vs.
+$25\%$ chance**: the models *do* carry a detectable
 style, but it is largely masked by what the code *does*. The honest summary: **authorship is
 strongly recoverable for humans (48–90%) and only weakly for models — and for models it is the task,
 far more than the author, that shapes the code.** No convergence claim; no individual-usage claim.
