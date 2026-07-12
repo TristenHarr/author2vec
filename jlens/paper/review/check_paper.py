@@ -76,12 +76,18 @@ _raw = []
 for row in LEDGER_ROWS:
     flatten_nums(row.get("value"), _raw)
 
-# normalized string forms a ledger number can legitimately appear as in prose
+# Normalized string forms a ledger number can legitimately appear as in prose. We deliberately do
+# NOT emit the bare `.1f` form: rounding a 2-3-decimal quantity to one decimal is so lossy that a
+# fabricated round number (e.g. "0.9") would coincidentally match a real 0.897 — the exact hole the
+# red-team found. Prose quotes results at full precision (.2f/.3f) or as percentages, so those forms
+# suffice while keeping the check tight.
 LEDGER_FORMS = set()
 for v in _raw:
-    for s in (f"{v:.3f}", f"{v:.2f}", f"{v:.1f}", f"{v:g}", f"{round(v)}"):
+    for s in (f"{v:.3f}", f"{v:.2f}", f"{v:g}", f"{round(v)}"):
         LEDGER_FORMS.add(s.lstrip("+"))          # incl. round-to-integer (prose rounds 205.2->205)
-    # percentage forms (value stored as a fraction 0..1)
+    if abs(v) >= 1.0:                             # 1-decimal form ONLY for magnitudes >=1
+        LEDGER_FORMS.add(f"{v:.1f}".lstrip("+"))  # (33.53->33.5 ok; fractions stay strict)
+    # percentage forms (value stored as a fraction 0..1) — percentages ARE quoted to one decimal
     if 0 <= abs(v) <= 1:
         for s in (f"{v*100:.1f}", f"{v*100:.0f}", f"{v*100:g}"):
             LEDGER_FORMS.add(s.lstrip("+"))
@@ -265,16 +271,21 @@ def _novel():
 def _sentlen():
     cap = TH.get("max_sentence_words", 48)
     mean_cap = TH.get("mean_sentence_words", 26.0)
-    # prose only: drop headings, image lines, code fences, table rows
+    # prose only: drop headings, image lines, code fences, table rows, and the title/byline block
+    # (everything before the first "## " heading); strip markdown so bold-terminated sentences
+    # ("...kills it.**") split correctly and the metric reflects real run-ons, not formatting.
     prose = []
     in_code = False
+    seen_h2 = False
     for ln in PL:
+        if ln.startswith("## "):
+            seen_h2 = True
         if ln.strip().startswith("```"):
             in_code = not in_code; continue
-        if in_code or ln.startswith("#") or ln.strip().startswith("![") or ln.lstrip().startswith("|"):
+        if not seen_h2 or in_code or ln.startswith("#") or ln.strip().startswith("![") or ln.lstrip().startswith(("|", ">")):
             continue
         prose.append(ln)
-    text = " ".join(prose)
+    text = re.sub(r"[*_`]+", "", " ".join(prose))
     sents = re.split(r"(?<=[.!?])\s+", text)
     lens = [(len(re.findall(r"[A-Za-z]+", s)), s) for s in sents]
     lens = [(n, s) for n, s in lens if n > 3]

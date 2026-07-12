@@ -273,6 +273,8 @@ if hg:
     add("coders", "homogenization_post2022", hg["cross_sim_post2022"], fn, "cross_sim_post2022", "mean cross-coder sim, AI era")
     add("coders", "homogenization_delta", hg["convergence_delta"], fn, "convergence_delta", "+ = converged")
     add("coders", "homogenization_p_two_sided", hg["p_two_sided"], fn, "p_two_sided", "500-sample permutation null")
+    add("coders", "homogenization_null_mean", r3(hg["null_mean"]), fn, "null_mean", "within-coder permutation null mean")
+    add("coders", "homogenization_null_sd", r3(hg["null_sd"]), fn, "null_sd", "")
     add("coders", "homogenization_within_consistency", hg["within_coder_consistency"], fn, "within_coder_consistency", "")
     add("coders", "homogenization_n_coders", hg["n_coders_both_eras"], fn, "n_coders_both_eras", "")
 

@@ -20,6 +20,9 @@ HARNESS = os.path.join(HERE, "check_paper.py")
 # Each poison line injects one defect; the value is a substring the harness output must contain.
 POISONS = [
     (r"We achieve a $87.3\%$ breakthrough on every metric.", "untraceable result-number", "hallucinated number"),
+    # regression guard for the red-team hole: a fabricated round cosine in math must NOT slip
+    # through by coincidentally matching a real 0.897 rounded to one decimal.
+    (r"Raw cross-model cosine is high ($\approx 0.9$).", "untraceable result-number", "fabricated round cosine (0.9)"),
     ("This is a groundbreaking, revolutionary result.", "hype superlative", "hype words"),
     # rate checks are document-level budgets, so the poison must breach the rate, not just appear once
     (("It is " + "very really extremely truly absolutely incredibly hugely massively vastly enormously " * 4

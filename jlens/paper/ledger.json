@@ -1827,6 +1827,22 @@
   },
   {
     "dataset": "coders",
+    "metric": "homogenization_null_mean",
+    "value": -0.033,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "null_mean",
+    "note": "within-coder permutation null mean"
+  },
+  {
+    "dataset": "coders",
+    "metric": "homogenization_null_sd",
+    "value": 0.018,
+    "asset": "person2vec-homogenization-coders.json",
+    "path": "null_sd",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
     "metric": "homogenization_within_consistency",
     "value": 0.774,
     "asset": "person2vec-homogenization-coders.json",
