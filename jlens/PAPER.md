@@ -288,8 +288,9 @@ at the mid layer swings the output's loading on axis $A$ **monotonically from $\
 $\alpha=-6$) through $\approx0$ (unperturbed) to $\approx+0.55$ (at $\alpha=+6$)** — the same
 sign and magnitude across all five prose identity axes (gender, education, upbringing). A
 **matched-norm random direction**, injected identically, leaves the loading essentially flat
-(total drift $<0.13$ over the same sweep). So the layer holds the identity direction as
-something the rest of the network *acts on*, not merely correlates with.
+(total drift $\le 0.16$ over the same sweep, versus a real swing of $0.80$–$1.11$). So the layer
+holds the identity direction as something the rest of the network *acts on*, not merely
+correlates with.
 
 ### 5.5 Decoder track — structure on a generative model
 _[pending: Phase 3]_ ![placeholder](figures/fig7_decoder.png)
