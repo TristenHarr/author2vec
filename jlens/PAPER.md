@@ -55,10 +55,12 @@ and about what we **do not** claim: no "IQ", no consciousness.
 7. **Causal steering & directed modulation** (§5.4, §5.6): the identity direction is a
    sign-controllable lever on encoders, and a leakage-free concept direction is a (modest but
    real) causal handle on a decoder's output.
-8. **A measured-population validation** (§5.7): on 2,467 psychometrically-labelled essays, the
-   same embeddings recover self-reported Big Five personality above chance on all five traits
-   (mean $+4.6$ points; Openness $+6.8$) with a flat shuffled-label null — a validated,
-   weak-but-real signal that grounds our refusal to make an "IQ" claim.
+8. **A measured-population validation with a negative control** (§5.7): on 2,467
+   psychometrically-labelled essays the same embeddings recover self-reported Big Five personality
+   above chance on all five traits (mean $+4.6$ points; Openness $+6.8$) with a flat shuffled-label
+   null; and on the Blog Authorship Corpus, gender and age recover while an astrological-sign
+   *negative control* does not — real constructs register, a meaningless one stays silent. This
+   grounds our refusal to make an "IQ" claim in evidence rather than assertion.
 9. **An open, reproducible, browser-native reimplementation** across two modalities (prose &
    code), with a faithfulness gate and a full audit ledger.
 
@@ -369,7 +371,7 @@ change a final answer needs a model that can reason; GPT-2 shows the handle exis
 and marks exactly where a capable open decoder (e.g. Qwen2.5) is required to go further. We regard
 that as the honest next step, not a result we have.
 
-### 5.7 A measured population: Big Five personality — and why we still make no "IQ" claim
+### 5.7 Measured constructs, a negative control, and why we make no "IQ" claim
 
 Every attribute so far (gender, region, systems-vs-scripting) is a *label we assigned*. The
 sharpest test of whether these embeddings carry real psychological signal is to hand them a
@@ -394,7 +396,25 @@ Openness-leads-the-pack is its standard finding. It is a genuine positive result
 population: author2vec, trained for nothing of the kind, carries a faint but real trace of who the
 writer is.
 
-That same ceiling is **why we make no "IQ" claim.** A validated psychometric construct tops out a
+**A negative control: what the method does *not* recover.** A positive result could still, in
+principle, be spurious structure. The decisive test is to pair it with an attribute that *should*
+be unrecoverable and confirm the method stays silent. The Blog Authorship Corpus [@schler2006]
+labels every blogger with gender, age, **and** astrological sign — the first two have genuine
+linguistic correlates, the third has none. We pool posts to the author level (138 authors with a
+known sign; each author is the mean of their post embeddings) and run the *identical*
+leave-one-author-out nearest-centroid classifier on all three, each against a shuffled-label null.
+
+![Construct validity on one corpus: gender and age recover above their shuffled-label nulls; the astrological-sign negative control does not.](figures/fig11_negative_control.png)
+
+**That is exactly what happens.** Gender recovers at $56.5\%$ (majority $52.2\%$, shuffled null
+$47.7\%$) and age band at $53.6\%$ (majority $43.5\%$, null $25.9\%$) — both clearly above their
+nulls — while astrological sign lands at $4.3\%$, *at or below* both its majority baseline
+($11.6\%$) and its own shuffled-label null ($9.1\%$): no recoverable signal. Same corpus, same
+author-level pipeline; the method recovers the two constructs with a linguistic basis and stays
+silent on the one without. This is the honest boundary a "measured population" is *for* — evidence
+that the recovered signal is real where a real construct exists, and absent where none does.
+
+Those two results together are **why we make no "IQ" claim.** A validated psychometric construct tops out a
 few points over chance; a loaded, poorly-operationalized one like "intelligence" would fare no
 better and would invite far worse misreading. A companion check makes the point concretely: if the
 recovered *education* style axis were a proxy for lexical sophistication, an author's projection
@@ -568,6 +588,7 @@ cargo run -p jlens  --bin decoder_steer --release          # -> decoder-steer-gp
 python3 jlens/paper/expertise_probe.py        # -> person2vec-expertise-minilm.json            (sec 5.7)
 ./target/release/embed_texts minilm essays_in.json essays_out.json   # embed Pennebaker essays (sec 5.7)
 python3 jlens/paper/recover_bigfive.py        # -> person2vec-bigfive.json  (Big Five recovery)  (sec 5.7)
+python3 jlens/paper/recover_blog_demographics.py  # -> person2vec-blog-demographics.json  (neg. control, sec 5.7)
 python3 jlens/paper/build_ledger.py           # -> jlens/paper/ledger.json  (every cited number)
 python3 jlens/figures/make_figures.py         # -> jlens/figures/*.png
 ```

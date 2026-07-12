@@ -252,6 +252,19 @@ if bf:
     add("minilm", "bigfive_mean_lift", bf["mean_lift"], fn, "mean_lift",
         "mean lift over majority across 5 traits")
 
+# ---- Blog corpus demographics: gender/age positive controls + zodiac NEGATIVE control ----
+bd = load("person2vec-blog-demographics.json")
+if bd:
+    fn = "person2vec-blog-demographics.json"
+    add("minilm", "blog_n_authors", bd["n_authors"], fn, "n_authors",
+        "Blog Authorship Corpus, author-level")
+    for aname, a in bd["attributes"].items():
+        note = "NEGATIVE CONTROL (should be ~chance)" if aname == "zodiac" else "positive control"
+        add("minilm", f"blog::{aname}",
+            [a["loo_acc"], a["majority"], a["shuffled_null"], a["lift_over_null"]], fn,
+            "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
+            f"{a['classes']}-way author-level LOO; {note}")
+
 # ---- homogenization over time (coders) ----
 hg = load("person2vec-homogenization-coders.json")
 if hg:

@@ -1739,6 +1739,53 @@
     "note": "mean lift over majority across 5 traits"
   },
   {
+    "dataset": "minilm",
+    "metric": "blog_n_authors",
+    "value": 138,
+    "asset": "person2vec-blog-demographics.json",
+    "path": "n_authors",
+    "note": "Blog Authorship Corpus, author-level"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "blog::gender",
+    "value": [
+      0.565,
+      0.522,
+      0.477,
+      0.088
+    ],
+    "asset": "person2vec-blog-demographics.json",
+    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
+    "note": "2-way author-level LOO; positive control"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "blog::age",
+    "value": [
+      0.536,
+      0.435,
+      0.259,
+      0.277
+    ],
+    "asset": "person2vec-blog-demographics.json",
+    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
+    "note": "3-way author-level LOO; positive control"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "blog::zodiac",
+    "value": [
+      0.043,
+      0.116,
+      0.091,
+      -0.048
+    ],
+    "asset": "person2vec-blog-demographics.json",
+    "path": "attributes[].[loo_acc, majority, shuffled_null, lift_over_null]",
+    "note": "12-way author-level LOO; NEGATIVE CONTROL (should be ~chance)"
+  },
+  {
     "dataset": "coders",
     "metric": "homogenization_pre2021",
     "value": 0.5683,

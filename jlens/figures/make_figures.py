@@ -342,8 +342,53 @@ def fig10_bigfive():
     save(fig, "fig10_bigfive.png")
 
 
+def fig11_negative_control():
+    """Construct validity: real demographic constructs recover; the negative control does not.
+
+    One corpus (Blog Authorship), one pipeline. Metric = lift over the shuffled-label null
+    (accuracy - null), comparable across attributes with different class counts. Gender/age are
+    positive controls; zodiac is the negative control and should sit at ~0.
+    """
+    order = ["gender", "age", "zodiac"]
+    labelmap = {"gender": "Gender (2-way)", "age": "Age band (3-way)", "zodiac": "Zodiac (12-way)"}
+    rows = []
+    for a in order:
+        acc, maj, null, lift = led("minilm", f"blog::{a}")
+        rows.append((labelmap[a], lift * 100, acc * 100, null * 100, a == "zodiac"))
+    rows = rows[::-1]  # zodiac at bottom
+    names = [r[0] for r in rows]
+    lifts = [r[1] for r in rows]
+    y = list(range(len(names)))
+    colors = [MUTED if r[4] else AUTHORS for r in rows]
+    fig, ax = plt.subplots(figsize=(7.4, 3.3))
+    ax.axvline(0, color="#33333f", lw=1.2, zorder=2)
+    ax.barh(y, lifts, color=colors, height=0.62, zorder=3)
+    for yi, (nm, lift, acc, null, isneg) in zip(y, rows):
+        # positive bars: label just past the tip; negative bars: label in the empty
+        # region right of 0 so it never collides with the y-axis tick labels.
+        xtext = (lift + 0.5) if lift >= 0 else 0.5
+        ax.text(xtext, yi, f"{acc:.0f}% vs {null:.0f}% null", va="center", ha="left",
+                fontsize=8.5, color=INK)
+    ax.set_yticks(y)
+    ax.set_yticklabels(names, fontsize=9.5)
+    ax.set_ylim(-0.6, len(names) - 0.4)
+    lo = min(lifts + [0]) - 2
+    hi = max(lifts + [0]) + 13
+    ax.set_xlim(lo, hi)
+    ax.set_xlabel("recovery lift over shuffled-label null (percentage points)")
+    ax.set_title("Real constructs recover; the negative control (zodiac) does not\n"
+                 "Blog Authorship Corpus — same corpus, same author-level pipeline",
+                 fontsize=11.5, fontweight="bold")
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(color=AUTHORS, label="real construct (positive control)"),
+                       Patch(color=MUTED, label="negative control")],
+              loc="lower right", fontsize=8.5)
+    save(fig, "fig11_negative_control.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
+    fig11_negative_control()
     fig10_bigfive()
     fig8_coders_recognizability()
     fig1_identity()
