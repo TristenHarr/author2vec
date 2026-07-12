@@ -243,6 +243,12 @@ blended input — to $0.73$–$0.74$ by mid-depth and holds. In short: *shallow 
 mixture; by the middle of the network the representation has snapped to a single author.* The
 mid-network peak echoes the low-rank "workspace" bottleneck we see structurally (§5.3).
 
+**The same holds for code, more strongly.** On the 12-layer code encoder the ignition index
+climbs $0.09\to0.88$ across depth, and the identity axis separates coders **$\sim\!17\times$
+above the random-direction null** at its early-mid peak (depth 3: $1.85$ vs $0.11$) — a sharper
+version of the same effect, consistent with code identity being more linearly accessible overall
+(§5.1). Both modalities show the representation committing to a single individual with depth.
+
 *Honesty.* This is a 6-layer encoder and 15 pairs; the sharpening is measured *along an axis the
 separation control proves is identity-specific*, but we cannot fully exclude that some of the
 depth-wise sharpening reflects generic late-layer nonlinearity. We report the raw depth series.
