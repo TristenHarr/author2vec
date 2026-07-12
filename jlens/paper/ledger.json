@@ -1147,7 +1147,7 @@
   {
     "dataset": "coders",
     "metric": "identity_chance",
-    "value": 0.077,
+    "value": 0.067,
     "asset": "person2vec-identity-coders.json",
     "path": "chance",
     "note": ""
@@ -1155,7 +1155,7 @@
   {
     "dataset": "coders",
     "metric": "identity_output_acc",
-    "value": 0.38,
+    "value": 0.468,
     "asset": "person2vec-identity-coders.json",
     "path": "output_acc",
     "note": "output-embedding ceiling"
@@ -1164,18 +1164,18 @@
     "dataset": "coders",
     "metric": "identity_per_layer",
     "value": [
-      0.425,
-      0.495,
-      0.475,
-      0.385,
-      0.39,
-      0.395,
+      0.452,
+      0.448,
+      0.48,
+      0.508,
       0.4,
-      0.435,
-      0.425,
-      0.415,
+      0.488,
+      0.48,
+      0.404,
       0.42,
-      0.385
+      0.42,
+      0.424,
+      0.432
     ],
     "asset": "person2vec-identity-coders.json",
     "path": "per_layer",
@@ -1184,15 +1184,15 @@
   {
     "dataset": "coders",
     "metric": "identity_best_layer_acc",
-    "value": 0.495,
+    "value": 0.508,
     "asset": "person2vec-identity-coders.json",
     "path": "max per_layer",
-    "note": "argmax layer 1"
+    "note": "argmax layer 3"
   },
   {
     "dataset": "coders",
     "metric": "identity_best_layer_idx",
-    "value": 1,
+    "value": 3,
     "asset": "person2vec-identity-coders.json",
     "path": "argmax per_layer",
     "note": ""
@@ -1727,9 +1727,17 @@
   {
     "dataset": "ai",
     "metric": "aifp_n_samples",
-    "value": 90,
+    "value": 149,
     "asset": "person2vec-aifp.json",
     "path": "n_samples",
+    "note": ""
+  },
+  {
+    "dataset": "ai",
+    "metric": "aifp_n_tasks",
+    "value": 40,
+    "asset": "person2vec-aifp.json",
+    "path": "n_tasks",
     "note": ""
   },
   {
@@ -1747,34 +1755,34 @@
   },
   {
     "dataset": "ai",
-    "metric": "aifp_model_id_accuracy",
-    "value": 0.078,
+    "metric": "aifp_task_effect",
+    "value": 0.711,
     "asset": "person2vec-aifp.json",
-    "path": "model_id_accuracy",
-    "note": "LOO model ID; chance 0.25 (below chance = not separable)"
+    "path": "task_effect",
+    "note": "same-task, different-model cosine"
   },
   {
     "dataset": "ai",
-    "metric": "aifp_cross_model_cosine_mean",
-    "value": 0.897,
+    "metric": "aifp_model_effect",
+    "value": 0.197,
     "asset": "person2vec-aifp.json",
-    "path": "mean off-diagonal cross_model_cosine",
-    "note": "frontier models are ~identical in style"
+    "path": "model_effect",
+    "note": "same-model, different-task cosine"
   },
   {
     "dataset": "ai",
-    "metric": "aifp_ai_to_ai",
-    "value": 0.463,
+    "metric": "aifp_task_controlled_model_id",
+    "value": 0.423,
     "asset": "person2vec-aifp.json",
-    "path": "ai_vs_human.ai_to_ai",
-    "note": ""
+    "path": "task_controlled_model_id",
+    "note": "leave-one-task-out; chance 0.25"
   },
   {
     "dataset": "ai",
-    "metric": "aifp_human_to_ai",
-    "value": 0.275,
+    "metric": "aifp_verdict",
+    "value": "task dominates; faint but real model fingerprint",
     "asset": "person2vec-aifp.json",
-    "path": "ai_vs_human.human_to_ai",
+    "path": "verdict",
     "note": ""
   }
 ]

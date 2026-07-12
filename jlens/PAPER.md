@@ -265,7 +265,7 @@ depth-wise sharpening reflects generic late-layer nonlinearity. We report the ra
 
 ![Layer-to-layer readout geometry (linear CKA).](figures/fig3_cka.png)
 
-Effective dimension rises with depth in both models (prose $73\!\to\!205$; code $80\!\to\!184$).
+Effective dimension rises with depth in both models (prose $73\!\to\!205$; code $80\!\to\!185$).
 The **stable rank** tells the sharper story: in the 6-layer prose model it is **lowest at the
 very first layer** ($22.1$, rising to $106.9$) — the network compresses to a
 low-rank readout immediately — whereas the 12-layer code model has a genuine **mid-network
@@ -429,7 +429,7 @@ truth** — we generate the code, so we know which model wrote it. We prompted f
 models (`claude-opus-4.8`, `gpt-5.6`, `gemini-3.5-flash`, `deepseek-chat`) across 40 coding tasks
 (24 canonical + 16 open-ended) and embedded the output in the same JinaBERT space as the humans.
 
-![Task vs. model: on the same task, different models write nearly the same code (0.73); the same model across different tasks is far less alike (0.20). The task, not the model, dominates the embedding — controlling for it, model identity is recoverable at 43% vs 25% chance.](figures/fig9_ai_fingerprint.png)
+![Task vs. model: on the same task, different models write nearly the same code (0.71); the same model across different tasks is far less alike (0.20). The task, not the model, dominates the embedding — controlling for it, model identity is recoverable at 42% vs 25% chance.](figures/fig9_ai_fingerprint.png)
 
 **A tempting wrong claim, and the control that kills it.** Raw cross-model style cosine is high
 ($\approx 0.9$), which *looks* like "the frontier models have converged to one style." **We do not
@@ -516,7 +516,7 @@ runs; the deeper JinaBERT numbers differ from an earlier site build generated wi
 single-averaged, single-direction lens is lossy; the vocab lens is noisy on encoders (no trained
 MLM head); finite-difference $\varepsilon$ introduces $O(\varepsilon^2)$ error.
 
-**Scope.** 55 authors / 13 coders on laptop-scale models demonstrate the *mechanism*; that a
+**Scope.** 55 authors / 15 coders on laptop-scale models demonstrate the *mechanism*; that a
 frontier model trained on someone's millions of words holds a sharp, personal fingerprint of *that
 individual* is a well-motivated extrapolation, not something these data settle. The behavioral half
 of the paper (§5.6–5.7) is the hardest to carry over and is where a small open decoder's limited
@@ -632,7 +632,7 @@ one-vs-rest classes of the `educated` and `raised` fields — `educated=England�
 of class-mean reference embeddings — a unit Fisher direction, used for both readout and steering.
 
 **Rosters.** 55 public-domain prose authors (`corpus/authors.toml`, labelled with
-gender / birth / raised / educated / college) and 13 open-source developers (`corpus/coders.toml`,
+gender / birth / raised / educated / college) and 15 open-source developers (`corpus/coders.toml`,
 git-attributed and **name-scrubbed**, labelled with a `paradigm` = Systems/Scripting trait).
 
 **OOD probes** for the fingerprint detector (§5.4). Prose (bar 0.30): four held-out author samples
