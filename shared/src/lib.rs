@@ -1150,3 +1150,179 @@ fn even_sample(items: &[usize], k: usize) -> Vec<usize> {
     let step = items.len() as f32 / k as f32;
     (0..k).map(|i| items[(i as f32 * step) as usize]).collect()
 }
+
+// ---------------------------------------------------------------------------
+// J-lens bundle — precomputed averaged-Jacobian interpretability readouts for the
+// `/jlens` view. Everything the browser shows is computed offline by the `jlens`
+// crate; the viewer does no linear algebra. Shipped as `person2vec-jlens-minilm.json`.
+// ---------------------------------------------------------------------------
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct JlensBundle {
+    pub model: JlensModel,
+    /// Style-axis names; index is the axis id used by [`JlensStyleTraj::axis`].
+    pub axes: Vec<String>,
+    /// Source depths analyzed, e.g. `[0,1,2,3,4,5]`.
+    pub layers: Vec<usize>,
+    pub structural: JlensStructural,
+    pub examples: Vec<JlensExample>,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct JlensModel {
+    pub name: String,
+    pub layers: usize,
+    pub d_model: usize,
+    pub vocab: usize,
+    pub max_len: usize,
+    /// Provenance of the pseudo-unembedding, e.g. "tied word embeddings (logit lens)".
+    pub w_u_source: String,
+    /// How many passages the averaged Jacobians were built from.
+    pub passages: usize,
+}
+
+/// Depth-wise structural signatures. Each vector is indexed by source layer.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensStructural {
+    pub stable_rank: Vec<f32>,
+    pub effective_dim: Vec<f32>,
+    /// Mean excess kurtosis of the vocab-lens readout (peakier ⇒ more verbalizable).
+    pub verbalizability: Vec<f32>,
+    /// Linear-CKA of J-lens geometry between layers (`layers × layers`).
+    pub cka: Vec<Vec<f32>>,
+    /// Lag-1 readout autocorrelation vs. a position-shuffled null (the paper's 4th
+    /// Figure-28 signature). Positive ⇒ readout persists across the sequence.
+    #[serde(default)]
+    pub autocorrelation: Vec<f32>,
+}
+
+/// One curated passage, with its per-(layer, position) token readouts and per-axis
+/// style trajectory through depth.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensExample {
+    pub passage_idx: usize,
+    pub author: String,
+    pub color: String,
+    pub snippet: String,
+    /// WordPiece tokens (position labels for the grid).
+    pub tokens: Vec<String>,
+    pub cells: Vec<JlensCell>,
+    pub style: Vec<JlensStyleTraj>,
+    /// Rank-vs-depth trajectory for a handful of top concepts (the paper's key figure).
+    #[serde(default)]
+    pub concepts: Vec<JlensConcept>,
+    /// Sparse J-space decomposition of the activation at a representative layer.
+    #[serde(default)]
+    pub jspace: JlensJspace,
+}
+
+/// A concept token and its vocab-lens rank at each layer (1 = surfaced strongest).
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensConcept {
+    pub tok: String,
+    pub per_layer_rank: Vec<u32>,
+}
+
+/// J-space: the sparse non-negative set of J-lens (token) directions that reconstruct
+/// an activation, and the fraction of its variance they capture.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensJspace {
+    pub layer: usize,
+    pub captured_variance: f32,
+    /// Token directions with their non-negative coefficients (score = coeff).
+    pub items: Vec<JlensTok>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensCell {
+    pub layer: usize,
+    pub pos: usize,
+    /// The input token at this position (for the cell label).
+    pub token: String,
+    pub top: Vec<JlensTok>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensTok {
+    pub tok: String,
+    pub score: f32,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct JlensStyleTraj {
+    pub axis: usize,
+    /// Per-layer style-axis loading (length == `layers`).
+    pub per_layer: Vec<f32>,
+}
+
+/// Fingerprint-presence detector: precomputed identity centroids + sample embeddings, so
+/// the browser can compute "known fingerprint vs blank space" live for a chosen sample,
+/// and show the tokens each identity's style direction verbalizes. Written by `bin/fingerprint`.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct FingerprintBundle {
+    pub subject: String,
+    pub threshold: f32,
+    pub authors: Vec<FpAuthor>,
+    pub probes: Vec<FpProbe>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct FpAuthor {
+    pub name: String,
+    pub color: String,
+    /// L2-normalized identity centroid in the output embedding space.
+    pub centroid: Vec<f32>,
+    /// Top tokens the identity's style direction aligns with (embedding logit lens).
+    pub tokens: Vec<String>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct FpProbe {
+    pub label: String,
+    pub snippet: String,
+    /// L2-normalized embedding of the sample.
+    pub vec: Vec<f32>,
+}
+
+/// Nearest identity by cosine (L2-normalized inputs) → `(author index, cosine)`. The
+/// detector's core: if the cosine clears the threshold the fingerprint is "known",
+/// otherwise the sample is in "blank space".
+pub fn nearest_centroid(v: &[f32], authors: &[FpAuthor]) -> (usize, f32) {
+    let mut best = (0usize, f32::NEG_INFINITY);
+    for (i, a) in authors.iter().enumerate() {
+        let s: f32 = v.iter().zip(&a.centroid).map(|(x, y)| x * y).sum();
+        if s > best.1 {
+            best = (i, s);
+        }
+    }
+    best
+}
+
+#[cfg(test)]
+mod fp_tests {
+    use super::*;
+    #[test]
+    fn nearest_centroid_picks_closest() {
+        let authors = vec![
+            FpAuthor { name: "A".into(), centroid: vec![1.0, 0.0], ..Default::default() },
+            FpAuthor { name: "B".into(), centroid: vec![0.0, 1.0], ..Default::default() },
+        ];
+        assert_eq!(nearest_centroid(&[0.9, 0.1], &authors), (0, 0.9));
+        assert_eq!(nearest_centroid(&[0.1, 0.9], &authors).0, 1);
+    }
+}
+
+/// "Does the model learn who wrote it?" — nearest-identity accuracy decoded from the
+/// *internal* J-lens readout at each layer, versus the output embedding and chance.
+/// Written by `bin/steer`; shows identity lives inside the Jacobians, not just the output.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct IdentityBundle {
+    pub model: String,
+    /// Noun for one identity: "author" / "coder".
+    pub subject: String,
+    pub identities: usize,
+    pub chance: f32,
+    pub output_acc: f32,
+    /// Per-layer accuracy decoding identity from the internal Jacobian readout.
+    pub per_layer: Vec<f32>,
+}
