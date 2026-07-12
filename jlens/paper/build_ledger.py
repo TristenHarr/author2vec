@@ -181,6 +181,20 @@ for key, label, core_fn in DATASETS:
         add(key, "ignition_separation_peak", r3(max(sm)), fn, "max separation_mean",
             f"peak at depth {sm.index(max(sm))}")
 
+    # ---- steering bundle: causal identity lever ----
+    st = load(f"person2vec-steer-{key}.json")
+    if st:
+        fn = f"person2vec-steer-{key}.json"
+        add(key, "steer_layer", st["steer_layer"], fn, "steer_layer", "")
+        add(key, "steer_alphas", st["alphas"], fn, "alphas", "")
+        real_swings = [ax["loading"][-1] - ax["loading"][0] for ax in st["axes"]]
+        rand_drifts = [abs(ax["loading_random"][-1] - ax["loading_random"][0]) for ax in st["axes"]]
+        add(key, "steer_n_axes", len(st["axes"]), fn, "len(axes)", "")
+        add(key, "steer_real_swing_range", [r3(min(real_swings)), r3(max(real_swings))], fn,
+            "loading[-1]-loading[0] per axis", "real α-sweep swing (α:−6→+6)")
+        add(key, "steer_random_drift_max", r3(max(rand_drifts)), fn,
+            "max |loading_random[-1]-loading_random[0]|", "matched-norm control drift")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

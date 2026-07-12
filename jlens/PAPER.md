@@ -280,9 +280,16 @@ forcing that reading.
 A calibrated nearest-centroid detector separates known identities from "blank space". Prose
 (bar $0.30$): known probes $0.62$–$0.69$, out-of-distribution text (code, chat, biology,
 legalese) $0.10$–$0.25$. Code is tighter and reported honestly (bar $0.51$): known
-$0.54$–$0.70$, OOD $0.17$–$0.49$ — "modern chat" sits just under the bar. **[pending: T1.3]**
-steering: injecting $\alpha\,\hat\delta$, $\hat\delta=\operatorname{normalize}(J_{\text{emb}}^{\top}A)$,
-swings the output's axis loading, with matched-norm and random-direction controls.
+$0.54$–$0.70$, OOD $0.17$–$0.49$ — "modern chat" sits just under the bar.
+
+**The identity direction is a causal lever, not just a readable one.** Forming the residual
+steering direction $\hat\delta=\widehat{J_{\text{emb}}^{\top}A}$ and injecting $\alpha\hat\delta$
+at the mid layer swings the output's loading on axis $A$ **monotonically from $\approx-0.5$ (at
+$\alpha=-6$) through $\approx0$ (unperturbed) to $\approx+0.55$ (at $\alpha=+6$)** — the same
+sign and magnitude across all five prose identity axes (gender, education, upbringing). A
+**matched-norm random direction**, injected identically, leaves the loading essentially flat
+(total drift $<0.13$ over the same sweep). So the layer holds the identity direction as
+something the rest of the network *acts on*, not merely correlates with.
 
 ### 5.5 Decoder track — structure on a generative model
 _[pending: Phase 3]_ ![placeholder](figures/fig7_decoder.png)

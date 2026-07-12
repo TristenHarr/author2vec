@@ -687,6 +687,57 @@
     "note": "peak at depth 4"
   },
   {
+    "dataset": "minilm",
+    "metric": "steer_layer",
+    "value": 3,
+    "asset": "person2vec-steer-minilm.json",
+    "path": "steer_layer",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "steer_alphas",
+    "value": [
+      -6.0,
+      -4.0,
+      -2.0,
+      0.0,
+      2.0,
+      4.0,
+      6.0
+    ],
+    "asset": "person2vec-steer-minilm.json",
+    "path": "alphas",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "steer_n_axes",
+    "value": 5,
+    "asset": "person2vec-steer-minilm.json",
+    "path": "len(axes)",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "steer_real_swing_range",
+    "value": [
+      0.797,
+      1.109
+    ],
+    "asset": "person2vec-steer-minilm.json",
+    "path": "loading[-1]-loading[0] per axis",
+    "note": "real \u03b1-sweep swing (\u03b1:\u22126\u2192+6)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "steer_random_drift_max",
+    "value": 0.16,
+    "asset": "person2vec-steer-minilm.json",
+    "path": "max |loading_random[-1]-loading_random[0]|",
+    "note": "matched-norm control drift"
+  },
+  {
     "dataset": "coders",
     "metric": "n_identities",
     "value": 13,
