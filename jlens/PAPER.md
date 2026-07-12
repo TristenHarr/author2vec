@@ -62,23 +62,72 @@ why an encoder is a clean minimal testbed for the mechanistic (not behavioral) c
 
 ## 2. Related work
 
-_[T6.1] Position against: logit lens [@nostalgebraist2020logitlens], tuned lens
-[@belrose2023tunedlens], activation steering / ActAdd [@turner2023actadd] & CAA
-[@rimsky2024caa], representation engineering / diff-in-means [@zou2023repe], dictionary
-learning / SAEs [@bricken2023monosemanticity], probing [@alain2017probing; @hewitt2019structural],
-CKA [@kornblith2019cka], global workspace & ignition [@baars1988workspace; @dehaene2011ignition],
-Sentence-BERT [@reimers2019sbert], authorship attribution / stylometry, and the reference
-paper [@workspace2026]. Be explicit that the J-lens, J-space, and structural signatures are
-**theirs**; our novelty is the encoder adaptation + identity target + reproducibility._
+**Lenses on the residual stream.** The logit lens [@nostalgebraist2020logitlens] reads
+intermediate activations through the unembedding; the tuned lens [@belrose2023tunedlens] learns
+an affine correction per layer. The averaged Jacobian of [@workspace2026] generalizes this by
+linearizing the *whole* map from a layer to the output and averaging over a corpus. We inherit
+that construction and adapt it to a pooled encoder (§4.2); our vocab lens is a logit lens over
+tied WordPiece embeddings, and our *style lens* (§4.5) replaces the vocabulary readout with one
+onto interpretable directions — the piece that is new here.
+
+**Steering and concept directions.** Activation addition [@turner2023actadd] and contrastive
+activation addition [@rimsky2024caa] steer generation by adding a direction to the residual
+stream; representation engineering [@zou2023repe] extracts such directions, often as a
+difference of class means. Our identity axes are exactly difference-of-means (Fisher)
+directions, used both to *read* (§4.5) and to *steer* (§5.4); the novelty is not the technique
+but the target — personal authorship identity — and reading it *through the layer Jacobian*.
+
+**Probing and representational geometry.** Linear probes [@alain2017probing;
+@hewitt2019structural] test what a layer linearly encodes; we use leave-one-out nearest-centroid
+decoding as a probe of *identity* across depth (§5.1). Linear CKA [@kornblith2019cka] compares
+representations between layers, which we apply to J-lens readout geometry (§4.7). Sparse
+dictionary learning / SAEs [@bricken2023monosemanticity] decompose activations into
+interpretable atoms; the paper's J-space decomposition is a supervised cousin we reuse (§4.6).
+
+**Global workspace and authorship.** The framing of [@workspace2026] draws on global workspace
+theory [@baars1988workspace] and the "ignition" of conscious access [@dehaene2011ignition]; we
+borrow the *ignition* experimental design (§5.2) but point it at identity, and we make no claim
+about consciousness. Our substrate is Sentence-BERT-style embeddings [@reimers2019sbert], and
+the downstream question — attributing text to its author from style — is classical authorship
+attribution / stylometry, here recast as a question about *where in a network* identity is
+computed. Throughout, the J-lens, J-space, and structural signatures are the paper's; our
+contribution is their transplant to open encoders, the style-lens readout, the identity target,
+and full reproducibility.
 
 ## 3. Background: the averaged-Jacobian lens
 
-_[T6.1] Summarize [@workspace2026]: the causal J-lens $J_\ell = \mathbb{E}_{t,t'\ge t}[\partial
-h_{\text{final},t'}/\partial h_{\ell,t}]$; the vocabulary readout; J-space decomposition
-(~6–10% of variance, ~10–25 concepts); the four Figure-28 signatures (next-token accuracy,
-excess kurtosis, autocorrelation, effective dimension); the sensory→workspace→motor
-tripartition; scale (127 layers, workspace ≈L38–92). This frames the contrast: they study a
-generative decoder with per-position logits; we study a pooled encoder._
+We build directly on the apparatus of [@workspace2026], which we summarize here so that our
+adaptation (§4) and its boundaries are unambiguous.
+
+**The J-lens.** For a causal decoder, the *averaged Jacobian* at layer $\ell$ is
+$$ J_\ell \;=\; \mathbb{E}_{t,\,t'\ge t,\,\text{prompt}}\!\left[\frac{\partial h_{\text{final},t'}}{\partial h_{\ell,t}}\right], $$
+the linearized effect of a layer-$\ell$ activation on the final residual stream, averaged over
+token positions and a corpus of prompts. Read through the unembedding it yields, for any
+activation, a ranked list of vocabulary tokens the model is "disposed to say" — a corrected
+logit lens that accounts for representational change across layers.
+
+**J-space and its privilege.** Activations are decomposed into sparse non-negative
+combinations of $k$ ($\approx 10$–$25$) J-lens vectors; the *J-space component* is the part of
+an activation lying in that cone. Though it accounts for only $\sim 6$–$10\%$ of a concept
+vector's variance, it is the part causally responsible for the concept's availability to
+verbal report, and it is subject to top-down control (instructing the model to "focus on X"
+loads X), mediates unverbalized reasoning intermediates (swapping a J-lens vector redirects
+downstream answers), and is required for deliberate — but not automatic — tasks.
+
+**Structural depth signatures.** Four quantities, read off $J_\ell$ across depth (the paper's
+Figure 28), identify a workspace band: next-token-prediction accuracy of the readout, its
+*excess kurtosis* (peakiness), the *autocorrelation* of the top lens token across positions
+(persistence of abstract content), and the readout's *effective linear dimensionality*. All
+four mark a consistent sensory → workspace → motor tripartition — noisy early layers, a
+coherent middle band, and output-aligned late layers — corroborated by an ambiguous-input
+"ignition" experiment in which the representation snaps to one interpretation at workspace
+onset. The study is conducted on Claude Sonnet 4.5 (127 layers; workspace $\approx$ L38–92)
+and corroborated on Haiku/Opus.
+
+**The gap we step into.** Every one of these constructs is defined for a *generative decoder*
+with per-position next-token logits. An embedding encoder has neither: its output is a single
+pooled vector. §4 is what it takes to carry the mechanistic half of this apparatus across that
+gap — and §5.2, §5.5–5.7 are our attempts at the behavioral half the encoder cannot reach.
 
 ## 4. Method
 
