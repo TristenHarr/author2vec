@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+"""Audit ledger builder.
+
+Machine-extracts every citable number in the paper straight from the shipped
+`web/assets/person2vec-*.json` bundles into `jlens/paper/ledger.json`. The paper
+may only cite values that appear here; figures plot the same values. This is the
+single source of truth for the "no fabricated numbers" guarantee.
+
+Run:  python3 jlens/paper/build_ledger.py
+"""
+import json
+import os
+import math
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ASSETS = os.path.normpath(os.path.join(HERE, "..", "..", "web", "assets"))
+
+# (dataset key, human label, core-bundle filename)
+DATASETS = [
+    ("minilm", "Authors (prose)", "person2vec-minilm.json"),
+    ("coders", "Coders (code)", "person2vec-coders.json"),
+]
+
+ledger = []
+
+
+def add(dataset, metric, value, asset, path, note=""):
+    ledger.append({
+        "dataset": dataset,
+        "metric": metric,
+        "value": value,
+        "asset": asset,
+        "path": path,
+        "note": note,
+    })
+
+
+def load(fn):
+    p = os.path.join(ASSETS, fn)
+    if not os.path.exists(p):
+        return None
+    with open(p) as f:
+        return json.load(f)
+
+
+def r3(x):
+    return round(x, 3) if isinstance(x, float) else x
+
+
+def cosine_nn(vec, centroids):
+    """Vectors are L2-normalized => cosine == dot. Return (max_cos, argmax)."""
+    best, bi = -2.0, -1
+    for i, c in enumerate(centroids):
+        s = sum(a * b for a, b in zip(vec, c))
+        if s > best:
+            best, bi = s, i
+    return best, bi
+
+
+for key, label, core_fn in DATASETS:
+    # ---- core bundle: authorship study numbers ----
+    core = load(core_fn)
+    if core:
+        n_auth = len(core["authors"])
+        n_pass = len(core["passages"])
+        res = core["results"]
+        add(key, "n_identities", n_auth, core_fn, "authors[]", label)
+        add(key, "n_passages", n_pass, core_fn, "passages[]", label)
+        add(key, "chance", r3(1.0 / n_auth), core_fn, "1/len(authors)",
+            "blind-guess baseline")
+        add(key, "dim", core["dim"], core_fn, "dim", "embedding dimension")
+        for rung in res["rungs"]:
+            add(key, f"rung::{rung['label']}", r3(rung["accuracy"]), core_fn,
+                "results.rungs[].accuracy", rung.get("sublabel", ""))
+        add(key, "headline_correct", res["headline_correct"], core_fn,
+            "results.headline_correct", "same-unit reveal")
+        add(key, "headline_total", res["headline_total"], core_fn,
+            "results.headline_total", "")
+        add(key, "reel_hits_seen", res["reel_hits_seen"], core_fn,
+            "results.reel_hits_seen", "predict new passage, author read")
+        add(key, "reel_hits_unseen", res["reel_hits_unseen"], core_fn,
+            "results.reel_hits_unseen", "predict new passage, author hidden")
+        add(key, "reel_total", res["reel_total"], core_fn, "results.reel_total", "")
+        add(key, "trained_sim", r3(res["trained_sim"]), core_fn,
+            "results.trained_sim", "cosine to own centroid")
+        add(key, "untrained_sim", r3(res["untrained_sim"]), core_fn,
+            "results.untrained_sim", "cosine to global centroid")
+        accs = [a["accuracy"] for a in res["per_author"]]
+        add(key, "per_author_acc_min", r3(min(accs)), core_fn,
+            "min results.per_author[].accuracy", "")
+        add(key, "per_author_acc_max", r3(max(accs)), core_fn,
+            "max results.per_author[].accuracy", "")
+        add(key, "per_author_acc_mean", r3(sum(accs) / len(accs)), core_fn,
+            "mean results.per_author[].accuracy", "")
+        for attr in res["attributes"]:
+            nm = attr["name"]
+            add(key, f"attr::{nm}::fair", r3(attr["fair_accuracy"]), core_fn,
+                "results.attributes[].fair_accuracy", "leave-one-author-out")
+            add(key, f"attr::{nm}::leaky", r3(attr["leaky_accuracy"]), core_fn,
+                "results.attributes[].leaky_accuracy", "identity-leaking")
+            add(key, f"attr::{nm}::majority", r3(attr["baseline"]), core_fn,
+                "results.attributes[].baseline", "majority-class")
+            add(key, f"attr::{nm}::random", r3(attr["random_baseline"]), core_fn,
+                "results.attributes[].random_baseline", "")
+
+    # ---- jlens bundle: method + structural signatures ----
+    jl = load(f"person2vec-jlens-{key}.json")
+    if jl:
+        fn = f"person2vec-jlens-{key}.json"
+        m = jl["model"]
+        for mk in ("name", "layers", "d_model", "vocab", "passages", "w_u_source"):
+            if mk in m:
+                add(key, f"jlens_model::{mk}", m[mk], fn, f"model.{mk}", "")
+        add(key, "jlens_axes", jl["axes"], fn, "axes", "style-lens axes")
+        st = jl["structural"]
+        for sk in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation"):
+            if sk in st:
+                add(key, f"structural::{sk}", [r3(v) for v in st[sk]], fn,
+                    f"structural.{sk}", "per layer")
+        if "cka" in st:
+            cka = st["cka"]
+            off = [cka[i][j] for i in range(len(cka)) for j in range(len(cka)) if i != j]
+            add(key, "cka_offdiag_mean", r3(sum(off) / len(off)), fn,
+                "mean off-diag structural.cka", "")
+            add(key, "cka_offdiag_min", r3(min(off)), fn, "min off-diag structural.cka", "")
+
+    # ---- identity bundle: identity-across-depth ----
+    idb = load(f"person2vec-identity-{key}.json")
+    if idb:
+        fn = f"person2vec-identity-{key}.json"
+        add(key, "identity_chance", r3(idb["chance"]), fn, "chance", "")
+        add(key, "identity_output_acc", r3(idb["output_acc"]), fn, "output_acc",
+            "output-embedding ceiling")
+        pl = idb["per_layer"]
+        add(key, "identity_per_layer", [r3(v) for v in pl], fn, "per_layer", "")
+        add(key, "identity_best_layer_acc", r3(max(pl)), fn, "max per_layer",
+            f"argmax layer {pl.index(max(pl))}")
+        add(key, "identity_best_layer_idx", pl.index(max(pl)), fn, "argmax per_layer", "")
+
+    # ---- fingerprint bundle: recompute nearest-centroid cosines ----
+    fp = load(f"person2vec-fingerprint-{key}.json")
+    if fp:
+        fn = f"person2vec-fingerprint-{key}.json"
+        thr = fp["threshold"]
+        centroids = [a["centroid"] for a in fp["authors"]]
+        names = [a["name"] for a in fp["authors"]]
+        add(key, "fingerprint_threshold", r3(thr), fn, "threshold", "")
+        add(key, "fingerprint_n_identities", len(fp["authors"]), fn, "len(authors)", "")
+        known_cos, ood_cos = [], []
+        for p in fp["probes"]:
+            cos, bi = cosine_nn(p["vec"], centroids)
+            is_known = cos >= thr
+            (known_cos if is_known else ood_cos).append(cos)
+            add(key, f"probe::{p['label']}", r3(cos), fn,
+                "recomputed max cos(probe.vec, authors[].centroid)",
+                f"nearest={names[bi]}; {'KNOWN' if is_known else 'BLANK-SPACE'} (thr={r3(thr)})")
+        if known_cos:
+            add(key, "fingerprint_known_cos_range",
+                [r3(min(known_cos)), r3(max(known_cos))], fn,
+                "recomputed", "KNOWN probes cosine range")
+        if ood_cos:
+            add(key, "fingerprint_ood_cos_range",
+                [r3(min(ood_cos)), r3(max(ood_cos))], fn,
+                "recomputed", "blank-space probes cosine range")
+
+out = os.path.join(HERE, "ledger.json")
+with open(out, "w") as f:
+    json.dump(ledger, f, indent=2)
+
+# human-readable summary to stdout
+print(f"wrote {len(ledger)} ledger entries -> {os.path.relpath(out)}")
+for key, label, _ in DATASETS:
+    print(f"\n=== {label} [{key}] ===")
+    for e in ledger:
+        if e["dataset"] == key:
+            print(f"  {e['metric']:38s} = {e['value']}")

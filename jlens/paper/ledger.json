@@ -1,0 +1,1127 @@
+[
+  {
+    "dataset": "minilm",
+    "metric": "n_identities",
+    "value": 55,
+    "asset": "person2vec-minilm.json",
+    "path": "authors[]",
+    "note": "Authors (prose)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "n_passages",
+    "value": 7084,
+    "asset": "person2vec-minilm.json",
+    "path": "passages[]",
+    "note": "Authors (prose)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "chance",
+    "value": 0.018,
+    "asset": "person2vec-minilm.json",
+    "path": "1/len(authors)",
+    "note": "blind-guess baseline"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "dim",
+    "value": 384,
+    "asset": "person2vec-minilm.json",
+    "path": "dim",
+    "note": "embedding dimension"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "rung::Blind guessing",
+    "value": 0.018,
+    "asset": "person2vec-minilm.json",
+    "path": "results.rungs[].accuracy",
+    "note": "no information"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "rung::Never read the author",
+    "value": 0.0,
+    "asset": "person2vec-minilm.json",
+    "path": "results.rungs[].accuracy",
+    "note": "held out every work by them"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "rung::Never read this series",
+    "value": 0.158,
+    "asset": "person2vec-minilm.json",
+    "path": "results.rungs[].accuracy",
+    "note": "has read the author's other work"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "rung::Never read this book",
+    "value": 0.19,
+    "asset": "person2vec-minilm.json",
+    "path": "results.rungs[].accuracy",
+    "note": "has read the rest of the series"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "rung::Has read the book",
+    "value": 0.583,
+    "asset": "person2vec-minilm.json",
+    "path": "results.rungs[].accuracy",
+    "note": "has seen other passages from it"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "headline_correct",
+    "value": 4001,
+    "asset": "person2vec-minilm.json",
+    "path": "results.headline_correct",
+    "note": "same-unit reveal"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "headline_total",
+    "value": 6864,
+    "asset": "person2vec-minilm.json",
+    "path": "results.headline_total",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "reel_hits_seen",
+    "value": 130,
+    "asset": "person2vec-minilm.json",
+    "path": "results.reel_hits_seen",
+    "note": "predict new passage, author read"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "reel_hits_unseen",
+    "value": 0,
+    "asset": "person2vec-minilm.json",
+    "path": "results.reel_hits_unseen",
+    "note": "predict new passage, author hidden"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "reel_total",
+    "value": 220,
+    "asset": "person2vec-minilm.json",
+    "path": "results.reel_total",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "trained_sim",
+    "value": 0.701,
+    "asset": "person2vec-minilm.json",
+    "path": "results.trained_sim",
+    "note": "cosine to own centroid"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "untrained_sim",
+    "value": 0.651,
+    "asset": "person2vec-minilm.json",
+    "path": "results.untrained_sim",
+    "note": "cosine to global centroid"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "per_author_acc_min",
+    "value": 0.294,
+    "asset": "person2vec-minilm.json",
+    "path": "min results.per_author[].accuracy",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "per_author_acc_max",
+    "value": 0.865,
+    "asset": "person2vec-minilm.json",
+    "path": "max results.per_author[].accuracy",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "per_author_acc_mean",
+    "value": 0.584,
+    "asset": "person2vec-minilm.json",
+    "path": "mean results.per_author[].accuracy",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Gender::fair",
+    "value": 0.855,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Gender::leaky",
+    "value": 0.855,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Gender::majority",
+    "value": 0.527,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Gender::random",
+    "value": 0.5,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Birth country::fair",
+    "value": 0.259,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Birth country::leaky",
+    "value": 0.727,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Birth country::majority",
+    "value": 0.333,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Birth country::random",
+    "value": 0.111,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were raised::fair",
+    "value": 0.185,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were raised::leaky",
+    "value": 0.764,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were raised::majority",
+    "value": 0.278,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were raised::random",
+    "value": 0.111,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were educated::fair",
+    "value": 0.259,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were educated::leaky",
+    "value": 0.727,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were educated::majority",
+    "value": 0.426,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::Where they were educated::random",
+    "value": 0.143,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::College::fair",
+    "value": 0.553,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::College::leaky",
+    "value": 0.855,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::College::majority",
+    "value": 0.723,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "attr::College::random",
+    "value": 0.2,
+    "asset": "person2vec-minilm.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_model::name",
+    "value": "sentence-transformers/all-MiniLM-L6-v2",
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "model.name",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_model::layers",
+    "value": 6,
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "model.layers",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_model::d_model",
+    "value": 384,
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "model.d_model",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_model::vocab",
+    "value": 30522,
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "model.vocab",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_model::passages",
+    "value": 96,
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "model.passages",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_model::w_u_source",
+    "value": "tied word embeddings (logit lens)",
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "model.w_u_source",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "jlens_axes",
+    "value": [
+      "male \u2194 female",
+      "educated=England \u2194 rest",
+      "educated=United States \u2194 rest",
+      "raised=England \u2194 rest",
+      "raised=United States \u2194 rest"
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "axes",
+    "note": "style-lens axes"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::stable_rank",
+    "value": [
+      22.116,
+      31.376,
+      31.211,
+      37.168,
+      54.525,
+      106.941
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "structural.stable_rank",
+    "note": "per layer"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::effective_dim",
+    "value": [
+      73.461,
+      88.811,
+      93.048,
+      104.63,
+      127.602,
+      205.195
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "structural.effective_dim",
+    "note": "per layer"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::verbalizability",
+    "value": [
+      0.501,
+      0.509,
+      0.527,
+      0.498,
+      0.493,
+      0.606
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "structural.verbalizability",
+    "note": "per layer"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "cka_offdiag_mean",
+    "value": 0.858,
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "mean off-diag structural.cka",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "cka_offdiag_min",
+    "value": 0.773,
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "min off-diag structural.cka",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "identity_chance",
+    "value": 0.018,
+    "asset": "person2vec-identity-minilm.json",
+    "path": "chance",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "identity_output_acc",
+    "value": 0.144,
+    "asset": "person2vec-identity-minilm.json",
+    "path": "output_acc",
+    "note": "output-embedding ceiling"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "identity_per_layer",
+    "value": [
+      0.052,
+      0.072,
+      0.088,
+      0.08,
+      0.072,
+      0.088
+    ],
+    "asset": "person2vec-identity-minilm.json",
+    "path": "per_layer",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "identity_best_layer_acc",
+    "value": 0.088,
+    "asset": "person2vec-identity-minilm.json",
+    "path": "max per_layer",
+    "note": "argmax layer 2"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "identity_best_layer_idx",
+    "value": 2,
+    "asset": "person2vec-identity-minilm.json",
+    "path": "argmax per_layer",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "fingerprint_threshold",
+    "value": 0.3,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "threshold",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "fingerprint_n_identities",
+    "value": 55,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "len(authors)",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::held-out author sample",
+    "value": 0.634,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Jane Austen; KNOWN (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::held-out author sample",
+    "value": 0.691,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Elizabeth Gaskell; KNOWN (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::held-out author sample",
+    "value": 0.638,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Jane Austen; KNOWN (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::held-out author sample",
+    "value": 0.618,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Jane Austen; KNOWN (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::source code",
+    "value": 0.104,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Harriet Beecher Stowe; BLANK-SPACE (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::modern chat",
+    "value": 0.163,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Percy FitzPatrick; BLANK-SPACE (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::biology abstract",
+    "value": 0.199,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Catharine Parr Traill; BLANK-SPACE (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "probe::legalese",
+    "value": 0.246,
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Harriet Beecher Stowe; BLANK-SPACE (thr=0.3)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "fingerprint_known_cos_range",
+    "value": [
+      0.618,
+      0.691
+    ],
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed",
+    "note": "KNOWN probes cosine range"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "fingerprint_ood_cos_range",
+    "value": [
+      0.104,
+      0.246
+    ],
+    "asset": "person2vec-fingerprint-minilm.json",
+    "path": "recomputed",
+    "note": "blank-space probes cosine range"
+  },
+  {
+    "dataset": "coders",
+    "metric": "n_identities",
+    "value": 13,
+    "asset": "person2vec-coders.json",
+    "path": "authors[]",
+    "note": "Coders (code)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "n_passages",
+    "value": 1690,
+    "asset": "person2vec-coders.json",
+    "path": "passages[]",
+    "note": "Coders (code)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "chance",
+    "value": 0.077,
+    "asset": "person2vec-coders.json",
+    "path": "1/len(authors)",
+    "note": "blind-guess baseline"
+  },
+  {
+    "dataset": "coders",
+    "metric": "dim",
+    "value": 768,
+    "asset": "person2vec-coders.json",
+    "path": "dim",
+    "note": "embedding dimension"
+  },
+  {
+    "dataset": "coders",
+    "metric": "rung::Blind guessing",
+    "value": 0.077,
+    "asset": "person2vec-coders.json",
+    "path": "results.rungs[].accuracy",
+    "note": "no information"
+  },
+  {
+    "dataset": "coders",
+    "metric": "rung::Never seen this coder",
+    "value": 0.0,
+    "asset": "person2vec-coders.json",
+    "path": "results.rungs[].accuracy",
+    "note": "held out every line they authored"
+  },
+  {
+    "dataset": "coders",
+    "metric": "rung::Never seen this repo",
+    "value": 0.295,
+    "asset": "person2vec-coders.json",
+    "path": "results.rungs[].accuracy",
+    "note": "has read their code in other repos"
+  },
+  {
+    "dataset": "coders",
+    "metric": "rung::Never seen this file",
+    "value": 0.736,
+    "asset": "person2vec-coders.json",
+    "path": "results.rungs[].accuracy",
+    "note": "has read the coder's other files in this repo"
+  },
+  {
+    "dataset": "coders",
+    "metric": "rung::Read this file",
+    "value": 0.746,
+    "asset": "person2vec-coders.json",
+    "path": "results.rungs[].accuracy",
+    "note": "has seen other lines from the same file"
+  },
+  {
+    "dataset": "coders",
+    "metric": "headline_correct",
+    "value": 1222,
+    "asset": "person2vec-coders.json",
+    "path": "results.headline_correct",
+    "note": "same-unit reveal"
+  },
+  {
+    "dataset": "coders",
+    "metric": "headline_total",
+    "value": 1638,
+    "asset": "person2vec-coders.json",
+    "path": "results.headline_total",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "reel_hits_seen",
+    "value": 38,
+    "asset": "person2vec-coders.json",
+    "path": "results.reel_hits_seen",
+    "note": "predict new passage, author read"
+  },
+  {
+    "dataset": "coders",
+    "metric": "reel_hits_unseen",
+    "value": 0,
+    "asset": "person2vec-coders.json",
+    "path": "results.reel_hits_unseen",
+    "note": "predict new passage, author hidden"
+  },
+  {
+    "dataset": "coders",
+    "metric": "reel_total",
+    "value": 52,
+    "asset": "person2vec-coders.json",
+    "path": "results.reel_total",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "trained_sim",
+    "value": 0.58,
+    "asset": "person2vec-coders.json",
+    "path": "results.trained_sim",
+    "note": "cosine to own centroid"
+  },
+  {
+    "dataset": "coders",
+    "metric": "untrained_sim",
+    "value": 0.461,
+    "asset": "person2vec-coders.json",
+    "path": "results.untrained_sim",
+    "note": "cosine to global centroid"
+  },
+  {
+    "dataset": "coders",
+    "metric": "per_author_acc_min",
+    "value": 0.516,
+    "asset": "person2vec-coders.json",
+    "path": "min results.per_author[].accuracy",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "per_author_acc_max",
+    "value": 0.897,
+    "asset": "person2vec-coders.json",
+    "path": "max results.per_author[].accuracy",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "per_author_acc_mean",
+    "value": 0.746,
+    "asset": "person2vec-coders.json",
+    "path": "mean results.per_author[].accuracy",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::When was it written?::fair",
+    "value": 0.355,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::When was it written?::leaky",
+    "value": 0.675,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::When was it written?::majority",
+    "value": 0.369,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::When was it written?::random",
+    "value": 0.25,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Weekend or weekday?::fair",
+    "value": 0.52,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Weekend or weekday?::leaky",
+    "value": 0.624,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Weekend or weekday?::majority",
+    "value": 0.796,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Weekend or weekday?::random",
+    "value": 0.5,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Systems or scripting?::fair",
+    "value": 0.846,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].fair_accuracy",
+    "note": "leave-one-author-out"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Systems or scripting?::leaky",
+    "value": 0.923,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].leaky_accuracy",
+    "note": "identity-leaking"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Systems or scripting?::majority",
+    "value": 0.615,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].baseline",
+    "note": "majority-class"
+  },
+  {
+    "dataset": "coders",
+    "metric": "attr::Systems or scripting?::random",
+    "value": 0.5,
+    "asset": "person2vec-coders.json",
+    "path": "results.attributes[].random_baseline",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_model::name",
+    "value": "jinaai/jina-embeddings-v2-base-code",
+    "asset": "person2vec-jlens-coders.json",
+    "path": "model.name",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_model::layers",
+    "value": 12,
+    "asset": "person2vec-jlens-coders.json",
+    "path": "model.layers",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_model::d_model",
+    "value": 768,
+    "asset": "person2vec-jlens-coders.json",
+    "path": "model.d_model",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_model::vocab",
+    "value": 61056,
+    "asset": "person2vec-jlens-coders.json",
+    "path": "model.vocab",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_model::passages",
+    "value": 32,
+    "asset": "person2vec-jlens-coders.json",
+    "path": "model.passages",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_model::w_u_source",
+    "value": "tied word embeddings (logit lens)",
+    "asset": "person2vec-jlens-coders.json",
+    "path": "model.w_u_source",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "jlens_axes",
+    "value": [
+      "Systems or scripting?=Scripting \u2194 rest",
+      "Systems or scripting?=Systems \u2194 rest"
+    ],
+    "asset": "person2vec-jlens-coders.json",
+    "path": "axes",
+    "note": "style-lens axes"
+  },
+  {
+    "dataset": "coders",
+    "metric": "structural::stable_rank",
+    "value": [
+      28.522,
+      26.945,
+      26.991,
+      24.154,
+      18.441,
+      10.905,
+      32.705,
+      45.771,
+      51.762,
+      57.026,
+      68.282,
+      79.43
+    ],
+    "asset": "person2vec-jlens-coders.json",
+    "path": "structural.stable_rank",
+    "note": "per layer"
+  },
+  {
+    "dataset": "coders",
+    "metric": "structural::effective_dim",
+    "value": [
+      79.815,
+      90.514,
+      91.877,
+      89.721,
+      83.878,
+      59.969,
+      107.171,
+      123.58,
+      130.379,
+      138.343,
+      153.049,
+      187.162
+    ],
+    "asset": "person2vec-jlens-coders.json",
+    "path": "structural.effective_dim",
+    "note": "per layer"
+  },
+  {
+    "dataset": "coders",
+    "metric": "structural::verbalizability",
+    "value": [
+      0.195,
+      0.208,
+      0.221,
+      0.205,
+      0.209,
+      0.207,
+      0.209,
+      0.238,
+      0.218,
+      0.223,
+      0.217,
+      0.238
+    ],
+    "asset": "person2vec-jlens-coders.json",
+    "path": "structural.verbalizability",
+    "note": "per layer"
+  },
+  {
+    "dataset": "coders",
+    "metric": "cka_offdiag_mean",
+    "value": 0.792,
+    "asset": "person2vec-jlens-coders.json",
+    "path": "mean off-diag structural.cka",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "cka_offdiag_min",
+    "value": 0.655,
+    "asset": "person2vec-jlens-coders.json",
+    "path": "min off-diag structural.cka",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_chance",
+    "value": 0.077,
+    "asset": "person2vec-identity-coders.json",
+    "path": "chance",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_output_acc",
+    "value": 0.38,
+    "asset": "person2vec-identity-coders.json",
+    "path": "output_acc",
+    "note": "output-embedding ceiling"
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_per_layer",
+    "value": [
+      0.425,
+      0.495,
+      0.475,
+      0.385,
+      0.39,
+      0.395,
+      0.4,
+      0.435,
+      0.425,
+      0.415,
+      0.42,
+      0.385
+    ],
+    "asset": "person2vec-identity-coders.json",
+    "path": "per_layer",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_best_layer_acc",
+    "value": 0.495,
+    "asset": "person2vec-identity-coders.json",
+    "path": "max per_layer",
+    "note": "argmax layer 1"
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_best_layer_idx",
+    "value": 1,
+    "asset": "person2vec-identity-coders.json",
+    "path": "argmax per_layer",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "fingerprint_threshold",
+    "value": 0.51,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "threshold",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "fingerprint_n_identities",
+    "value": 13,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "len(authors)",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::held-out coder sample",
+    "value": 0.701,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Salvatore Sanfilippo; KNOWN (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::held-out coder sample",
+    "value": 0.594,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Salvatore Sanfilippo; KNOWN (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::held-out coder sample",
+    "value": 0.68,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Salvatore Sanfilippo; KNOWN (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::held-out coder sample",
+    "value": 0.54,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Salvatore Sanfilippo; KNOWN (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::Victorian prose",
+    "value": 0.243,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Charlie Marsh; BLANK-SPACE (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::modern chat",
+    "value": 0.487,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Mitchell Hashimoto; BLANK-SPACE (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::news headline",
+    "value": 0.168,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Brad Fitzpatrick; BLANK-SPACE (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "probe::recipe",
+    "value": 0.268,
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed max cos(probe.vec, authors[].centroid)",
+    "note": "nearest=Brad Fitzpatrick; BLANK-SPACE (thr=0.51)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "fingerprint_known_cos_range",
+    "value": [
+      0.54,
+      0.701
+    ],
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed",
+    "note": "KNOWN probes cosine range"
+  },
+  {
+    "dataset": "coders",
+    "metric": "fingerprint_ood_cos_range",
+    "value": [
+      0.168,
+      0.487
+    ],
+    "asset": "person2vec-fingerprint-coders.json",
+    "path": "recomputed",
+    "note": "blank-space probes cosine range"
+  }
+]
