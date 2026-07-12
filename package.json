@@ -5,7 +5,7 @@
   "description": "Deploy tooling for the author2vec static WASM site (Cloudflare Workers + static assets).",
   "scripts": {
     "clean": "rm -rf target/dx/web/release/web/public",
-    "build": "cd web && dx bundle --release",
+    "build": "cd web && dx bundle --release --debug-symbols false",
     "predeploy": "npm run clean && npm run build",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev"

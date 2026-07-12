@@ -44,6 +44,74 @@ pub fn Story() -> Element {
                 " Another reason I made this is because it took a couple prompts while babysitting my other agents. It is so easy to create."
             }
 
+            h2 { class: "findings-head", "What we found — proving it, one rung at a time" }
+            p {
+                "\u{201c}The AI knows you\u{201d} is not one claim, it is a ladder. Each rung is a "
+                "different, testable thing, and being honest about which rung each result stands on "
+                "is what makes the whole thing hold up rather than read as hype."
+            }
+            ol { class: "rungs",
+                li {
+                    strong { "It learns the fingerprint." }
+                    " A 6-layer model, shown public-domain prose and "
+                    em { "no author names" }
+                    ", separates 55 authors far above chance and recovers hidden traits — gender, "
+                    "where someone was educated — from style alone, leave-one-author-out. It learned "
+                    "the fingerprint without ever being told the names."
+                }
+                li {
+                    strong { "The fingerprint lives inside the computation." }
+                    " Using the J-lens — an averaged Jacobian that linearizes each layer to the "
+                    "output — we read authorship off the model's "
+                    em { "internal" }
+                    " activations, not just its final vector: identity is recoverable at every layer "
+                    "(≈5–9% vs 1.8% chance). The model does not merely emit your fingerprint; it "
+                    "computes with it. (The single-direction lens is lossy — the raw activations carry more.)"
+                }
+                li {
+                    strong { "We can tell whether your fingerprint exists at all." }
+                    " Given a writing sample, we find the nearest fingerprint and its cosine. "
+                    "Known-style prose lands squarely on an author (0.63–0.69); out-of-distribution "
+                    "text — code, modern chat, a biology abstract, legalese — falls into empty space "
+                    "(0.10–0.25). If nothing is close enough, you are in "
+                    strong { "blank space" }
+                    ": the model has no fingerprint for you."
+                }
+                li {
+                    strong { "The identity direction is causal." }
+                    " Take the direction the Jacobian maps onto a style axis, inject it into an "
+                    "internal activation, and re-embed. The output's loading on that axis swings from "
+                    "near zero to ±0.4–0.6, in whichever direction we push. The fingerprint is not a "
+                    "passive correlation — it is a lever you can pull."
+                }
+            }
+            p { class: "story-aside",
+                "Where the honesty lives: this is 55 public-domain authors and a laptop-sized model. "
+                "That the "
+                em { "mechanism" }
+                " exists is proven. That a frontier model trained on your millions of words holds a "
+                "sharp, personal fingerprint of "
+                em { "you" }
+                " specifically is the natural extrapolation — a well-motivated hypothesis, not "
+                "something 55 authors can settle. And the behavioral half — whether a model reasons "
+                "with these directions, reports them, or masks with them — needs a generative model. "
+                "That is the next track."
+            }
+
+            h2 { class: "findings-head", "Beyond the small model — it holds for a real decoder" }
+            p {
+                "The same machinery transfers to a generative model. On GPT-2, the logit lens shows "
+                "\u{201c}Paris\u{201d} emerge only in the last third of the network, while the Jacobian-corrected "
+                "J-lens surfaces the abstract concept \u{201c}country\u{201d} in the middle layers where the plain "
+                "lens sees only filler — the paper's central phenomenon, reproduced on an open, white-box "
+                "model. And the directions are "
+                em { "causal" }
+                ": inject a concept vector into the residual stream mid-network and the generated text bends "
+                "to adopt it — \u{201c}I thought it was terrible\u{201d}, \u{201c}wonderful. I loved it\u{201d} — including "
+                "an expert\u{2194}casual register axis. The multi-hop reasoning swaps (\u{201c}spider\u{201d}\u{2192}\u{201c}ant\u{201d} "
+                "flipping \u{201c}8\u{201d}\u{2192}\u{201c}6\u{201d}) need a model that can actually reason; that is the honest next step."
+            }
+
             h3 { class: "method-head", "How it works, and why you can trust the number" }
             p { class: "method-note", "{c.methodology}" }
         }

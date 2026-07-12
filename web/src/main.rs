@@ -8,7 +8,7 @@ mod views;
 
 use copy::copy_for;
 use data::use_selector;
-use views::{Accuracy, Dimensions, Map, Story};
+use views::{Accuracy, Dimensions, Jlens, Map, Story};
 
 static CSS: Asset = asset!("/assets/style.css");
 
@@ -25,6 +25,8 @@ enum Route {
     Map {},
     #[route("/dimensions")]
     Dimensions {},
+    #[route("/jlens")]
+    Jlens {},
     #[route("/why")]
     Story {},
 }
@@ -47,19 +49,21 @@ fn Shell() -> Element {
     let c = copy_for(&key);
     rsx! {
         div { class: "app",
+            a { class: "skip-link", href: "#main", "Skip to content" }
             header { class: "hero",
                 h1 { "author2vec" }
-                p { class: "subtitle", "The AI's already know you, or they probably never will" }
+                p { class: "subtitle", "The AIs already know you." }
                 p { class: "tagline", "{c.tagline}" }
                 DatasetToggle {}
-                nav { class: "tabs",
+                nav { class: "tabs", "aria-label": "Views",
                     Link { to: Route::Accuracy {}, class: "tab", active_class: "active", "{c.tab_predict}" }
                     Link { to: Route::Map {}, class: "tab", active_class: "active", "🗺 Vector-space map" }
                     Link { to: Route::Dimensions {}, class: "tab", active_class: "active", "🔮 Hidden dimensions" }
+                    Link { to: Route::Jlens {}, class: "tab", active_class: "active", "🔬 J-lens" }
                     Link { to: Route::Story {}, class: "tab", active_class: "active", "💭 Why I made this" }
                 }
             }
-            main { class: "content", Outlet::<Route> {} }
+            main { id: "main", class: "content", Outlet::<Route> {} }
             footer { class: "footer",
                 "{c.source_prefix}"
                 a { href: "{c.source_href}", "{c.source_name}" }

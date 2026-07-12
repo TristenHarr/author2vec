@@ -127,7 +127,7 @@ canvas { display: block; border-radius: 8px; cursor: crosshair; }
 
 .matrix-wrap { flex: 1 1 460px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; }
 .matrix-cap { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
-.matrix { max-width: 100%; }
+.matrix { max-width: none; }
 .matrix-label { font-size: 11px; fill: var(--muted); }
 .matrix-count { font-size: 9px; font-variant-numeric: tabular-nums; }
 
@@ -231,4 +231,182 @@ canvas { display: block; border-radius: 8px; cursor: crosshair; }
 .model-picker { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
 .mp-label { color: var(--muted); font-size: 13px; }
 .mp-dim { color: var(--muted); font-weight: 400; font-size: 11px; }
-.chip.active .mp-dim { color: #e7e2ff; }
+.chip.active .mp-dim { color: #d6f5ef; }
+
+/* ==========================================================================
+   transformer-circuits restyle + WCAG 2.2 AAA foundation
+   Academic serif body / sans headings / mono code; turquoise accent with an
+   AAA-dark teal for text & filled backgrounds; visible focus; reduced motion.
+   Layered as overrides so component classes above inherit via the variables.
+   ========================================================================== */
+:root {
+  --bg: #ffffff;
+  --bg-soft: #fafafa;
+  --panel: #ffffff;
+  --ink: #2c2c33;            /* body text — ~12:1 on white */
+  --muted: #545454;          /* secondary text — >=7:1 (AAA) on white and on --bg-soft */
+  --faint: #6b6b6b;          /* large/graphical text only */
+  --line: #e4e4ea;
+  --accent: #2dd4bf;         /* light beautiful teal — fills, rules, marks (NON-text) */
+  --accent-bright: #5eead4;  /* lighter teal — highlights / glows */
+  --accent-aqua: #22d3ee;    /* aqua-cyan — gradient companion */
+  --accent-ink: #0d5b52;     /* dark teal — accent TEXT, links, filled bg w/ white text (7.97:1 AAA) */
+  --accent-soft: #e6fbf7;    /* pale teal wash */
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --measure: 46rem;
+}
+
+body { font-family: var(--serif); color: var(--ink); }
+h1, h2, h3, h4, .tab, .chip, .mp-label, .matrix-label, .gaxis, .gref,
+.big-num, .stat-num, .rs-num, .attr-big, .ladder-val, .bar-val, .legend-count { font-family: var(--sans); }
+.mono, code, pre, .passage-text, .tg-tok, .tg-top, .tg-alt, .jlens-model .mono { font-family: var(--mono); }
+
+/* Luminous teal wordmark — a princess-eyes teal→aqua, AAA-large on white. */
+.hero h1 {
+  background: linear-gradient(100deg, #0f766e 0%, #0e7490 60%, #0e7490 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 600; letter-spacing: -0.5px; font-family: var(--sans);
+}
+.subtitle, .tagline, .pullquote, .story-sub { font-family: var(--serif); }
+.subtitle { color: var(--accent-ink); }
+
+/* Reading measure for prose. */
+.explainer, .story, .dims-view > .explainer { max-width: var(--measure); }
+.story p { font-family: var(--serif); }
+
+/* Links: dark-teal, always distinguishable (not by color alone — underlined). */
+a { color: var(--accent-ink); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--accent-ink); text-decoration-thickness: 2px; }
+
+/* Turquoise accent surfaces. Filled backgrounds that carry white text use the
+   dark teal so contrast stays AAA; bright turquoise is reserved for marks/rules. */
+.tab.active { background: var(--accent-ink); border-color: var(--accent-ink); color: #fff; }
+.tab:hover { border-color: var(--accent-ink); }
+.chip.active { background: var(--accent-ink); border-color: var(--accent-ink); color: #fff; }
+.reveal-btn { background: var(--accent-ink); }
+.spinner { border-top-color: var(--accent); }
+.pullquote { border-left-color: var(--accent); }
+.story-aside, .reel-super { background: var(--accent-soft); color: var(--ink); }
+.big-num, .attr-big, .stat-num { color: var(--accent-ink); }
+
+/* Visible focus everywhere (AAA 2.4.11/2.4.13). */
+a:focus-visible, button:focus-visible, .tab:focus-visible, .chip:focus-visible,
+.legend-item:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Target size >= 24px min (AAA 2.5.5 aims 44px; ensure comfortable hit areas). */
+.tab { padding: 10px 16px; }
+.chip { padding: 8px 13px; }
+.legend-item { min-height: 32px; }
+
+/* Respect reduced-motion (AAA 2.3.3 / 2.2.2). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* Skip link + screen-reader-only utility. */
+.skip-link {
+  position: absolute; left: 8px; top: -48px; z-index: 20;
+  background: var(--accent-ink); color: #fff; padding: 8px 14px; border-radius: 8px;
+  text-decoration: none; transition: top .15s;
+}
+.skip-link:focus { top: 8px; color: #fff; }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---- J-lens view ---- */
+.jlens-view { max-width: 980px; margin: 0 auto; }
+.jlens-model { text-align: center; color: var(--muted); font-size: 12.5px; margin: -8px 0 22px; }
+.jlens-model .mono { font-size: 12px; }
+.mono { font-family: var(--mono); }
+
+.depth-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 24px; }
+.identity-panel { background: var(--accent-soft); border: 1px solid #cdeee8; border-radius: 10px; padding: 18px; margin-bottom: 24px; }
+.identity-panel h3 { margin-bottom: 6px; }
+.identity-panel svg { max-width: 100%; }
+
+/* Fingerprint-presence detector. */
+.fp-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 24px; }
+.fp-panel h3 { margin-bottom: 6px; }
+.fp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.fp-result { border-top: 1px solid var(--line); padding-top: 14px; }
+.fp-snippet { font-family: var(--serif); font-style: italic; color: var(--ink); margin: 0 0 12px; }
+.fp-verdict { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-radius: 10px; margin-bottom: 10px; }
+.fp-verdict.known { background: var(--accent-soft); }
+.fp-verdict.blank { background: #f1f1f4; }
+.fp-badge { font-weight: 800; font-size: 15px; font-family: var(--sans); }
+.fp-verdict.known .fp-badge { color: var(--accent-ink); }
+.fp-verdict.blank .fp-badge { color: #595454; }
+.fp-cos { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.fp-nearest { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 8px 0; }
+.depth-grid { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+.depth-chart { margin: 0; }
+.depth-chart figcaption { text-align: center; font-family: var(--sans); font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+
+.jlens-picker { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 6px 0 18px; }
+
+.jlens-example { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 24px; }
+
+.token-grid-wrap { overflow-x: auto; }
+.token-grid { border-collapse: collapse; font-size: 12px; margin: 8px 0; }
+.token-grid th, .token-grid td { border: 1px solid var(--line); padding: 5px 7px; vertical-align: top; text-align: left; }
+.token-grid thead th { background: var(--bg-soft); font-family: var(--sans); }
+.token-grid tbody th { font-family: var(--sans); text-align: center; color: var(--muted); font-weight: 700; }
+.tg-pos { font-size: 10px; color: var(--muted); }
+.tg-tok { font-size: 11px; color: var(--accent-ink); }
+.token-grid td { min-width: 90px; }
+.tg-top, .tg-alt { display: block; line-height: 1.5; }
+.tg-top { color: var(--ink); font-weight: 600; }
+.tg-alt { color: var(--muted); font-size: 11px; }
+
+.style-panel { overflow-x: auto; }
+.style-panel svg { max-width: 100%; }
+
+/* ---- Flat academic chrome (transformer-circuits mimic) + teal beauty ---- */
+.ladder-panel, .gradient-panel, .reel-panel, .attr-panel, .per-author, .matrix-wrap,
+.rank-col, .passage-card, .depth-panel, .jlens-example, .map-wrap, .legend, .near-card {
+  box-shadow: none;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+.tab:hover { color: var(--accent-ink); }
+.legend-item:hover { background: var(--accent-soft); }
+.reel-super, .story-aside { background: var(--accent-soft); }
+.bar-track { background: #eef0f2; }
+
+/* A soft luminous teal wash behind the hero — the "princess-eyes" glow. */
+.hero { position: relative; }
+.hero::after {
+  content: ""; position: absolute; inset: -30px 0 auto; height: 230px; z-index: -1;
+  background: radial-gradient(58% 80% at 50% 0%, rgba(45, 212, 191, 0.16), rgba(45, 212, 191, 0) 72%);
+  pointer-events: none;
+}
+.subtitle { color: var(--accent-ink); font-weight: 600; }
+h3 { letter-spacing: -0.01em; }
+.explainer { font-size: 16px; line-height: 1.62; }
+
+/* Turquoise selection + accented rules. */
+::selection { background: var(--accent-bright); color: #05312b; }
+
+/* J-space + concept panels. */
+.jspace-panel { margin: 8px 0 4px; }
+.jspace-meter { height: 14px; background: #eef0f2; border-radius: 999px; overflow: hidden; max-width: 520px; }
+.jspace-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-aqua)); border-radius: 999px; }
+.jspace-pct { font-size: 13px; color: var(--muted); margin: 6px 0 10px; }
+.jspace-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.jspace-chip { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); border: 1px solid #cdeee8; }
+
+/* Findings ladder on the story page. */
+.findings-head { font-size: 25px; margin: 36px 0 8px; font-family: var(--sans); }
+.rungs { padding-left: 22px; margin: 10px 0 20px; }
+.rungs li { margin-bottom: 15px; line-height: 1.62; }
+.rungs li strong { color: var(--accent-ink); }
+.rungs li::marker { color: var(--accent); font-weight: 700; }

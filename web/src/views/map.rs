@@ -55,6 +55,8 @@ pub fn Map() -> Element {
                 div { class: "map-wrap",
                     canvas {
                         id: CANVAS_ID,
+                        role: "img",
+                        "aria-label": "Scatter plot of passages in 2D embedding space, each dot colored by author and hollow rings marking held-out mystery passages. The keyboard-navigable author legend to the side lists every author and their passage count as the accessible equivalent.",
                         onmousemove: move |evt| {
                             let c = evt.element_coordinates();
                             let (mx, my) = (c.x, c.y);

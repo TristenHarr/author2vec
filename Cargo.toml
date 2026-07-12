@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["shared", "corpus", "web"]
+members = ["shared", "corpus", "web", "jlens"]
 # NOTE: intentionally no `default-members`. dioxus-cli 0.7.9 panics when run from a
 # subdirectory if the workspace lists default-members (it canonicalizes those paths
 # relative to the cwd). Build the pieces with explicit commands instead:

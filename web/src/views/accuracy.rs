@@ -222,6 +222,8 @@ fn FamiliarityGradient(
         svg {
             class: "gradient-chart",
             width: "{w}", height: "{h}", view_box: "0 0 {w} {h}",
+            role: "img",
+            "aria-label": "Line chart: attribution accuracy rising with how many passages per author the model has read, versus chance and unseen-work reference lines.",
             for pct in [0, 25, 50, 75, 100] {
                 {
                     let gy = py(pct as f64 / 100.0);
@@ -269,10 +271,10 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
     let n = bundle.n_authors();
     let left = 82.0_f64;
     let top = 88.0_f64;
-    // Scale the cell so the whole matrix fits the panel width and centers, instead of
-    // overflowing. Drop per-cell counts and shrink labels once cells get small.
-    let cell = ((940.0_f64 - left - 12.0) / n.max(1) as f64).clamp(11.0, 30.0);
-    let show_counts = cell >= 22.0;
+    // Keep cells at least 22px so per-cell counts stay legible. When the matrix is
+    // wider than the panel it scrolls horizontally (`.matrix`/`.matrix-wrap` in
+    // style.css) instead of shrinking every number down to nothing.
+    let cell = (900.0_f64 / n.max(1) as f64).clamp(22.0, 34.0);
     let label_fs = if cell < 18.0 { 8 } else { 11 };
     let w = left + n as f64 * cell + 12.0;
     let h = top + n as f64 * cell + 12.0;
@@ -281,6 +283,8 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
         svg {
             class: "matrix",
             width: "{w}", height: "{h}", view_box: "0 0 {w} {h}",
+            role: "img",
+            "aria-label": "Confusion matrix: rows are the true author, columns the model's predicted author; per-cell counts are shown.",
             for c in 0..n {
                 {
                     let name = short(&bundle.meta.authors[c].name);
@@ -328,7 +332,7 @@ fn ConfusionMatrix(confusion: Vec<Vec<u32>>) -> Element {
                                             fill: "{author.color}", fill_opacity: "{opacity}",
                                             stroke: "#e7e7ef", stroke_width: "1",
                                         }
-                                        if count > 0 && show_counts {
+                                        if count > 0 {
                                             text {
                                                 x: "{x + cell / 2.0}", y: "{y + cell / 2.0 + 3.0}",
                                                 class: "matrix-count",

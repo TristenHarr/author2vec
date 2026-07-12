@@ -2,6 +2,12 @@
 name = "person2vec"
 default_platform = "web"
 
+# Size-optimize the wasm (uses a working system wasm-opt / binaryen on PATH; dx's
+# bundled copy aborts on this build).
+[web.wasm_opt]
+level = "s"
+debug = false
+
 [web.app]
 title = "author2vec — Claude already knows you"
 # For a GitHub Pages project site, set this to "/<repo-name>" for release builds

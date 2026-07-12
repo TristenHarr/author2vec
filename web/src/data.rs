@@ -15,6 +15,12 @@ static MINILM_JSON: Asset = asset!("/assets/person2vec-minilm.json");
 static MINILM_BIN: Asset = asset!("/assets/person2vec-minilm.bin");
 static CODERS_JSON: Asset = asset!("/assets/person2vec-coders.json");
 static CODERS_BIN: Asset = asset!("/assets/person2vec-coders.bin");
+static JLENS_JSON: Asset = asset!("/assets/person2vec-jlens-minilm.json");
+static JLENS_CODERS_JSON: Asset = asset!("/assets/person2vec-jlens-coders.json");
+static IDENTITY_MINILM: Asset = asset!("/assets/person2vec-identity-minilm.json");
+static IDENTITY_CODERS: Asset = asset!("/assets/person2vec-identity-coders.json");
+static FP_MINILM: Asset = asset!("/assets/person2vec-fingerprint-minilm.json");
+static FP_CODERS: Asset = asset!("/assets/person2vec-fingerprint-coders.json");
 
 fn dataset_urls(key: &str) -> Option<(String, String)> {
     Some(match key {
@@ -106,6 +112,37 @@ async fn load_bundle(key: &str) -> Result<Bundle, String> {
         return Err(format!("vector/passage mismatch for {key}"));
     }
     Ok(Bundle { meta, vectors })
+}
+
+/// Load the precomputed J-lens bundle for a dataset: `coders` (JinaBERT) or `minilm`/
+/// authors (all-MiniLM-L6-v2).
+pub async fn load_jlens(key: &str) -> Result<shared::JlensBundle, String> {
+    let url = match key {
+        "coders" => JLENS_CODERS_JSON.to_string(),
+        _ => JLENS_JSON.to_string(),
+    };
+    let bytes = fetch(&url).await?;
+    serde_json::from_slice(&bytes).map_err(|e| e.to_string())
+}
+
+/// Load the "does it learn who wrote it?" identity-by-layer result for a dataset.
+pub async fn load_identity(key: &str) -> Result<shared::IdentityBundle, String> {
+    let url = match key {
+        "coders" => IDENTITY_CODERS.to_string(),
+        _ => IDENTITY_MINILM.to_string(),
+    };
+    let bytes = fetch(&url).await?;
+    serde_json::from_slice(&bytes).map_err(|e| e.to_string())
+}
+
+/// Load the fingerprint-presence detector data (centroids + precomputed samples).
+pub async fn load_fingerprint(key: &str) -> Result<shared::FingerprintBundle, String> {
+    let url = match key {
+        "coders" => FP_CODERS.to_string(),
+        _ => FP_MINILM.to_string(),
+    };
+    let bytes = fetch(&url).await?;
+    serde_json::from_slice(&bytes).map_err(|e| e.to_string())
 }
 
 async fn fetch(url: &str) -> Result<Vec<u8>, String> {

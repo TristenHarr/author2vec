@@ -1,0 +1,1 @@
+{"model":"sentence-transformers/all-MiniLM-L6-v2","subject":"author","identities":55,"chance":0.0182,"output_acc":0.144,"per_layer":[0.052,0.072,0.088,0.080,0.072,0.088]}

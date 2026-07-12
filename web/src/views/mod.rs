@@ -2,11 +2,13 @@
 
 mod accuracy;
 mod dimensions;
+mod jlens;
 mod map;
 mod story;
 
 pub use accuracy::Accuracy;
 pub use dimensions::Dimensions;
+pub use jlens::Jlens;
 pub use map::Map;
 pub use story::Story;
 
