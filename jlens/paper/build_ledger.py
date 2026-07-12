@@ -163,6 +163,24 @@ for key, label, core_fn in DATASETS:
                 [r3(min(ood_cos)), r3(max(ood_cos))], fn,
                 "recomputed", "blank-space probes cosine range")
 
+    # ---- ignition bundle: identity commitment across depth ----
+    ig = load(f"person2vec-ignition-{key}.json")
+    if ig:
+        fn = f"person2vec-ignition-{key}.json"
+        add(key, "ignition_n_pairs", ig["n_pairs"], fn, "n_pairs", "")
+        add(key, "ignition_separation_mean", [r3(v) for v in ig["separation_mean"]], fn,
+            "separation_mean", "A-vs-B separation, identity axis, per depth")
+        add(key, "ignition_separation_null_random", [r3(v) for v in ig["separation_null_random_mean"]],
+            fn, "separation_null_random_mean", "random-direction null")
+        add(key, "ignition_separation_null_shuffled", [r3(v) for v in ig["separation_null_shuffled_mean"]],
+            fn, "separation_null_shuffled_mean", "shuffled-label null")
+        add(key, "ignition_index_mean", [r3(v) for v in ig["ignition_index_mean"]], fn,
+            "ignition_index_mean", "transition sharpness per depth (0 graded → 1 snap)")
+        add(key, "ignition_depth", ig["ignition_depth"], fn, "ignition_depth", "")
+        sm = ig["separation_mean"]
+        add(key, "ignition_separation_peak", r3(max(sm)), fn, "max separation_mean",
+            f"peak at depth {sm.index(max(sm))}")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

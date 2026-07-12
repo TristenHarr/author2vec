@@ -9,6 +9,7 @@ Run:  python3 jlens/figures/make_figures.py
 """
 import json
 import os
+import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -189,6 +190,53 @@ def fig5_style():
     save(fig, "fig5_style.png")
 
 
+# ---- Fig 6: identity ignition ----
+def fig6_ignition(ds="minilm", dslabel="Authors (prose)"):
+    path = os.path.join(ASSETS, f"person2vec-ignition-{ds}.json")
+    if not os.path.exists(path):
+        print(f"  (skip fig6: {os.path.basename(path)} not present yet)")
+        return
+    b = json.load(open(path))
+    alphas, depths = b["alphas"], b["depths"]
+    commit = b["example"]["commitment"]  # [depth][alpha]
+    nd = len(depths)
+    fig, axes = plt.subplots(1, 3, figsize=(12.5, 3.5))
+
+    # A: commitment curves colored by depth (graded shallow → snap deep)
+    ax = axes[0]
+    for d in range(nd):
+        col = PURPLE_SEQ(0.12 + 0.82 * d / (nd - 1))
+        ax.plot(alphas, commit[d], "-", color=col, lw=1.9)
+    ax.axhline(0, color=MUTED, lw=0.8)
+    ax.set_title(f"Commitment vs α by depth\n{b['example']['a']} ↔ {b['example']['b']}")
+    ax.set_xlabel("α   (input blend B → A)")
+    ax.set_ylabel("commitment  (− = B, + = A)")
+    sm = plt.cm.ScalarMappable(cmap=PURPLE_SEQ, norm=plt.Normalize(0, nd - 1))
+    fig.colorbar(sm, ax=ax, label="depth", fraction=0.046, pad=0.04)
+
+    # B: separation vs depth, real vs two nulls
+    ax = axes[1]
+    m = np.array(b["separation_mean"]); sd = np.array(b["separation_std"])
+    ax.fill_between(depths, m - sd, m + sd, color=AUTHORS, alpha=0.15)
+    ax.plot(depths, m, "-o", color=AUTHORS, lw=2, label="identity axis")
+    ax.plot(depths, b["separation_null_shuffled_mean"], "--s", color=MUTED, lw=1.5, label="shuffled-label null")
+    ax.plot(depths, b["separation_null_random_mean"], ":^", color=NEG, lw=1.5, label="random-direction null")
+    ax.set_title("Endpoint separation vs depth")
+    ax.set_xlabel("depth"); ax.set_ylabel("A–vs–B separation")
+    ax.legend(fontsize=8)
+
+    # C: ignition index vs depth (graded → all-or-none)
+    ax = axes[2]
+    ax.plot(depths, b["ignition_index_mean"], "-o", color=CODERS, lw=2)
+    ax.set_ylim(0, 1)
+    ax.set_title("Ignition index vs depth")
+    ax.set_xlabel("depth"); ax.set_ylabel("sharpness  (0 graded → 1 snap)")
+
+    fig.suptitle("Identity ignition: commitment to one author sharpens with depth",
+                 fontsize=12, fontweight="bold", y=1.03)
+    save(fig, "fig6_ignition.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
     fig1_identity()
@@ -196,4 +244,5 @@ if __name__ == "__main__":
     fig3_cka()
     fig4_fingerprint()
     fig5_style()
+    fig6_ignition()
     print("done.")

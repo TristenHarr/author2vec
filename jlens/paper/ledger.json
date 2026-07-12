@@ -420,6 +420,21 @@
   },
   {
     "dataset": "minilm",
+    "metric": "structural::autocorrelation",
+    "value": [
+      -0.004,
+      0.004,
+      0.048,
+      0.101,
+      0.116,
+      0.088
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "structural.autocorrelation",
+    "note": "per layer"
+  },
+  {
+    "dataset": "minilm",
     "metric": "cka_offdiag_mean",
     "value": 0.858,
     "asset": "person2vec-jlens-minilm.json",
@@ -582,6 +597,94 @@
     "asset": "person2vec-fingerprint-minilm.json",
     "path": "recomputed",
     "note": "blank-space probes cosine range"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_n_pairs",
+    "value": 15,
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "n_pairs",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_separation_mean",
+    "value": [
+      0.355,
+      0.544,
+      0.63,
+      0.775,
+      0.954,
+      0.663,
+      0.543
+    ],
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "separation_mean",
+    "note": "A-vs-B separation, identity axis, per depth"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_separation_null_random",
+    "value": [
+      0.063,
+      0.069,
+      0.09,
+      0.117,
+      0.138,
+      0.11,
+      0.097
+    ],
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "separation_null_random_mean",
+    "note": "random-direction null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_separation_null_shuffled",
+    "value": [
+      0.147,
+      0.256,
+      0.328,
+      0.385,
+      0.469,
+      0.346,
+      0.124
+    ],
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "separation_null_shuffled_mean",
+    "note": "shuffled-label null"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_index_mean",
+    "value": [
+      0.091,
+      0.475,
+      0.57,
+      0.697,
+      0.734,
+      0.737,
+      0.74
+    ],
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "ignition_index_mean",
+    "note": "transition sharpness per depth (0 graded \u2192 1 snap)"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_depth",
+    "value": 6,
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "ignition_depth",
+    "note": ""
+  },
+  {
+    "dataset": "minilm",
+    "metric": "ignition_separation_peak",
+    "value": 0.954,
+    "asset": "person2vec-ignition-minilm.json",
+    "path": "max separation_mean",
+    "note": "peak at depth 4"
   },
   {
     "dataset": "coders",

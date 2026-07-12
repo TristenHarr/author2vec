@@ -193,10 +193,29 @@ emitted. _(All values: ledger `identity_*`.)_
 
 ### 5.2 Identity ignition — does the space collapse to a single person?
 
-_[pending: T2.1–T2.5]_ Hypothesis: ambiguous between-two-authors inputs transition from graded
-to all-or-none commitment to a single identity at a characteristic depth.
+We adapt the paper's ambiguous-input ignition to identity. For an author pair $(A,B)$ we build
+a per-depth difference-of-means axis $\hat u_\ell = \widehat{c_{A,\ell}-c_{B,\ell}}$ from their
+*training* passages, then blend two *held-out* passages at the input embedding,
+$h_0(\alpha)=(1-\alpha)h_0^{B}+\alpha h_0^{A}$, sweep $\alpha\in[0,1]$, and read the commitment
+$s_\ell(\alpha)=\hat u_\ell\!\cdot\!(\bar p_\ell(\alpha)-m_\ell)$ at every depth (15 pairs). A
+graded layer ramps linearly in $\alpha$; an *ignited* layer snaps.
 
-![placeholder](figures/fig6_ignition.png)
+![Identity ignition (MiniLM). Left: commitment vs. α by depth for one pair (input-linear at depth 0, stepped by mid-depth). Middle: A-vs-B separation rises to a mid-network peak and towers over both nulls. Right: the ignition index (transition sharpness) rises with depth.](figures/fig6_ignition.png)
+
+**The representation commits to one author, increasingly with depth.** Endpoint separation along
+the identity axis rises from $0.36$ at the input to a **mid-network peak of $0.95$ at depth 4**
+(of 6), then eases to $0.54$ at the output — and it dominates both controls at every depth: the
+random-direction null sits at $0.06$–$0.14$ (a $\sim\!7\times$ margin at the peak) and the
+shuffled-label null at $0.15$–$0.47$. So the effect is **identity-specific**, not a generic
+consequence of blending inputs. The **ignition index** (transition sharpness, $0$ = graded, $1$
+= all-or-none) climbs from $0.09$ at the input — where the readout is, correctly, linear in the
+blended input — to $0.73$–$0.74$ by mid-depth and holds. In short: *shallow layers hold a graded
+mixture; by the middle of the network the representation has snapped to a single author.* The
+mid-network peak echoes the low-rank "workspace" bottleneck we see structurally (§5.3).
+
+*Honesty.* This is a 6-layer encoder and 15 pairs; the sharpening is measured *along an axis the
+separation control proves is identity-specific*, but we cannot fully exclude that some of the
+depth-wise sharpening reflects generic late-layer nonlinearity. We report the raw depth series.
 
 ### 5.3 Structural signatures across depth
 

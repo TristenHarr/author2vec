@@ -45,6 +45,16 @@ impl LensModel {
             LensModel::Jina(m) => m.forward_from(layer, hidden),
         }
     }
+    pub fn hidden_states_from(&self, start: usize, hidden: &Tensor) -> candle_core::Result<Vec<Tensor>> {
+        match self {
+            LensModel::Bert(m) => {
+                let (b, t, _) = hidden.dims3()?;
+                let ones = Tensor::ones((b, t), DType::F32, hidden.device())?;
+                m.hidden_states_from(start, hidden, &bert::extended_attention_mask(&ones)?)
+            }
+            LensModel::Jina(m) => m.hidden_states_from(start, hidden),
+        }
+    }
 }
 
 use std::path::PathBuf;
@@ -145,6 +155,13 @@ impl Harness {
     /// the steering experiment to re-embed after injecting a direction.
     pub fn forward_from(&self, layer: usize, hidden: &Tensor) -> Result<Tensor> {
         Ok(self.model.forward_from(layer, hidden)?)
+    }
+
+    /// Run layers `layer..` from an injected hidden state, returning the residual
+    /// stream at every depth `[h[layer], …, h[final]]` — the ignition experiment
+    /// reads identity commitment at each depth under a blended input.
+    pub fn hidden_states_from(&self, layer: usize, hidden: &Tensor) -> Result<Vec<Tensor>> {
+        Ok(self.model.hidden_states_from(layer, hidden)?)
     }
 
     pub fn token_str(&self, id: u32) -> String {
