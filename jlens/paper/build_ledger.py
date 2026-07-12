@@ -195,6 +195,22 @@ for key, label, core_fn in DATASETS:
         add(key, "steer_random_drift_max", r3(max(rand_drifts)), fn,
             "max |loading_random[-1]-loading_random[0]|", "matched-norm control drift")
 
+# ---- decoder structural (GPT-2) — single bundle, not per-dataset ----
+dec = load("person2vec-decoder-structural-gpt2.json")
+if dec:
+    fn = "person2vec-decoder-structural-gpt2.json"
+    add("gpt2", "decoder_prompts", dec["prompts"], fn, "prompts", "")
+    add("gpt2", "decoder_layers", dec["layers"], fn, "layers", "")
+    for k in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation", "next_token_acc"):
+        add("gpt2", f"decoder::{k}", [r3(v) for v in dec[k]], fn, k, "per depth")
+    sr, ed = dec["stable_rank"], dec["effective_dim"]
+    add("gpt2", "decoder_stable_rank_peak", r3(max(sr)), fn, "max stable_rank",
+        f"workspace peak at layer {sr.index(max(sr))}; ends {r3(sr[-1])}")
+    add("gpt2", "decoder_effdim_peak", r3(max(ed)), fn, "max effective_dim",
+        f"peak at layer {ed.index(max(ed))}; ends {r3(ed[-1])}")
+    add("gpt2", "decoder_nexttok_final", r3(dec["next_token_acc"][-1]), fn,
+        "next_token_acc[-1]", "final-depth logit-lens next-token accuracy")
+
 out = os.path.join(HERE, "ledger.json")
 with open(out, "w") as f:
     json.dump(ledger, f, indent=2)

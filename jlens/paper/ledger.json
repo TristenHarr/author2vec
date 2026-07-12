@@ -1410,5 +1410,151 @@
     "asset": "person2vec-ignition-coders.json",
     "path": "max separation_mean",
     "note": "peak at depth 12"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_prompts",
+    "value": 10,
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "prompts",
+    "note": ""
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_layers",
+    "value": 12,
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "layers",
+    "note": ""
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::stable_rank",
+    "value": [
+      2.565,
+      4.996,
+      6.295,
+      6.448,
+      6.634,
+      6.728,
+      6.536,
+      6.488,
+      6.679,
+      5.182,
+      3.817,
+      2.034
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "stable_rank",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::effective_dim",
+    "value": [
+      5.767,
+      16.163,
+      25.818,
+      30.349,
+      32.075,
+      33.533,
+      31.078,
+      29.94,
+      32.527,
+      23.724,
+      13.807,
+      4.109
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "effective_dim",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::verbalizability",
+    "value": [
+      0.886,
+      1.809,
+      2.442,
+      2.084,
+      2.151,
+      1.941,
+      1.903,
+      1.573,
+      1.263,
+      1.391,
+      1.1,
+      0.893
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "verbalizability",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::autocorrelation",
+    "value": [
+      0.007,
+      0.05,
+      0.031,
+      0.047,
+      0.044,
+      0.052,
+      0.058,
+      0.099,
+      0.123,
+      0.145,
+      0.161,
+      0.11
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "autocorrelation",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::next_token_acc",
+    "value": [
+      0.0,
+      0.026,
+      0.026,
+      0.032,
+      0.032,
+      0.047,
+      0.051,
+      0.072,
+      0.109,
+      0.13,
+      0.17,
+      0.213,
+      0.226
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "next_token_acc",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_stable_rank_peak",
+    "value": 6.728,
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "max stable_rank",
+    "note": "workspace peak at layer 5; ends 2.034"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_effdim_peak",
+    "value": 33.533,
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "max effective_dim",
+    "note": "peak at layer 5; ends 4.109"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_nexttok_final",
+    "value": 0.226,
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "next_token_acc[-1]",
+    "note": "final-depth logit-lens next-token accuracy"
   }
 ]

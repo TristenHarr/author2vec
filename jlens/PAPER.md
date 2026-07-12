@@ -311,8 +311,22 @@ approximation). This is the paper's mechanistic apparatus on an open model that 
 
 ![Decoder structural signatures on GPT-2 (Figure-28 series + next-token accuracy).](figures/fig7_decoder.png)
 
-_[results pending: Phase 3 run in progress — the numbers here will be filled from the ledger, and
-the honest verdict on (i)/(ii) stated, whatever it is.]_
+**Result: both predictions hold, and more cleanly than on the encoders.** Next-token accuracy is
+near zero through the first six layers and then climbs steadily to $22.6\%$ at the output —
+hypothesis (ii): the late layers are the motor regime. The Jacobian's **stable rank and effective
+dimension trace a pronounced inverted-U** — low at the input ($2.6$ / $5.8$), high through the
+middle ($6.7$ / $33.5$ at layer 5), collapsing to near rank-one at the output ($2.0$ / $4.1$) — a
+sensory→workspace→motor signature that is *sharper on the 12-layer decoder than on the 6-layer
+encoders*, exactly as the "needs depth to spare" reading predicts (hypothesis (i)). Autocorrelation
+rises with depth to $0.16$, echoing the encoder workspace-persistence.
+
+*Honesty.* Final-layer next-token accuracy ($22.6\%$) is low — archaic literary prose, a 48-token
+context, 10 prompts — so read the accuracy *shape*, not its level. And our motor-end *collapse* is
+the opposite of the paper's motor behavior (there $J_\ell\!\to\!$ identity, full rank): the
+difference is deliberate and methodological — our decoder Jacobian reads the **last position** (the
+next-token driver), which naturally becomes low-rank as the network commits to a single output,
+rather than the full residual stream the paper differentiates. The workspace geometry transfers;
+the motor *readout* is ours, and we flag it as such.
 
 ### 5.6 Behavioral steering — can't-answer → can-answer
 _[pending: Phase 4]_ ![placeholder](figures/fig8_behavioral.png)
