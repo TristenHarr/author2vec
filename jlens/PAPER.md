@@ -57,8 +57,38 @@ about what we **do not** claim: no "IQ", no consciousness.
 
 ## 1. Introduction
 
-_[T6.1] The reframe: reasoning-workspace-in-closed-decoders → identity-forensics-in-open-encoders;
-why an encoder is a clean minimal testbed for the mechanistic (not behavioral) claims; roadmap._
+Recent interpretability work argues that large language models maintain a privileged, verbalizable
+"workspace" of representations — a small subset of activations that are reportable, controllable,
+and causally responsible for reasoning [@workspace2026]. That evidence comes from a *generative
+decoder* with hundreds of billions of parameters and privileged internal access, read out with an
+**averaged-Jacobian lens** onto the token vocabulary. It is a striking picture, but it is expensive
+to reproduce and impossible to inspect from the outside.
+
+We ask a different, smaller, checkable question with the same apparatus: **where, inside a network,
+does *who wrote this* become decidable?** We take the averaged-Jacobian lens and move it from a
+frontier decoder to two small, open, *embedding encoders* — a 6-layer prose model (MiniLM) and a
+12-layer code model (JinaBERT) — and re-point it from reasoning onto **personal writing-style
+identity**. An encoder is a clean minimal testbed for the paper's *mechanistic* claims precisely
+because it strips away generation: there is no autoregressive loop to smuggle information through,
+just a fixed map from text to a single pooled vector. It cannot, however, speak to the paper's
+*behavioral* claims (verbal report, reasoning swaps); those need a decoder, which we take up
+separately (§5.5–5.7).
+
+Carrying the lens across that gap takes three ingredients (§4): a **δ-broadcast reduction** that
+collapses the encoder's intractable position×position Jacobian to one matrix per layer; an
+**embedding-space projection** that removes the meaningless radial direction of a normalized
+output; and a **style lens** that reads the layer Jacobian onto interpretable identity axes rather
+than the token vocabulary — the trustworthy signal where an encoder has no clean unembedding.
+
+With these we find that **author identity is a computed intermediate, decodable above chance at
+every layer** (§5.1), not merely an artifact of the output embedding; that an ambiguous
+two-author input causes the internal representation to **commit to a single author increasingly
+with depth**, peaking in a mid-network band and surviving two null controls (§5.2, ignition); that
+the same geometry yields a **fingerprint-presence detector** distinguishing a known identity from
+"blank space" (§5.4); and that these signatures hold across two modalities, prose and code. We are
+explicit throughout about what is a faithful **replication** of the paper's apparatus versus what
+is **new** here, and about what we deliberately do **not** claim: no "IQ", no consciousness. The
+contributions are listed above; every number is reproducible from the audit ledger (Appendix D).
 
 ## 2. Related work
 
