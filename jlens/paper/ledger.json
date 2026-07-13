@@ -1238,6 +1238,51 @@
   },
   {
     "dataset": "coders",
+    "metric": "identity_per_layer_probe",
+    "value": [
+      0.364,
+      0.436,
+      0.488,
+      0.488,
+      0.42,
+      0.4,
+      0.388,
+      0.336,
+      0.316,
+      0.4,
+      0.428,
+      0.44
+    ],
+    "asset": "person2vec-identity-coders.json",
+    "path": "per_layer_probe",
+    "note": "baseline: plain linear probe on mean-pooled activation (no Jacobian)"
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_probe_best_acc",
+    "value": 0.488,
+    "asset": "person2vec-identity-coders.json",
+    "path": "max per_layer_probe",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_jlens_mean",
+    "value": 0.446,
+    "asset": "person2vec-identity-coders.json",
+    "path": "mean per_layer",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
+    "metric": "identity_probe_mean",
+    "value": 0.409,
+    "asset": "person2vec-identity-coders.json",
+    "path": "mean per_layer_probe",
+    "note": ""
+  },
+  {
+    "dataset": "coders",
     "metric": "fingerprint_threshold",
     "value": 0.51,
     "asset": "person2vec-fingerprint-coders.json",

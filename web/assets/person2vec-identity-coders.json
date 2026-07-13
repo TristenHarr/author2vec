@@ -1,1 +1,1 @@
-{"model":"jinaai/jina-embeddings-v2-base-code","subject":"coder","identities":15,"chance":0.06666667,"output_acc":0.468,"per_layer":[0.452,0.448,0.48,0.508,0.4,0.488,0.48,0.404,0.42,0.42,0.424,0.432]}
+{"model":"jinaai/jina-embeddings-v2-base-code","subject":"coder","identities":15,"chance":0.06666667,"output_acc":0.468,"per_layer":[0.452,0.448,0.48,0.508,0.4,0.488,0.48,0.404,0.42,0.42,0.424,0.432],"per_layer_probe":[0.364,0.436,0.488,0.488,0.42,0.4,0.388,0.336,0.316,0.4,0.428,0.44]}

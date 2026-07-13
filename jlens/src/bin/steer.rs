@@ -26,6 +26,10 @@ fn main() -> Result<()> {
     let n_jac = arg(2, 48);
     let n_align = arg(3, 250);
     let jl: usize = std::env::var("JLENS_JAC_LEN").ok().and_then(|s| s.parse().ok()).unwrap_or(64);
+    // Probe-only mode: skip the (expensive) Jacobian averaging + steering and recompute *only* the
+    // plain-linear-probe baseline (per_layer_probe), merging it into the shipped identity bundle.
+    // Used to finish the readout-vs-probe ablation on code without a full ~90-min Jacobian run.
+    let probe_only = std::env::var("JLENS_PROBE_ONLY").is_ok();
 
     let h = Harness::load_dataset(&dataset)?;
     let dim = h.dim;
@@ -38,24 +42,29 @@ fn main() -> Result<()> {
     println!("(dataset={dataset}, {n_authors} identities, chance {:.1}%)", 100.0 / n_authors as f32);
 
     // ---- averaged embedding-Jacobians J_emb_ℓ over a passage sample ----
-    println!("== averaging J_emb over {n_jac} passages × {n_layers} layers ==");
-    let mut jemb = vec![vec![0f64; dim * dim]; n_layers];
-    for (ci, &pi) in even_nonmystery(&meta, n_jac).iter().enumerate() {
-        let fwd = h.forward_capped(&meta.passages[pi].text, jl)?;
-        for l in 0..n_layers {
-            let je = to_embedding_jacobian(&h.layer_jacobian(&fwd, l)?, &fwd.embedding, fwd.pooled_norm, dim);
-            for k in 0..dim * dim {
-                jemb[l][k] += je[k] as f64;
+    // Skipped entirely in probe-only mode (this is the expensive part).
+    let jemb: Vec<Vec<f32>> = if probe_only {
+        Vec::new()
+    } else {
+        println!("== averaging J_emb over {n_jac} passages × {n_layers} layers ==");
+        let mut jemb = vec![vec![0f64; dim * dim]; n_layers];
+        for (ci, &pi) in even_nonmystery(&meta, n_jac).iter().enumerate() {
+            let fwd = h.forward_capped(&meta.passages[pi].text, jl)?;
+            for l in 0..n_layers {
+                let je = to_embedding_jacobian(&h.layer_jacobian(&fwd, l)?, &fwd.embedding, fwd.pooled_norm, dim);
+                for k in 0..dim * dim {
+                    jemb[l][k] += je[k] as f64;
+                }
+            }
+            if ci % 8 == 0 {
+                print!(".");
+                std::io::stdout().flush().ok();
             }
         }
-        if ci % 8 == 0 {
-            print!(".");
-            std::io::stdout().flush().ok();
-        }
-    }
-    let scale = 1.0 / even_nonmystery(&meta, n_jac).len() as f64;
-    let jemb: Vec<Vec<f32>> = jemb.iter().map(|m| m.iter().map(|&x| (x * scale) as f32).collect()).collect();
-    println!();
+        let scale = 1.0 / even_nonmystery(&meta, n_jac).len() as f64;
+        println!();
+        jemb.iter().map(|m| m.iter().map(|&x| (x * scale) as f32).collect()).collect()
+    };
 
     // ---- (A) alignment: author separability, output vs per-layer internal readout ----
     println!("\n== (A) is identity decodable INSIDE the model? leave-one-out nearest-author ==");
@@ -71,14 +80,23 @@ fn main() -> Result<()> {
         for l in 0..n_layers {
             let ma = fwd.hidden[l].mean(1)?.squeeze(0)?.to_vec1::<f32>()?;
             raw_vecs[l].push(normalize(ma.clone()));
-            layer_vecs[l].push(normalize(matvec(&jemb[l], &ma, dim)));
+            if !probe_only {
+                layer_vecs[l].push(normalize(matvec(&jemb[l], &ma, dim)));
+            }
         }
         labels.push(meta.passages[pi].author_id);
     }
     let output_acc = loo_centroid_accuracy(&out_vecs, &labels, n_authors, dim);
-    let per_layer: Vec<f32> = (0..n_layers)
-        .map(|l| loo_centroid_accuracy(&layer_vecs[l], &labels, n_authors, dim))
-        .collect();
+    // In probe-only mode reuse the shipped J-lens per_layer (the Jacobian readout we are not recomputing).
+    let per_layer: Vec<f32> = if probe_only {
+        let existing: shared::IdentityBundle =
+            serde_json::from_slice(&std::fs::read(assets.join(format!("person2vec-identity-{dataset}.json")))?)?;
+        existing.per_layer
+    } else {
+        (0..n_layers)
+            .map(|l| loo_centroid_accuracy(&layer_vecs[l], &labels, n_authors, dim))
+            .collect()
+    };
     let per_layer_probe: Vec<f32> = (0..n_layers)
         .map(|l| loo_centroid_accuracy(&raw_vecs[l], &labels, n_authors, dim))
         .collect();
@@ -102,6 +120,11 @@ fn main() -> Result<()> {
     };
     std::fs::write(assets.join(format!("person2vec-identity-{dataset}.json")), serde_json::to_vec(&idb)?)?;
     println!("  wrote person2vec-identity-{dataset}.json");
+
+    if probe_only {
+        println!("  (probe-only: J-lens per_layer reused from the shipped bundle; steering skipped)");
+        return Ok(());
+    }
 
     // ---- (B) steering: push an internal activation along an identity axis ----
     println!("\n== (B) can we STEER identity from inside? add α·δ at a mid layer ==");
