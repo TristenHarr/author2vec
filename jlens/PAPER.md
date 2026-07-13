@@ -274,7 +274,7 @@ the identity axis separates developers far above the random-direction null: a $\
 margin at depth 4 ($1.21$ vs $0.09$; raw separation peaks slightly earlier, $1.56\pm0.22$ at depth
 3). It is a sharper version of the same effect, consistent with code identity being more linearly
 accessible overall (§5.1). Separation spikes higher still at the final layer ($2.33$), but that
-depth is noisy, its wide $\pm0.53$ SEM and a jumping null are why we feature the stable early-mid
+depth is noisy: its wide $\pm0.53$ SEM and a jumping null are why we feature the stable early-mid
 layers. Both modalities show the representation committing to one individual with depth.
 
 Two caveats bound this reading. It rests on a 6-layer encoder and 15 pairs. And although the
@@ -337,16 +337,16 @@ the late layers, marking the "motor" regime where representations turn toward th
 not expect the clean sensory→workspace→motor tripartition: GPT-2 is 12 layers, far short of
 the paper's ~100, so we report the raw series and let it say what it says.
 
-**Method.** GPT-2 [@radford2019gpt2] (`openai-community/gpt2`; 12 layers, $d{=}768$), the δ-broadcast averaged
-Jacobian made causal (perturb every position, read the *last* position, the next-token
-driver) over prose prompts, with the four signatures computed by the *same* `lib.rs` functions
-as the encoders and verbalizability read through GPT-2's real tied unembedding (no
-approximation). This is the paper's mechanistic apparatus on an open model that actually generates.
+**Method.** On GPT-2 [@radford2019gpt2] (`openai-community/gpt2`; 12 layers, $d{=}768$) we run the
+δ-broadcast averaged Jacobian, made causal (perturb every position, read the *last* position, the
+next-token driver), over prose prompts. The four signatures use the *same* `lib.rs` functions as
+the encoders, and verbalizability is read through GPT-2's real tied unembedding (no approximation).
+This is the paper's mechanistic apparatus on an open model that actually generates.
 
 ![Decoder structural signatures on GPT-2 (Figure-28 series + next-token accuracy).](figures/fig7_decoder.png)
 
 **Result: both predictions hold, and more cleanly than on the encoders.** Next-token accuracy is
-near zero through the first six layers and then climbs steadily to $22.6\%$ at the output,
+near zero through the first six layers and then climbs steadily to $22.6\%$ at the output. This is
 hypothesis (ii): the late layers are the motor regime. The Jacobian's stable rank and effective
 dimension trace a pronounced inverted-U: low at the input ($2.6$ / $5.8$), high through the
 middle ($6.7$ / $33.5$ at layer 5), collapsing to near rank-one at the output ($2.0$ / $4.1$), a
@@ -513,7 +513,7 @@ models (`claude-opus-4.8`, `gpt-5.6-terra`, `gemini-3.5-flash`, `deepseek-chat`)
 
 ![Task vs. model: on the same task, different models write nearly the same code (0.71); the same model across different tasks is far less alike (0.20). The task, not the model, dominates the embedding; controlling for it, model identity is recoverable at 42% vs 25% chance.](figures/fig9_ai_fingerprint.png)
 
-**A control rules this out.** Same-task, different-model code is
+**The apparent convergence is a task artifact.** Same-task, different-model code is
 alike (cosine $0.71$), which *looks* like "the frontier models have converged to one
 style." We do not make that claim, because a control refutes it: same-model / different-task
 similarity is only $0.20$, so it is the task, not the model, that drives the embedding. On a
@@ -716,7 +716,7 @@ Structural signatures and internal identity accuracy by residual depth, straight
 | 10 | 73.3 | 151.3 | 0.23 | +0.088 |
 | 11 | 79.0 | 185.0 | 0.22 | +0.075 |
 
-**Decoder (GPT-2, 12 layers).** Next-token accuracy by residual depth: [0.0, 2.6, 2.6, 3.2, 3.2, 4.7, 5.1, 7.2, 10.9, 13.0, 17.0, 21.3, 22.6]%.
+**Decoder (GPT-2, 12 layers).** Next-token logit-lens accuracy at the 13 residual points (input embedding, then 12 layers): [0.0, 2.6, 2.6, 3.2, 3.2, 4.7, 5.1, 7.2, 10.9, 13.0, 17.0, 21.3, 22.6]%. The four structural signatures below are the 12 layer-Jacobians (depths 0–11), so "the output" is the final residual (22.6%) for next-token accuracy and the last layer for the signatures.
 
 | layer | stable rank | eff dim | verbaliz. | autocorr |
 |---|---|---|---|---|

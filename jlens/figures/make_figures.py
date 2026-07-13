@@ -191,7 +191,9 @@ def fig5_style():
         for t, col in zip(ranked, pair):
             nm = axes_names[t["axis"]]
             # clean, full (non-truncated) legend labels
-            nm = (nm.replace("United States", "US").replace("England", "UK")
+            # keep the axis values verbatim (England != UK: the axis excludes Scotland/Wales);
+            # only trim the "↔ rest" suffix and tidy the separator for the legend.
+            nm = (nm.replace("United States", "US")
                     .replace(" ↔ rest", "").replace("?", "").replace("=", ": "))
             x = list(range(len(t["per_layer"])))
             ax.plot(x, t["per_layer"], "-o", color=col, lw=2, ms=4, label=nm)
