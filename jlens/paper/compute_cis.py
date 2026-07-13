@@ -53,9 +53,19 @@ for ds in ("minilm", "coders"):
     pl = [{"acc": round(a, 3), "lo": wilson(round(a * N_IDENTITY), N_IDENTITY)[0],
            "hi": wilson(round(a * N_IDENTITY), N_IDENTITY)[1]} for a in idb["per_layer"]]
     o = round(idb["output_acc"], 3)
-    out["identity"][ds] = {"n": N_IDENTITY, "per_layer": pl,
-                           "output": {"acc": o, "lo": wilson(round(idb["output_acc"] * N_IDENTITY), N_IDENTITY)[0],
-                                      "hi": wilson(round(idb["output_acc"] * N_IDENTITY), N_IDENTITY)[1]}}
+    entry = {"n": N_IDENTITY, "per_layer": pl,
+             "output": {"acc": o, "lo": wilson(round(idb["output_acc"] * N_IDENTITY), N_IDENTITY)[0],
+                        "hi": wilson(round(idb["output_acc"] * N_IDENTITY), N_IDENTITY)[1]}}
+    probe = idb.get("per_layer_probe") or []
+    if probe:
+        entry["per_layer_probe"] = [{"acc": round(a, 3),
+                                     "lo": wilson(round(a * N_IDENTITY), N_IDENTITY)[0],
+                                     "hi": wilson(round(a * N_IDENTITY), N_IDENTITY)[1]} for a in probe]
+        # best-layer comparison: does the J-lens readout beat the plain probe?
+        bi = max(range(len(idb["per_layer"])), key=lambda i: idb["per_layer"][i])
+        entry["best_jlens"] = round(idb["per_layer"][bi], 3)
+        entry["best_probe"] = round(max(probe), 3)
+    out["identity"][ds] = entry
 
 # ---- §5.7 Big Five (n=2467) Wilson vs majority ----
 bf = load("person2vec-bigfive.json")

@@ -136,6 +136,13 @@ for key, label, core_fn in DATASETS:
         add(key, "identity_best_layer_acc", r3(max(pl)), fn, "max per_layer",
             f"argmax layer {pl.index(max(pl))}")
         add(key, "identity_best_layer_idx", pl.index(max(pl)), fn, "argmax per_layer", "")
+        probe = idb.get("per_layer_probe") or []
+        if probe:
+            add(key, "identity_per_layer_probe", [r3(v) for v in probe], fn, "per_layer_probe",
+                "baseline: plain linear probe on mean-pooled activation (no Jacobian)")
+            add(key, "identity_probe_best_acc", r3(max(probe)), fn, "max per_layer_probe", "")
+            add(key, "identity_jlens_mean", r3(sum(pl) / len(pl)), fn, "mean per_layer", "")
+            add(key, "identity_probe_mean", r3(sum(probe) / len(probe)), fn, "mean per_layer_probe", "")
 
     # ---- fingerprint bundle: recompute nearest-centroid cosines ----
     fp = load(f"person2vec-fingerprint-{key}.json")
@@ -327,6 +334,9 @@ if cis:
             "identity per_layer Wilson lo", "")
         add(ds, "ci_identity_per_layer_hi", [p["hi"] for p in d["per_layer"]], fn,
             "identity per_layer Wilson hi", "")
+        if "best_probe" in d:
+            add(ds, "ci_identity_best_probe", [d["best_probe"], d["best_jlens"]], fn,
+                "[best probe acc, best J-lens acc]", "Jacobian-vs-probe ablation")
     for t, v in cis.get("bigfive", {}).items():
         add("minilm", f"ci_bigfive::{t}", [v["lo"], v["hi"]], fn,
             "bigfive trait Wilson", f"clears majority={v['clears_majority']}")

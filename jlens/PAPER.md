@@ -238,6 +238,14 @@ intervals overlap by $\sim\!9$ points, so the internal readout is *as good as* t
 output, not better. Identity is computed inside the layers, not merely emitted. _(Wilson 95% CIs,
 decode sample $n{=}250$; per-layer values in ledger `identity_*`, bounds in `ci_identity_*`.)_
 
+**Does the Jacobian readout beat a plain probe?** The natural baseline is to decode identity from
+the raw mean-pooled activation at each layer, with no Jacobian. On prose the two are
+indistinguishable: best layer $8.8\%$ (J-lens) versus $8.4\%$ (direct probe), and $7.5\%$ versus
+$7.0\%$ averaged over layers, both well inside the Wilson intervals above. The averaged Jacobian
+adds no decode accuracy over a direct probe, which bounds this contribution: the
+identity-at-every-layer result is robust to the readout, and the Jacobian's value is interpretability
+(the style lens onto named axes, §4.5) and causal steering (§5.4), not raw accuracy.
+
 ### 5.2 Identity ignition — does the space collapse to a single person?
 
 We adapt the paper's ambiguous-input ignition to identity. For an author pair $(A,B)$ we build
