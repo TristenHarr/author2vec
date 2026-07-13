@@ -52,10 +52,11 @@ ledger. We separate replication from new results throughout, and claim no "IQ" a
    with a faithfulness gate and a full audit ledger.
 
 The new method is narrow: the δ-broadcast reduction (1) and the embedding-space projection (2) are
-what make the averaged-Jacobian lens run on a pooled encoder at all. Contributions 4–5 apply
-established techniques (difference-of-means directions, probing across depth, the ignition design)
-to a new target, authorship identity read through the layer Jacobian; 6–7 are the construct-validity
-check and the open reimplementation.
+what make the averaged-Jacobian lens run on a pooled encoder at all, with the style lens (3) as the
+readout they enable. Contribution 4 is the empirical headline, the structural-geometry transfer;
+5 applies established techniques (difference-of-means directions, probing across depth, the ignition
+design) to a new target, authorship identity read through the layer Jacobian; 6–7 are the
+construct-validity check and the open reimplementation.
 
 ---
 
@@ -337,38 +338,38 @@ This is the paper's mechanistic apparatus on an open model that actually generat
 near zero through the first six layers and then climbs steadily to $22.6\%$ at the output. This is
 hypothesis (ii): the late layers are the motor regime. The Jacobian's stable rank and effective
 dimension trace a pronounced inverted-U: low at the input ($2.6$ / $5.8$), high through the
-middle ($6.7$ / $33.5$ at layer 5), collapsing to near rank-one at the output ($2.0$ / $4.1$), a
-sensory→workspace→motor signature that is *sharper on the 12-layer decoder than on the 6-layer
-encoders*, just as the "needs depth to spare" reading predicts (hypothesis (i)). Autocorrelation
+middle ($6.7$ / $33.5$ at layer 5), collapsing to near rank-one at the output ($2.0$ / $4.1$). This
+inverted-U is *sharper on the 12-layer decoder than on the 6-layer encoders*, just as the "needs
+depth to spare" reading predicts (hypothesis (i)). Autocorrelation
 rises with depth to a peak of $0.16$ (layer 10) before easing to $0.11$ at the output, echoing the
 encoder workspace-persistence.
 
 Two caveats bound this. Final-layer next-token accuracy ($22.6\%$) is low (archaic literary prose,
 a 48-token context, 10 prompts), so read the accuracy *shape*, not its level. And our motor-end
 *collapse* is the opposite of the paper's motor behavior (there $J_\ell\!\to\!$ identity, full
-rank): the difference is deliberate and methodological, since our decoder Jacobian reads the last
+rank). The difference is deliberate and methodological: our decoder Jacobian reads the last
 position (the next-token driver), which naturally becomes low-rank as the network commits to a
 single output, rather than the full residual stream the paper differentiates. The workspace
 geometry transfers; the motor *readout* is ours, and we flag it as such.
 
 ### 5.5 The identity direction is a causal lever
 
-Reading a direction is weaker than showing the network acts on it. Forming the residual steering
-direction $\hat\delta=\widehat{J_{\text{emb}}^{\top}A}$ from a style axis $A$ and injecting
-$\alpha\hat\delta$ (broadcast to every position) at the mid layer drives the output's loading on $A$
-through a large, sign-controllable swing that runs monotonically from negative (at $\alpha=-6$)
-through zero (unperturbed) to positive (at $\alpha=+6$), saturating (and for gender slightly
-reversing) at the extremes. The effect has the same sign across all five prose identity axes
+Reading a direction is weaker than showing the network acts on it. We form the residual steering
+direction $\hat\delta=\widehat{J_{\text{emb}}^{\top}A}$ from a style axis $A$ and inject
+$\alpha\hat\delta$ (broadcast to every position) at the mid layer. This drives the output's loading
+on $A$ through a large, sign-controllable swing: monotonic from negative (at $\alpha=-6$) through
+zero (unperturbed) to positive (at $\alpha=+6$), saturating (and for gender slightly reversing) at
+the extremes. The effect has the same sign across all five prose identity axes
 (gender, education, upbringing), though not the same magnitude: the gender axis swings least
 ($0.80$), the other four up to $1.11$. A matched-norm random direction, injected identically, leaves
 the loading essentially flat (total drift $\le 0.16$ over the same sweep). So the mid layer holds
 the identity direction as something the rest of the network *acts on*, not merely correlates with.
 
 **A leakage-free check on the decoder.** The encoder steer reads back on the same axis it perturbs,
-so we repeat the test on GPT-2 with an independent readout: build a concept-context direction as the
-difference of mid-layer mean residuals between concept-primed and neutral prompts (not the target's
-unembedding), inject $\pm\alpha\hat\delta$ at the mid layer, and measure held-out concept-token
-log-probability. The direction is a sign-controllable handle, raising concept-token log-prob by
+so we repeat the test on GPT-2 with an independent readout. We build a concept-context direction as
+the difference of mid-layer mean residuals between concept-primed and neutral prompts (not the
+target's unembedding), inject $\pm\alpha\hat\delta$ at the mid layer, and measure held-out
+concept-token log-probability. The direction is a sign-controllable handle, raising concept-token log-prob by
 $+0.10$/$+0.22$/$+0.44$ (money / music / war) for $+\alpha$ and lowering it below baseline for
 $-\alpha$; the mean effect is $+0.254$ versus $-0.085$ for a matched-norm random control. It is real
 and bidirectional but small (it shifts the distribution, not the argmax output) and rests on
@@ -572,8 +573,8 @@ across runs (verified); the ignition null uses a fixed splitmix64 seed. The `/jl
 no linear algebra; all quantities are precomputed offline and shipped as static JSON.
 
 **Auditability.** Every quantitative claim resolves through the audit ledger (Appendix D,
-`jlens/paper/build_ledger.py`) to a source bundle and JSON path; every method claim resolves
-through `jlens/paper/method_map.md` to a `file:line`.
+`build_ledger.py`) to a source bundle and JSON path; every method claim resolves through
+`method_map.md` to a `file:line`.
 
 ---
 
