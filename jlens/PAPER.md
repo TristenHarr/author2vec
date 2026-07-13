@@ -176,10 +176,11 @@ gap; §5.2 and §5.5–5.7 are our attempts at the behavioral half the encoder c
 
 **Setup.** We study two open embedding encoders: `sentence-transformers/all-MiniLM-L6-v2`
 [@wang2020minilm] (prose; 6 layers, $d=384$, vocab 30,522) and
-`jinaai/jina-embeddings-v2-base-code` [@gunther2023jina] (code; 12 layers, $d=768$, vocab 61,056). Each maps a passage to one masked-mean-pooled,
-L2-normalized vector $p$. A faithfulness gate (`bin/spike`) asserts our native candle
-forward reproduces the shipped fastembed embeddings at cosine $>0.99$ before any Jacobian is
-trusted.
+`jinaai/jina-embeddings-v2-base-code` [@gunther2023jina] (code; 12 layers, $d=768$, vocab 61,056).
+Each maps a passage to a masked-mean-pooled vector $p=\frac{1}{T}\sum_t h_{L,t}$; the shipped
+embedding is its L2-normalization $\hat p = p/\lVert p\rVert$. A faithfulness gate (`bin/spike`)
+asserts our native candle forward reproduces the shipped fastembed embeddings at cosine $>0.99$
+before any Jacobian is trusted.
 
 ### 4.1 The problem an encoder poses
 The causal J-lens is defined per token position toward next-token logits. An encoder emits a
@@ -187,15 +188,18 @@ single pooled vector and no logits, so the per-position causal Jacobian is undef
 
 ### 4.2 δ-broadcast averaged Jacobian
 We perturb every source position by a shared displacement $\delta$ and differentiate the
-pooled output, collapsing the position×position Jacobian to one matrix per layer:
-$$ J_\ell \;=\; \frac{1}{T}\,\frac{\partial p}{\partial \delta}\;\in\;\mathbb{R}^{d\times d}. $$
-$J_\ell$ is built by batched central finite differences ($\varepsilon=0.05$, pure gemm),
-not per-dimension autograd. `lib.rs:layer_jacobian`. (Derivation: Appendix A.)
+pooled vector, collapsing the position×position Jacobian to one matrix per layer:
+$$ J_\ell \;=\; \frac{1}{T}\,\frac{\partial p}{\partial \delta}\Big|_{\delta=0}\;=\;\frac{1}{T}\sum_{t=1}^{T}\frac{\partial p}{\partial h_{\ell,t}}\;\in\;\mathbb{R}^{d\times d}, $$
+which is exactly the mean over source positions of the per-position output Jacobian (Prop. 1,
+Appendix A), independent of $T$. It is built by batched central finite differences
+($\varepsilon=0.05$, pure gemm), not per-dimension autograd. `lib.rs:layer_jacobian`.
 
 ### 4.3 Embedding-space projection
-Because $p$ is L2-normalized, its radial direction carries no information, so we project:
-$$ J_{\text{emb}} \;=\; \tfrac{1}{\lVert p\rVert}\,(I - e e^{\top})\,J_{\text{raw}},\qquad e = p/\lVert p\rVert, $$
-which is unit-tested to satisfy $e^{\top}(J_{\text{emb}}v)\approx 0$. `lib.rs:to_embedding_jacobian`.
+The shipped embedding is the L2-normalized $\hat p=p/\lVert p\rVert$, so we compose $J_\ell$ with
+the Jacobian of the normalization map to obtain the Jacobian of the actual output:
+$$ J_{\text{emb}} \;=\; \tfrac{1}{\lVert p\rVert}\,(I - e e^{\top})\,J_\ell \;=\; \frac{\partial \hat p}{\partial \delta},\qquad e = \hat p. $$
+This is exact, not an approximation, and satisfies $e^{\top}J_{\text{emb}}=0$ (Prop. 2, Appendix A):
+it discards precisely the radial component that renormalization annihilates. `lib.rs:to_embedding_jacobian`.
 
 ### 4.4 Vocabulary (logit) lens
 Standardized $J\!\cdot\!h$ times the tied WordPiece embeddings $W_U$ → top tokens. Noisy here
@@ -666,23 +670,43 @@ through `jlens/paper/method_map.md` to a `file:line`.
 
 ---
 
-## Appendix A — δ-broadcast derivation
+## Appendix A — δ-broadcast reduction and the embedding projection
 
-A masked-mean-pooled encoder outputs $p=\frac{1}{T}\sum_{t} h_{L,t}$, the mean over $T$ positions of
-the final layer. The full sensitivity of $p$ to the layer-$\ell$ residuals is a rank-4 object
-$\partial p_i/\partial h_{\ell,t,j}$ of size $d\times(T\times d)$, intractable to form and to
-average across variable-length prompts. We collapse it with a shared perturbation: perturb
-*every* source position by the same $\delta\in\mathbb{R}^d$, $h_{\ell,t}\mapsto h_{\ell,t}+\delta$,
-and differentiate the pooled output,
-$$ J_\ell \;=\; \frac{\partial p}{\partial\delta}\Big|_{\delta=0} \;=\; \frac{1}{T}\sum_{t}\frac{\partial p}{\partial h_{\ell,t}}\;\in\;\mathbb{R}^{d\times d}, $$
-one $d\times d$ matrix per layer, independent of $T$. Each column $c$ is estimated by central
-finite differences, $J_{\cdot c}\approx\frac{p(+\varepsilon e_c)-p(-\varepsilon e_c)}{2\varepsilon}$
-(with $\pm\varepsilon e_c$ broadcast to all positions), whose error is $O(\varepsilon^2)$ by Taylor
-expansion; columns are computed in batches (pure gemm) via one `forward_from(ℓ)` per batch. On a
-causal decoder (§5.5) the identical construction reads the last position $p=h_{L,\text{last}}$
-(the next-token driver) rather than the mean, giving the causal analog. The embedding-space
-projection (§4.3) removes the component along the unit output $e=p/\lVert p\rVert$, since a
-normalized embedding is invariant to radial scaling: $J_{\text{emb}}=\frac{1}{\lVert p\rVert}(I-ee^\top)J$.
+A masked-mean-pooled encoder produces the pooled vector $p=\frac{1}{T}\sum_{t} h_{L,t}$ and the
+L2-normalized output $\hat p=p/\lVert p\rVert$. The full sensitivity of $p$ to the layer-$\ell$
+residuals is a rank-4 object $\partial p_i/\partial h_{\ell,t,j}$ of size $d\times(T\times d)$,
+intractable to form and to average across variable-length prompts. Perturbing every source
+position by the same $\delta\in\mathbb{R}^d$ collapses it to one $d\times d$ matrix.
+
+**Proposition 1 (the δ-broadcast Jacobian is the mean per-position Jacobian).** Let
+$h_{\ell,t}(\delta)=h_{\ell,t}+\delta$ for all $t$ and $J_\ell:=\tfrac{1}{T}\,\partial p/\partial\delta\,|_{\delta=0}$. Then
+$$ J_\ell \;=\; \frac{1}{T}\sum_{t=1}^{T}\frac{\partial p}{\partial h_{\ell,t}}. $$
+
+*Proof.* Writing $p=p\big(h_{\ell,1}(\delta),\dots,h_{\ell,T}(\delta)\big)$, the chain rule gives
+$\partial p/\partial\delta=\sum_{t}(\partial p/\partial h_{\ell,t})(\partial h_{\ell,t}/\partial\delta)=\sum_{t}\partial p/\partial h_{\ell,t}$,
+since $\partial h_{\ell,t}/\partial\delta=I$. Divide by $T$. $\square$
+
+So $J_\ell$ is not an approximation to the per-position Jacobian but exactly its average over
+source positions. Each column $c$ is estimated by central finite differences with $\pm\varepsilon e_c$
+broadcast to all positions,
+$$ (J_\ell)_{\cdot c}\;\approx\;\frac{p(+\varepsilon e_c)-p(-\varepsilon e_c)}{2\varepsilon\,T}, $$
+whose truncation error is $O(\varepsilon^2)$ by Taylor expansion; columns are computed in batches
+(pure gemm) via one `forward_from(ℓ)` per batch. On a causal decoder (§5.5) the identical
+construction reads the last position $p=h_{L,\text{last}}$ (the next-token driver) rather than the
+mean, giving the causal analog.
+
+**Proposition 2 (the projection is the exact normalized Jacobian).** With $e=\hat p$,
+$J_{\text{emb}}:=\tfrac{1}{\lVert p\rVert}(I-ee^{\top})J_\ell$ satisfies
+$$ J_{\text{emb}} \;=\; \frac{\partial \hat p}{\partial\delta}\Big|_{\delta=0}, \qquad e^{\top}J_{\text{emb}}=0. $$
+
+*Proof.* The Jacobian of the normalization $n(p)=p/\lVert p\rVert$ is $\partial n/\partial p=\tfrac{1}{\lVert p\rVert}(I-ee^{\top})$
+with $e=p/\lVert p\rVert$; composing with $J_\ell=\tfrac{1}{T}\partial p/\partial\delta$ by the chain
+rule gives $J_{\text{emb}}=\partial\hat p/\partial\delta$. For orthogonality,
+$e^{\top}(I-ee^{\top})=e^{\top}-(e^{\top}e)e^{\top}=0$ since $\lVert e\rVert=1$. $\square$
+
+Radial scaling of $p$ leaves $\hat p$ fixed, so the removed component $e^{\top}J_\ell$ — the
+first-order change in $\lVert p\rVert$ — is exactly the part the encoder discards; keeping it would
+inject a direction the downstream never sees.
 
 ## Appendix B — Per-layer tables
 
