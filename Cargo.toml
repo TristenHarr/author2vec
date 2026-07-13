@@ -13,3 +13,5 @@ license = "MIT"
 
 [profile.release]
 opt-level = 3
+lto = "thin"          # cross-crate inlining into candle kernels — a few % on the Jacobian sweep
+codegen-units = 1     # trade compile time for a faster binary (this is a compute-bound tool)

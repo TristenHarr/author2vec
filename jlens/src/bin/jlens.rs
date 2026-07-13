@@ -14,7 +14,7 @@ use anyhow::Result;
 use candle_core::IndexOp;
 
 use jlens::{
-    dataset_axes, effective_dim, excess_kurtosis, linear_cka, matvec, normalize,
+    dataset_axes, effective_dim, even_nonmystery, excess_kurtosis, linear_cka, matvec, normalize,
     readout_autocorrelation, stable_rank, style_scores, to_embedding_jacobian, vocab_topk, Harness,
 };
 use shared::{
@@ -315,20 +315,6 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn even_nonmystery(meta: &Meta, n: usize) -> Vec<usize> {
-    let all: Vec<usize> = meta
-        .passages
-        .iter()
-        .enumerate()
-        .filter(|(_, p)| !p.is_mystery)
-        .map(|(i, _)| i)
-        .collect();
-    if all.len() <= n {
-        return all;
-    }
-    let step = all.len() as f32 / n as f32;
-    (0..n).map(|i| all[(i as f32 * step) as usize]).collect()
-}
 
 /// One representative passage for each of `k` authors spread across the roster.
 fn pick_examples(meta: &Meta, k: usize) -> Vec<usize> {

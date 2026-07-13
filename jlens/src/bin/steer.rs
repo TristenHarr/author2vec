@@ -18,7 +18,7 @@ use std::io::Write;
 use anyhow::Result;
 use candle_core::Tensor;
 
-use jlens::{dataset_axes, dot, matvec, normalize, to_embedding_jacobian, Forward, Harness};
+use jlens::{dataset_axes, dot, even_nonmystery, matvec, normalize, to_embedding_jacobian, Forward, Harness};
 use shared::{vectors_from_bytes, Meta};
 
 fn main() -> Result<()> {
@@ -62,12 +62,15 @@ fn main() -> Result<()> {
     let align = even_nonmystery(&meta, n_align);
     let mut out_vecs: Vec<Vec<f32>> = Vec::new();
     let mut layer_vecs: Vec<Vec<Vec<f32>>> = vec![Vec::new(); n_layers];
+    // baseline: plain linear probe on the mean-pooled hidden state directly (no Jacobian)
+    let mut raw_vecs: Vec<Vec<Vec<f32>>> = vec![Vec::new(); n_layers];
     let mut labels: Vec<usize> = Vec::new();
     for &pi in &align {
         let fwd = h.forward_capped(&meta.passages[pi].text, jl)?;
         out_vecs.push(normalize(fwd.embedding.clone()));
         for l in 0..n_layers {
             let ma = fwd.hidden[l].mean(1)?.squeeze(0)?.to_vec1::<f32>()?;
+            raw_vecs[l].push(normalize(ma.clone()));
             layer_vecs[l].push(normalize(matvec(&jemb[l], &ma, dim)));
         }
         labels.push(meta.passages[pi].author_id);
@@ -76,10 +79,13 @@ fn main() -> Result<()> {
     let per_layer: Vec<f32> = (0..n_layers)
         .map(|l| loo_centroid_accuracy(&layer_vecs[l], &labels, n_authors, dim))
         .collect();
+    let per_layer_probe: Vec<f32> = (0..n_layers)
+        .map(|l| loo_centroid_accuracy(&raw_vecs[l], &labels, n_authors, dim))
+        .collect();
     println!("  output embedding: {:.1}%", output_acc * 100.0);
-    println!("  internal J-lens readout, by layer:");
-    for (l, a) in per_layer.iter().enumerate() {
-        println!("    layer {l}: {:.1}%", a * 100.0);
+    println!("  by layer:  J-lens readout   vs   direct-activation probe (baseline)");
+    for l in 0..n_layers {
+        println!("    layer {l}: {:.1}%   vs   {:.1}%", per_layer[l] * 100.0, per_layer_probe[l] * 100.0);
     }
     println!("  (chance ≈ {:.1}%)  → identity lives in the internal computation, not only the output.", 100.0 / n_authors as f32);
     // Ship the result so the viewer can SHOW it.
@@ -92,6 +98,7 @@ fn main() -> Result<()> {
         chance: 1.0 / n_authors as f32,
         output_acc,
         per_layer,
+        per_layer_probe,
     };
     std::fs::write(assets.join(format!("person2vec-identity-{dataset}.json")), serde_json::to_vec(&idb)?)?;
     println!("  wrote person2vec-identity-{dataset}.json");
@@ -174,14 +181,6 @@ fn loo_centroid_accuracy(vecs: &[Vec<f32>], labels: &[usize], n_authors: usize, 
     correct as f32 / total.max(1) as f32
 }
 
-fn even_nonmystery(meta: &Meta, n: usize) -> Vec<usize> {
-    let all: Vec<usize> = meta.passages.iter().enumerate().filter(|(_, p)| !p.is_mystery).map(|(i, _)| i).collect();
-    if all.len() <= n {
-        return all;
-    }
-    let step = all.len() as f32 / n as f32;
-    (0..n).map(|i| all[(i as f32 * step) as usize]).collect()
-}
 
 fn short(name: &str) -> String {
     name.split_whitespace().last().unwrap_or(name).to_string()

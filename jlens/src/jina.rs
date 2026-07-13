@@ -11,6 +11,7 @@
 use candle_core::{DType, Device, Result, Tensor, D};
 use candle_nn::{embedding, layer_norm, linear, linear_no_bias, Embedding, LayerNorm, Linear, Module, VarBuilder};
 use serde::Deserialize;
+use std::cell::RefCell;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
@@ -166,6 +167,9 @@ pub struct JinaModel {
     embeddings: Embeddings,
     layers: Vec<Layer>,
     n_heads: usize,
+    // ALiBi bias is a pure function of seq length, which is constant across a whole Jacobian
+    // sweep; cache it so forward_from doesn't rebuild (1,H,T,T) on every finite-difference call.
+    bias_cache: RefCell<Option<(usize, Tensor)>>,
 }
 impl JinaModel {
     pub fn load(vb: VarBuilder, cfg: &Config) -> Result<Self> {
@@ -173,7 +177,7 @@ impl JinaModel {
         let layers = (0..cfg.num_hidden_layers)
             .map(|i| Layer::load(vb.pp("encoder").pp("layer").pp(i.to_string()), cfg))
             .collect::<Result<Vec<_>>>()?;
-        Ok(Self { embeddings, layers, n_heads: cfg.num_attention_heads })
+        Ok(Self { embeddings, layers, n_heads: cfg.num_attention_heads, bias_cache: RefCell::new(None) })
     }
 
     pub fn word_embeddings(&self) -> &Tensor {
@@ -181,7 +185,14 @@ impl JinaModel {
     }
 
     /// Per-head symmetric ALiBi bias `(1, n_heads, seq, seq)` for the actual length.
+    /// Memoized on `seq`: identical output, but computed once per length instead of once per
+    /// forward (the dominant redundant work in a Jacobian sweep, where `seq` is fixed).
     fn alibi(&self, seq: usize, device: &Device) -> Result<Tensor> {
+        if let Some((s, t)) = self.bias_cache.borrow().as_ref() {
+            if *s == seq {
+                return Ok(t.clone());
+            }
+        }
         let a = Tensor::arange(0, seq as i64, device)?.to_dtype(DType::F32)?;
         let dist = a.reshape((1, seq))?.broadcast_sub(&a.reshape((seq, 1))?)?.abs()?;
         let n = self.n_heads;
@@ -196,7 +207,9 @@ impl JinaModel {
             base.iter().skip(1).step_by(2).chain(base.iter().step_by(2)).take(n).copied().collect()
         };
         let slopes = Tensor::new(slopes, device)?.reshape((1, n, 1, 1))?;
-        dist.reshape((1, 1, seq, seq))?.broadcast_mul(&slopes)
+        let bias = dist.reshape((1, 1, seq, seq))?.broadcast_mul(&slopes)?;
+        *self.bias_cache.borrow_mut() = Some((seq, bias.clone()));
+        Ok(bias)
     }
 
     pub fn hidden_states(&self, input_ids: &Tensor) -> Result<Vec<Tensor>> {

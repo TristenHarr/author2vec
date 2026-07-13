@@ -492,6 +492,18 @@ fn top_classes(authors: &[AuthorMeta], field: &dyn Fn(&AuthorMeta) -> String, k:
 // Structural metrics across depth
 // ---------------------------------------------------------------------------
 
+/// Evenly-spaced sample of `n` non-mystery passage indices (or all, if fewer than `n`).
+/// Shared by the `steer`, `jlens`, and `steer_bundle` binaries.
+pub fn even_nonmystery(meta: &shared::Meta, n: usize) -> Vec<usize> {
+    let all: Vec<usize> = meta.passages.iter().enumerate()
+        .filter(|(_, p)| !p.is_mystery).map(|(i, _)| i).collect();
+    if all.len() <= n {
+        return all;
+    }
+    let step = all.len() as f32 / n as f32;
+    (0..n).map(|i| all[(i as f32 * step) as usize]).collect()
+}
+
 /// Stable rank `‖J‖_F² / σ₁²`.
 pub fn stable_rank(j: &[f32], dim: usize) -> f32 {
     let frob2 = j.iter().map(|x| x * x).sum::<f32>();

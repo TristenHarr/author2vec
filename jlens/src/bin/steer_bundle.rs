@@ -11,7 +11,7 @@
 
 use anyhow::Result;
 use candle_core::Tensor;
-use jlens::{dataset_axes, dot, matvec, normalize, to_embedding_jacobian, Forward, Harness};
+use jlens::{dataset_axes, dot, even_nonmystery, normalize, to_embedding_jacobian, Forward, Harness};
 use serde::Serialize;
 use shared::{vectors_from_bytes, Meta};
 
@@ -134,14 +134,6 @@ fn seeded_unit(seed: u64, dim: usize) -> Vec<f32> {
     normalize(v)
 }
 
-fn even_nonmystery(meta: &Meta, n: usize) -> Vec<usize> {
-    let all: Vec<usize> = meta.passages.iter().enumerate().filter(|(_, p)| !p.is_mystery).map(|(i, _)| i).collect();
-    if all.len() <= n {
-        return all;
-    }
-    let step = all.len() as f32 / n as f32;
-    (0..n).map(|i| all[(i as f32 * step) as usize]).collect()
-}
 
 fn r3(v: &[f32]) -> Vec<f32> {
     v.iter().map(|x| (x * 1000.0).round() / 1000.0).collect()

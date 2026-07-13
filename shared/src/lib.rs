@@ -1325,4 +1325,8 @@ pub struct IdentityBundle {
     pub output_acc: f32,
     /// Per-layer accuracy decoding identity from the internal Jacobian readout.
     pub per_layer: Vec<f32>,
+    /// Baseline: per-layer accuracy from a plain linear probe on the mean-pooled hidden
+    /// state directly (no Jacobian) — same layers, same LOO protocol. Empty on old bundles.
+    #[serde(default)]
+    pub per_layer_probe: Vec<f32>,
 }
