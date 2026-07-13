@@ -246,7 +246,7 @@ adds no decode accuracy over a direct probe, which bounds this contribution: the
 identity-at-every-layer result is robust to the readout, and the Jacobian's value is interpretability
 (the style lens onto named axes, §4.5) and causal steering (§5.4), not raw accuracy.
 
-### 5.2 Identity ignition — does the space collapse to a single person?
+### 5.2 Identity ignition: commitment sharpens with depth
 
 We adapt the paper's ambiguous-input ignition to identity. For an author pair $(A,B)$ we build
 a per-depth difference-of-means axis $\hat u_\ell = \widehat{c_{A,\ell}-c_{B,\ell}}$ from their
@@ -277,8 +277,8 @@ accessible overall (§5.1). Separation spikes higher still at the final layer ($
 depth is noisy, its wide $\pm0.53$ SEM and a jumping null are why we feature the stable early-mid
 layers. Both modalities show the representation committing to one individual with depth.
 
-Two caveats bound this reading. It rests on a 6-layer encoder and 15 pairs, and although the
-sharpening is measured *along an axis the separation control proves is identity-specific*, we
+Two caveats bound this reading. It rests on a 6-layer encoder and 15 pairs. And although the
+separation control confirms the axis is identity-specific, we
 cannot fully exclude that some of the depth-wise sharpening reflects generic late-layer
 nonlinearity. We report the raw depth series.
 
@@ -326,7 +326,7 @@ so the readout is not fully independent of the intervention; the matched-norm ra
 bounds how much of the swing that shared axis could manufacture (drift $\le 0.16$ vs. swings up to
 $1.11$), and §5.6 gives the leakage-free, independent-readout analogue on a decoder.
 
-### 5.5 Decoder track — does the structure hold on a generative model?
+### 5.5 Decoder track: structural signatures on GPT-2
 
 Everything above is on *encoders*. If the depth-wise workspace geometry is a real property of the
 J-lens apparatus and not an artifact of masked-mean pooling, then reading a generative
@@ -363,7 +363,7 @@ position (the next-token driver), which naturally becomes low-rank as the networ
 single output, rather than the full residual stream the paper differentiates. The workspace
 geometry transfers; the motor *readout* is ours, and we flag it as such.
 
-### 5.6 Behavioral steering — is the lever causal on a decoder?
+### 5.6 Behavioral steering on a decoder
 
 The paper's boldest claims are behavioral: swap a J-lens vector for a reasoning intermediate and the
 answer changes. We wanted to test the strongest version (take a prompt the model answers wrongly
@@ -467,7 +467,7 @@ absent for others: prose gender $85.5\%$ (majority $52.7\%$) but most geographic
 majority baselines; code systems-vs-scripting $80.0\%$ (majority $53.3\%$) but commit-time and
 weekend near or below chance.
 
-### 5.9 Does the model know some coders better than others? And is style homogenizing?
+### 5.9 Per-developer recognizability and style homogenization
 
 The 15-developer code roster lets us ask two questions the prose side cannot. (That developers are
 identifiable from code style at all is established: code stylometry de-anonymizes programmers
@@ -488,7 +488,7 @@ stylistically distinctive a developer's *attributed, name-scrubbed* code is in t
 confounded by codebase heterogeneity (Bun mixes Zig, C++, and generated code across many hands),
 not a verdict on the person.
 
-![Per-coder same-file recognizability across the 15 developers (Kelley and Sumner highlighted); chance 6.7%.](figures/fig8_coders_recognizability.png)
+![Per-developer same-file recognizability across the 15 developers (Kelley and Sumner highlighted); chance 6.7%.](figures/fig8_coders_recognizability.png)
 
 **No sign of AI-era style homogenization.** If a shared external influence (AI assistants) were
 melting coders into one style, cross-coder similarity should *rise* in the AI era. Time gives a
@@ -503,7 +503,7 @@ no claim about which individuals do or don't use AI: the population signal is nu
 per-developer attribution would be both unsupported (confounded, no ground truth) and
 inappropriate.
 
-### 5.10 Can we fingerprint the AI models? — the task dominates, a faint model signal survives
+### 5.10 Fingerprinting the AI models: the task dominates
 
 If humans have fingerprints, do the *models* people code with? Here we finally have ground
 truth: we generate the code, so we know which model wrote it. We prompted four latest frontier
@@ -578,8 +578,8 @@ readout, the identity target, and reproducibility. We are careful not to claim t
 not IQ, not consciousness. We borrow the *ignition* experimental design, not the conclusion.
 
 **The ignition result needs its caveat stated plainly.** The ignition index rising with depth
-(§5.2) is measured *along an axis the separation control proves is identity-specific* (real
-separation runs $\sim\!7$–$13\times$ above a random-direction null). But we cannot fully exclude
+(§5.2) is measured on the identity axis, and the separation control confirms that axis is
+identity-specific (real separation runs $\sim\!7$–$13\times$ above a random-direction null). But we cannot fully exclude
 that *some* of the depth-wise sharpening is generic late-layer nonlinearity: any readout of a
 linearly-blended input can become more nonlinear with depth. What the controls establish is that
 the *axis* carries identity; the raw sharpening curve should be read as suggestive, not decisive.
