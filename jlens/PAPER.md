@@ -234,7 +234,7 @@ $[5.2, 7.2, 8.8, 8.0, 7.2, 8.8]\%$ all clear the $1.8\%$ chance (output ceiling 
 weakest ($5.2\%$, Wilson $[3.1, 8.7]$, $n{=}250$) excludes chance (binomial $p<0.001$). For code the
 rates run far higher, up to $50.8\%$ against a $6.7\%$ chance. The best internal code layer
 ($50.8\%$, $[44.6, 56.9]$) matches the output-embedding ceiling ($46.8\%$, $[40.7, 53.0]$): the
-intervals overlap by $\sim\!9$ points, so the internal readout is *as good as* the
+intervals overlap by $\sim\!8$ points, so the internal readout is *as good as* the
 output, not better. Identity is computed inside the layers, not merely emitted. _(Wilson 95% CIs,
 decode sample $n{=}250$; per-layer values in ledger `identity_*`, bounds in `ci_identity_*`.)_
 
