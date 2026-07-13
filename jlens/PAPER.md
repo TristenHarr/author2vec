@@ -17,20 +17,19 @@ layer (proven equal to the mean per-position Jacobian); an embedding-space proje
 L2-normalized output (proven exact); and a style lens that reads the layer Jacobian onto
 interpretable axes rather than the token vocabulary. We re-point the lens at a target the original
 could not check from the outside, authorship identity, across a 6-layer prose encoder (MiniLM), a
-12-layer code encoder (JinaBERT), and a 12-layer open decoder (GPT-2). The apparatus transfers
-cleanly and yields stable, jackknife-bounded depth signatures on all three. But a single reproduced
-"workspace" does not: the averaged Jacobian shows a distinct mid-network spectral regime in the code
-encoder (a low-rank dip) and in GPT-2 (an inverted-U), yet these have opposite sign and the prose
-encoder shows only a monotone trend. We therefore report the depth profiles descriptively rather than
-claiming the geometry itself transfers. Identity is linearly decodable at every layer;
+12-layer code encoder (JinaBERT), and a 12-layer open decoder (GPT-2). The apparatus runs
+on all three and yields stable, jackknife-bounded depth signatures, but the workspace *geometry* does
+not carry over: the averaged Jacobian shows a distinct mid-network spectral regime in the code
+encoder (a low-rank dip) and in GPT-2 (an inverted-U), yet these have opposite sign, and the prose
+encoder shows only a monotone trend. Identity is linearly decodable at every layer;
 measured against a plain-activation probe, the Jacobian readout ties it on prose and modestly
-exceeds it mid-network on code (best $50.8\%$ vs. $48.8\%$, chance $6.7\%$), so the Jacobian earns
-its place through geometry, not decode accuracy. As a construct-validity check the same embeddings
+exceeds it mid-network on code (best $50.8\%$ vs. $48.8\%$, chance $6.7\%$), so the Jacobian's
+contribution is the geometry, not the decode accuracy. As a construct-validity check the same embeddings
 recover self-reported Big Five personality weakly but reliably (Openness $+6.8$ points; all five
 traits $p<0.001$ against a shuffled-label null), while an astrological-sign negative control
 recovers nothing ($p=0.96$), which is also why we make no cognitive-capacity claim. Everything runs
-on open models and reproduces on a laptop, every cited number machine-extracted into an audit
-ledger. We separate replication from new results throughout, and claim no "IQ" and no consciousness.
+on open models and reproduces on a laptop; every cited number is machine-extracted into an audit
+ledger. We make no "IQ" and no consciousness claim.
 
 ## Contributions
 
@@ -40,13 +39,12 @@ ledger. We separate replication from new results throughout, and claim no "IQ" a
 2. **An embedding-space Jacobian projection** for L2-normalized outputs (§4.3), proven to be the
    exact Jacobian of the normalized embedding and orthogonal to it (Prop. 2).
 3. **The style lens** (§4.5): a Jacobian readout onto interpretable identity axes rather than
-   the token vocabulary, the usable signal where a pooled encoder has no clean unembedding.
+   the token vocabulary — the readout available when a pooled encoder has no clean unembedding.
 4. **A jackknife-quantified reproduction study of the workspace's structural signatures on open
    models** (§5.3, §5.4): the averaged Jacobian yields stable depth-varying spectral signatures on
    both encoders and a decoder, but the mid-network regime differs in sign across models and readouts
    (a low-rank dip on the code encoder, an inverted-U on GPT-2, a monotone trend on the prose
-   encoder), so the workspace geometry reproduces only partially. We report it with confidence
-   intervals, not as a clean transfer.
+   encoder). The workspace geometry therefore reproduces only partially, with confidence intervals throughout.
 5. **A depth study of authorship identity as a checkable target**: identity is linearly decodable
    at every layer and benchmarked against a plain probe (§5.1), commits to a single individual with
    depth (ignition, §5.2), and is a sign-controllable causal lever (§5.5).
@@ -59,8 +57,8 @@ ledger. We separate replication from new results throughout, and claim no "IQ" a
 
 The new method is narrow: the δ-broadcast reduction (1) and the embedding-space projection (2) are
 what make the averaged-Jacobian lens run on a pooled encoder at all, with the style lens (3) as the
-readout they enable. Contribution 4 is an honest reproduction study of the structural signatures,
-with a mixed result; 5 applies established techniques (difference-of-means directions, probing
+readout they enable. Contribution 4 is a reproduction study of the structural signatures, with a
+mixed result; 5 applies established techniques (difference-of-means directions, probing
 across depth, the ignition design) to a new target, authorship identity read through the layer
 Jacobian; 6–7 are the construct-validity check and the open reimplementation.
 
@@ -90,19 +88,18 @@ Carrying the lens across that gap takes three ingredients (§4): a δ-broadcast 
 collapses the encoder's intractable position×position Jacobian to one matrix per layer; an
 embedding-space projection that removes the meaningless radial direction of a normalized output;
 and a style lens that reads the layer Jacobian onto interpretable identity axes rather than the
-token vocabulary, the trustworthy signal where an encoder has no clean unembedding.
+token vocabulary, where an encoder has no clean unembedding.
 
 With these we find that author identity is linearly decodable at every layer, not only at the output
 (§5.1), and that an ambiguous two-author input drives the internal representation to commit to a
 single author increasingly with depth, above two null controls (§5.2). We then read the same averaged
 Jacobian's structural depth signatures on both encoders and a decoder (§5.3, §5.4) to ask whether the
-reference paper's "workspace" geometry reproduces on open models. The honest answer is *partially*:
-each model carries depth-dependent spectral structure with a distinct mid-network regime, but its
-sign differs across models and readouts (a low-rank dip on the code encoder, an inverted-U on GPT-2,
-a monotone trend on the prose encoder), so we report the profiles with jackknife confidence intervals
-rather than as a clean transfer. We keep the replication-versus-new boundary sharp throughout and are
-explicit about what we do not claim (§7); every result number is machine-extracted into the audit
-ledger (Appendix D) and gated by the review harness.
+reference paper's "workspace" geometry reproduces on open models. It reproduces only in part: each
+model carries depth-dependent spectral structure with a distinct mid-network regime, but its sign
+differs across models and readouts (a low-rank dip on the code encoder, an inverted-U on GPT-2, a
+monotone trend on the prose encoder), quantified with jackknife confidence intervals. We mark
+replication versus new results throughout (§7); every result number is machine-extracted into the
+audit ledger (Appendix D) and gated by the review harness.
 
 ## 2. Related work
 
@@ -120,7 +117,7 @@ stream; representation engineering [@zou2023repe] extracts such directions, ofte
 difference of class means. A single such direction can be a causal lever (as in refusal, mediated
 by one direction [@arditi2024]), and causal-mediation analysis localizes where a
 direction acts [@vig2020]. Our identity axes are difference-of-means (Fisher)
-directions, used both to *read* (§4.5) and to *steer* (§5.4); the novelty is not the technique
+directions, used both to *read* (§4.5) and to *steer* (§5.5); the novelty is not the technique
 but the target, personal authorship identity, and reading it *through the layer Jacobian*.
 
 **Probing and representational geometry.** Linear probes [@alain2017probing;
@@ -180,7 +177,7 @@ and corroborated on Haiku/Opus.
 **The gap we step into.** Every one of these constructs is defined for a *generative decoder*
 with per-position next-token logits. An embedding encoder has neither: its output is a single
 pooled vector. §4 is what it takes to carry the mechanistic half of this apparatus across that
-gap; §5.5 (steering on a decoder) and §5.6 (a measured population) are the closest we come to the
+gap; §5.5 (causal steering) and §5.6 (a measured population) are the closest we come to the
 behavioral half the encoder cannot reach.
 
 ## 4. Method
@@ -261,11 +258,11 @@ versus $8.4\%$ (plain probe) and mean $7.5\%$ versus $7.0\%$ across layers, well
 intervals above. On code the Jacobian readout does modestly better, mean $44.6\%$ versus $40.9\%$
 and best layer $50.8\%$ versus $48.8\%$, with the gap concentrated in the middle of the network
 (e.g. layer 8, $42.0\%$ versus $31.6\%$); at $n{=}250$ each per-layer gap is only two to three
-standard errors, so we read the mid-network edge as suggestive, not decisive. The honest summary is
-that the Jacobian readout never underperforms a plain probe and modestly outperforms it mid-depth on
-code, but decode accuracy is not where the averaged Jacobian earns its keep. That is the structural
-geometry (§5.3, §5.4) and the steerable direction (§5.5); §5.1 establishes only that identity is
-linearly present at every depth, robustly to the readout.
+standard errors, so we read the mid-network edge as suggestive. The Jacobian readout never
+underperforms a plain probe and modestly outperforms it mid-depth on code, but decode accuracy is not
+where the averaged Jacobian earns its keep. That is the structural geometry (§5.3, §5.4) and the
+steerable direction (§5.5); §5.1 establishes only that identity is linearly present at every depth,
+robustly to the readout.
 
 ### 5.2 Identity ignition: commitment sharpens with depth
 
@@ -282,12 +279,10 @@ graded layer ramps linearly in $\alpha$; an *ignited* layer snaps.
 the identity axis rises from $0.36$ at the input to a mid-network peak of $0.95$ at depth 4
 (of 6; $\pm0.19$ SEM over $15$ author pairs), then eases to $0.54$ at the output. It dominates both
 controls at every depth: the random-direction null sits at $0.06$–$0.14$ (a $\sim\!7\times$ margin
-at the peak) and the shuffled-label null at $0.12$–$0.47$. So the effect is identity-specific, not a generic
+at the peak) and the shuffled-label null at $0.12$–$0.47$. The effect is therefore identity-specific, not a generic
 consequence of blending inputs. The ignition index (transition sharpness, $0$ = graded, $1$
 = all-or-none) climbs from $0.09$ at the input (where the readout is, correctly, linear in the
-blended input) to $0.73$–$0.74$ by mid-depth and holds. In short: *shallow layers hold a graded
-mixture; by the middle of the network the representation has snapped to a single author.* The
-mid-network peak echoes the low-rank "workspace-like" bottleneck we see structurally (§5.3).
+blended input) to $0.73$–$0.74$ by mid-depth and holds.
 
 **The same holds for code, more strongly.** On the 12-layer code encoder the ignition index
 climbs from $0.09$ at the input to a peak of $0.82$ (depth 11 of 12). Through the early-mid layers
@@ -296,12 +291,11 @@ margin at depth 4 ($1.21$ vs $0.09$; raw separation peaks slightly earlier, $1.5
 3). It is a sharper version of the same effect, consistent with code identity being more linearly
 accessible overall (§5.1). Separation spikes higher still at the final layer ($2.33$), but that
 depth is noisy: its wide $\pm0.53$ SEM and a jumping null are why we feature the stable early-mid
-layers. Both modalities show the representation committing to one individual with depth.
+layers.
 
 Two caveats bound this reading. It rests on a 6-layer encoder and 15 pairs. And although the
-separation control confirms the axis is identity-specific, we
-cannot fully exclude that some of the depth-wise sharpening reflects generic late-layer
-nonlinearity. We report the raw depth series.
+separation control confirms the axis is identity-specific, we cannot fully exclude that some of the
+depth-wise sharpening reflects generic late-layer nonlinearity.
 
 ### 5.3 Structural signatures across depth
 
@@ -322,17 +316,16 @@ with depth ($22.1$ at layer 0 to $106.9$), lowest at the very first layer, with 
 On code (JinaBERT) it instead has a local minimum mid-network ($20.3$ at layer 5 of 12), a low-rank
 dip flanked by higher-rank early and late layers, with a matching dip in effective dimension;
 effective dimension otherwise rises with depth in both (prose $73\!\to\!205$; code $80\!\to\!185$).
-So a mid-network low-rank "bottleneck" appears on one encoder and not the other. It is a property of
-the code model here, not a general encoder signature, and we do not read it as the reference paper's
-workspace band. The MiniLM bands are tight relative to the depth trend (Fig 2), so its monotone rise
-is real structure rather than sampling noise; the same jackknife on the code encoder is what we defer.
+The mid-network low-rank bottleneck appears on the code encoder but not the prose one, so it is a
+property of the code model, not the reference paper's workspace band. On MiniLM the rise is many
+times its jackknife band (Fig 2), so the profile is well-determined; the same band on the code
+encoder is what we defer.
 
 The fourth signature, autocorrelation (persistence of the readout across positions), is the one
 direction that agrees across models: near zero or negative at the shallowest layers and rising
 through the middle in both (prose peaks at $0.12$ around layer 4; code climbs to $\approx 0.09$ by
 layers 8–9), a readout-persistence trend consistent with [@workspace2026]. We do not see the paper's
-clean sensory→workspace→motor tripartition (6–12 layers is too shallow), and we report the raw depth
-series with confidence bands rather than forcing that reading.
+sensory→workspace→motor tripartition; at 6–12 layers there is too little depth for it.
 
 ### 5.4 Structural signatures on a decoder (GPT-2)
 
@@ -342,23 +335,22 @@ decoder with the *same* averaged-Jacobian machinery should reproduce the paper's
 signatures. Hypothesis: on an open decoder we will see (i) the four Jacobian signatures vary
 with depth, and (ii) a decoder-only signature, next-token logit-lens accuracy, rise sharply in
 the late layers, marking the "motor" regime where representations turn toward the output. We do
-not expect the clean sensory→workspace→motor tripartition: GPT-2 is 12 layers, far short of
-the paper's ~100, so we report the raw series and let it say what it says.
+not expect a sensory→workspace→motor tripartition: GPT-2 is 12 layers, far short of the paper's ~100.
 
 **Method.** On GPT-2 [@radford2019gpt2] (`openai-community/gpt2`; 12 layers, $d{=}768$) we run the
 δ-broadcast averaged Jacobian, made causal (perturb every position, read the *last* position, the
 next-token driver), over prose prompts. The four signatures use the *same* `lib.rs` functions as
 the encoders, and verbalizability is read through GPT-2's real tied unembedding (no approximation).
-This is the paper's mechanistic apparatus on an open model that actually generates.
+This is the paper's mechanistic apparatus on an open model that generates.
 
 ![Decoder structural signatures on GPT-2 (Figure-28 series + next-token accuracy).](figures/fig7_decoder.png)
 
 **Result.** Next-token accuracy is near zero through the first six layers, then climbs steadily to
 $22.6\%$ at the output: the late layers are the motor regime (hypothesis ii). The two spectral
-signatures trace a pronounced inverted-U — stable rank low at the input ($2.6$), high through the
+signatures trace an inverted-U — stable rank low at the input ($2.6$), high through the
 middle ($6.7$ at layer 5), collapsing to near rank-one at the output ($2.0$); effective dimension
 likewise ($5.8\!\to\!33.5\!\to\!4.1$) — with jackknife 95% bands in Fig 7, where the mid-network peak
-separates cleanly from the low-rank output end though only marginally from the input. Autocorrelation
+separates from the low-rank output end but not from the input. Autocorrelation
 rises with depth to a peak of $0.16$ (layer 10) before easing to $0.11$ at the output.
 
 **This is a different shape from the encoders, not a sharpened version of them.** The decoder's
@@ -370,9 +362,9 @@ output token. So the decoder's low-rank output end is partly manufactured by the
 "motor" property in the paper's sense (there $J_\ell\!\to\!$ identity, full rank). We therefore do
 not claim the encoder and decoder exhibit the *same* workspace geometry. What both show is that the
 averaged Jacobian carries depth-dependent spectral structure with a mid-network regime distinct from
-the endpoints; the *sign* of that regime depends on the model and the readout. Read the accuracy and
-rank *shapes*, not their levels: final-layer next-token accuracy ($22.6\%$) is low (archaic literary
-prose, a 48-token context, 10 prompts).
+the endpoints; the *sign* of that regime depends on the model and the readout. The shapes matter more than the
+levels here: final-layer next-token accuracy ($22.6\%$) is low, given archaic literary prose, a
+48-token context, and 10 prompts.
 
 ### 5.5 The identity direction is a causal lever
 
@@ -384,7 +376,7 @@ zero (unperturbed) to positive (at $\alpha=+6$), saturating (and for gender slig
 the extremes. The effect has the same sign across all five prose identity axes
 (gender, education, upbringing), though not the same magnitude: the gender axis swings least
 ($0.80$), the other four up to $1.11$. A matched-norm random direction, injected identically, leaves
-the loading essentially flat (total drift $\le 0.16$ over the same sweep). So the mid layer holds
+the loading flat (total drift $\le 0.16$ over the same sweep). The mid layer therefore holds
 the identity direction as something the rest of the network *acts on*, not merely correlates with.
 
 **A leakage-free check on the decoder.** The encoder steer reads back on the same axis it perturbs,
@@ -419,21 +411,19 @@ strongest at $58.3\%$ (majority $51.5\%$; $+6.8$ points), then Neuroticism $56.3
 Conscientiousness $55.1\%$ ($+4.3$), Extraversion $55.4\%$ ($+3.6$), Agreeableness $55.3\%$
 ($+2.2$), a mean lift of $+4.6$ points over the majority baseline. A 1000-permutation test, which
 shuffles the trait labels and re-runs the whole classifier, puts all five traits at $p<0.001$
-against that null (which sits at chance, $49.9$–$50.1\%$): the classifier is extracting real trait
-signal, not fitting noise. The permutation test is against label-shuffling, not the majority
+against that null (which sits at chance, $49.9$–$50.1\%$). The permutation test is against label-shuffling, not the majority
 baseline, so we also check each trait's Wilson 95% interval against its majority class: Openness
 clears it comfortably ($58.3\%$, $[56.3, 60.2]$ vs. $51.5\%$), but Agreeableness only marginally
 ($55.3\%$, $[53.3, 57.2]$ vs. $53.1\%$), its lower bound barely exceeding the baseline. The lift over
 majority is weak for the lowest traits, as expected.
 This is the *weak-but-real* ceiling the personality-from-text literature reports
 [@mairesse2007], and Openness-leads-the-pack is a standard finding at social-media scale
-[@schwartz2013]. It is a positive result on a measured
-population: author2vec, trained for nothing of the kind, carries a faint but real trace of who the
-writer is.
+[@schwartz2013]. It is a positive result on an externally-measured population: MiniLM, trained for
+no psychological task, recovers self-reported traits a few points above chance.
 
-**A negative control: what the method does *not* recover.** A positive result could still, in
-principle, be spurious structure. The decisive test is to pair it with an attribute that *should*
-be unrecoverable and confirm the method stays silent. The Blog Authorship Corpus [@schler2006]
+**A negative control: what the method does *not* recover.** A positive result could still be spurious
+structure, so we pair it with an attribute that *should* be unrecoverable and check that the method
+stays silent. The Blog Authorship Corpus [@schler2006]
 labels every blogger with gender, age, and astrological sign: the first two have
 linguistic correlates, the third has none. We pool posts to the author level (138 authors with a
 known sign; each author is the mean of their post embeddings) and run the *identical*
@@ -448,19 +438,17 @@ astrological sign shows
 $p=0.96$ (the real labels do worse than $96\%$ of random relabelings). Gender lands in between,
 directionally positive but not significant at this modest sample ($56.5\%$ against a $49.7\%$
 null, $p=0.08$), consistent with a weak signal that $138$ author-level points are
-underpowered to confirm. The contrast is unambiguous: the *exact* pipeline that
-recovers a construct with a linguistic basis (age) finds nothing in the astrological
-control. This is the boundary a "measured population" is *for*: evidence that the recovered
-signal is real where a real construct exists, and absent where none does. This check reads the
-pooled output embedding, not the layer Jacobian, so it validates the *embeddings and corpus*, not
-the lens; its role is to license, and to bound, the identity signal the rest of the paper reads
-through $J_\ell$.
+underpowered to confirm. The same pipeline that recovers age (a construct with linguistic correlates)
+recovers nothing from astrological sign — evidence that the signal tracks real constructs, not
+pipeline artifacts. This check reads the pooled output embedding, not the layer Jacobian, so it
+validates the *embeddings and corpus*, not the lens; its role is to license, and to bound, the
+identity signal the rest of the paper reads through $J_\ell$.
 
 Those two results together are why we make no "IQ" claim. A validated psychometric construct tops out a
 few points over chance; a loaded, poorly-operationalized one like "intelligence" would fare no
 better and would invite far worse misreading. Whether one can steer a *capability* score (a
 vocabulary test administered to a decoder) is a question for a capable model with careful construct
-validation. That is future work, not a result we have, and we make no intelligence claim.
+validation, and is left to future work.
 
 ### 5.7 Ablations
 
@@ -484,37 +472,36 @@ sensitivity to it.
 is linearly present at every layer (§5.1), it becomes increasingly separable and commits to a single
 individual with depth (§5.2), and the identity direction is a causal lever (§5.5). The apparatus
 itself carries across to code and to a generative decoder, letting us ask a question the paper never
-did: *whose style is this?* What does *not* cleanly reproduce is the workspace's structural depth
+did: *whose style is this?* What does *not* reproduce is the workspace's structural depth
 signature. The averaged Jacobian does carry a distinct mid-network spectral regime, but with opposite
 sign on the code encoder (a low-rank dip) and the decoder (an inverted-U), under different readouts,
-and none at all on the prose encoder (§5.3, §5.4). So the defensible transfer is the *apparatus* and
-the *linear and causal accessibility* of identity, not a reproduced "workspace band."
+and none at all on the prose encoder (§5.3, §5.4). What transfers is the *apparatus* and the
+*linear and causal accessibility* of identity, not a reproduced "workspace band."
 
 **What it does not support.** None of this is evidence of reportability, reasoning, or anything
 cognitive. Our decoder steering moves a distribution, not an answer (§5.5); a validated psychometric
 construct recovered from these embeddings tops out only a few points over chance (§5.6). The
 "workspace" here is a claim about representational geometry and linear accessibility, not about a
-model *knowing* or *reporting* who you are. The defensible reading is the narrow one: personal
-writing style is a low-dimensional, causally-active, depth-localized direction in these models'
-representations, which is both less than the slogan "the AI knows you" and more precise than it,
-because it is checkable on open models.
+model *knowing* or *reporting* who you are. Personal writing style is a low-dimensional,
+causally-active, depth-localized direction in these models' representations — a narrower claim than
+"the AI knows you," and one that holds on open models.
 
-**Why an encoder was the right testbed.** Stripping away generation removes the decoder story's main
+**What the encoder isolates.** Stripping away generation removes the decoder story's main
 confound (autoregressive leakage) and lets the accessibility claims stand or fall on geometry alone.
-Running the identical apparatus on a decoder (§5.4) cross-checks the *method*, and in the process
-shows the structural signature to be readout-dependent — an honest finding about the lens rather than
-a clean reproduction of the workspace.
+Running the identical apparatus on a decoder (§5.4) cross-checks the *method* and, in the process,
+shows the structural signature to be readout-dependent — a finding about the lens, not a reproduction
+of the workspace.
 
 ## 7. Limitations and threats to validity
 
 **Replication vs. novel.** The J-lens, J-space decomposition, and the four structural signatures
 are the paper's [@workspace2026]; our contribution is the encoder adaptation, the style-lens
-readout, the identity target, and reproducibility. We are careful not to claim the apparatus.
+readout, the identity target, and reproducibility.
 
-**Construct scope.** We measure *identity commitment* and (§5.6) a measured-personality signal,
-not IQ, not consciousness. We borrow the *ignition* experimental design, not the conclusion.
+**Construct scope.** We measure identity commitment and a measured-personality signal (§5.6), and we
+borrow the *ignition* experimental design without its consciousness conclusion.
 
-**The ignition result needs its caveat stated plainly.** The ignition index rising with depth
+**The ignition sharpening has a confound.** The ignition index rising with depth
 (§5.2) is measured on the identity axis, and the separation control confirms that axis is
 identity-specific (real separation runs $\sim\!7$–$13\times$ above a random-direction null). But we cannot fully exclude
 that *some* of the depth-wise sharpening is generic late-layer nonlinearity: any readout of a
@@ -543,7 +530,7 @@ uncertainty-quantified* reproduction, not as evidence the geometry is training-i
 the 12-layer models (JinaBERT, GPT-2) we have not verified GPU-reduction determinism, and the
 JinaBERT numbers differ from an earlier site build generated with different (undocumented) settings,
 so we report a run with documented settings (`JLENS_JAC_LEN=64`) and quote the jackknife CIs as the
-honest uncertainty on those point estimates. The single-averaged, single-direction lens is lossy; the
+uncertainty on those point estimates. The single-averaged, single-direction lens is lossy; the
 vocab lens is noisy on encoders (no trained MLM head); finite-difference $\varepsilon$ introduces
 $O(\varepsilon^2)$ error.
 
@@ -638,7 +625,7 @@ source positions. Each column $c$ is estimated by central finite differences wit
 broadcast to all positions,
 $$ (J_\ell)_{\cdot c}\;\approx\;\frac{p(+\varepsilon e_c)-p(-\varepsilon e_c)}{2\varepsilon\,T}, $$
 whose truncation error is $O(\varepsilon^2)$ by Taylor expansion; columns are computed in batches
-(pure gemm) via one `forward_from(ℓ)` per batch. On a causal decoder (§5.5) the identical
+(pure gemm) via one `forward_from(ℓ)` per batch. On a causal decoder (§5.4) the identical
 construction reads the last position $p=h_{L,\text{last}}$ (the next-token driver) rather than the
 mean, giving the causal analog.
 
