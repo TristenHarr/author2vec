@@ -110,6 +110,12 @@ def fig2_structural():
             vals = LED[key]
             n = len(vals)
             xs = [i / (n - 1) for i in range(n)]
+            se_key = (ds, f"structural::{mk}_se")
+            if se_key in LED:  # jackknife 95% CI band on the two spectral signatures
+                se = LED[se_key]
+                lo = [v - 1.96 * s for v, s in zip(vals, se)]
+                hi = [v + 1.96 * s for v, s in zip(vals, se)]
+                ax.fill_between(xs, lo, hi, color=color, alpha=0.16, lw=0)
             ax.plot(xs, vals, "-o", color=color, lw=2, ms=4,
                     label=title.split(" (")[0])
         ax.set_title(mlabel)
@@ -267,14 +273,18 @@ def fig7_decoder():
     nl = b["layers"]
     xJ, xN = list(range(nl)), list(range(nl + 1))
     panels = [
-        ("next-token acc\n(logit lens)", xN, [v * 100 for v in b["next_token_acc"]], "%"),
-        ("stable rank", xJ, b["stable_rank"], ""),
-        ("effective dim", xJ, b["effective_dim"], ""),
-        ("verbalizability", xJ, b["verbalizability"], ""),
-        ("autocorrelation", xJ, b["autocorrelation"], ""),
+        ("next-token acc\n(logit lens)", xN, [v * 100 for v in b["next_token_acc"]], "%", None),
+        ("stable rank", xJ, b["stable_rank"], "", b.get("stable_rank_se")),
+        ("effective dim", xJ, b["effective_dim"], "", b.get("effective_dim_se")),
+        ("verbalizability", xJ, b["verbalizability"], "", None),
+        ("autocorrelation", xJ, b["autocorrelation"], "", None),
     ]
     fig, axes = plt.subplots(1, 5, figsize=(15.5, 3.1))
-    for ax, (label, xs, ys, unit) in zip(axes, panels):
+    for ax, (label, xs, ys, unit, se) in zip(axes, panels):
+        if se:  # jackknife 95% CI band
+            lo = [v - 1.96 * s for v, s in zip(ys, se)]
+            hi = [v + 1.96 * s for v, s in zip(ys, se)]
+            ax.fill_between(xs, lo, hi, color=DEC, alpha=0.16, lw=0)
         ax.plot(xs, ys, "-o", color=DEC, lw=2, ms=4)
         ax.set_title(label)
         ax.set_xlabel("depth")

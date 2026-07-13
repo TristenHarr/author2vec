@@ -18,7 +18,10 @@ use serde::Serialize;
 use tokenizers::Tokenizer;
 
 use jlens::gpt2::{Config, Gpt2};
-use jlens::{effective_dim, excess_kurtosis, matvec, readout_autocorrelation, stable_rank, standardize};
+use jlens::{
+    effective_dim, excess_kurtosis, jackknife_se, loo_group_mean, matvec, readout_autocorrelation,
+    stable_rank, standardize,
+};
 use shared::Meta;
 
 #[derive(Serialize)]
@@ -30,6 +33,10 @@ struct DecoderStructural {
     prompts: usize,
     stable_rank: Vec<f32>,
     effective_dim: Vec<f32>,
+    #[serde(default)]
+    stable_rank_se: Vec<f32>,
+    #[serde(default)]
+    effective_dim_se: Vec<f32>,
     verbalizability: Vec<f32>,
     autocorrelation: Vec<f32>,
     next_token_acc: Vec<f32>, // logit-lens, length n_layer+1 (per residual depth)
@@ -63,6 +70,10 @@ fn main() -> Result<()> {
     let mut nt_correct = vec![0usize; n_layer + 1];
     let mut nt_total = 0usize;
     let mut hidden_cache: Vec<Vec<Tensor>> = Vec::new();
+    // Per-fold Jacobian totals for a delete-a-group jackknife SE on the structural metrics.
+    let n_folds = prompts.len().clamp(1, 8);
+    let mut fold_sum = vec![vec![vec![0f64; dim * dim]; n_layer]; n_folds];
+    let mut fold_n = vec![0usize; n_folds];
 
     for (pi, text) in prompts.iter().enumerate() {
         let enc = tok.encode(*text, false).map_err(|e| anyhow!("encode: {e}"))?;
@@ -84,10 +95,14 @@ fn main() -> Result<()> {
         nt_total += t - 1;
 
         // δ-broadcast averaged Jacobian per layer.
+        let fold = pi % n_folds;
+        fold_n[fold] += 1;
         for l in 0..n_layer {
             let j = gpt2_jacobian(&model, &hs[l].detach(), l, dim, &device, t)?;
             for (k, jc) in jacc[l].iter_mut().enumerate() {
-                *jc += j[k] as f64;
+                let v = j[k] as f64;
+                *jc += v;
+                fold_sum[fold][l][k] += v;
             }
         }
         hidden_cache.push(hs);
@@ -131,8 +146,24 @@ fn main() -> Result<()> {
     }
     let next_token_acc: Vec<f32> = nt_correct.iter().map(|&c| c as f32 / nt_total.max(1) as f32).collect();
 
+    // Delete-a-group jackknife SE on the two load-bearing structural metrics.
+    let (mut stable_se, mut effd_se) = (vec![0f32; n_layer], vec![0f32; n_layer]);
+    for l in 0..n_layer {
+        let mut sr = Vec::with_capacity(n_folds);
+        let mut ed = Vec::with_capacity(n_folds);
+        for f in 0..n_folds {
+            let loo = loo_group_mean(&jacc[l], &fold_sum[f][l], prompts.len(), fold_n[f]);
+            sr.push(stable_rank(&loo, dim));
+            ed.push(effective_dim(&loo, dim));
+        }
+        stable_se[l] = jackknife_se(&sr);
+        effd_se[l] = jackknife_se(&ed);
+    }
+
     println!("  stable_rank    : {:?}", r2(&stable));
+    println!("  stable_rank_se : {:?}", r2(&stable_se));
     println!("  effective_dim  : {:?}", r2(&effd));
+    println!("  effective_dim_se: {:?}", r2(&effd_se));
     println!("  verbalizability: {:?}", r2(&verb));
     println!("  autocorrelation: {:?}", r2(&autoc));
     println!("  next_token_acc : {:?}", r2(&next_token_acc));
@@ -145,6 +176,8 @@ fn main() -> Result<()> {
         prompts: prompts.len(),
         stable_rank: stable,
         effective_dim: effd,
+        stable_rank_se: stable_se,
+        effective_dim_se: effd_se,
         verbalizability: verb,
         autocorrelation: autoc,
         next_token_acc,

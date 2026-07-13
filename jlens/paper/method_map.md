@@ -14,11 +14,12 @@ Every method claim in PAPER.md §4 resolves to code below. All paths are in the
 | Axis panel (gender / top-2 educated / top-2 raised; coder traits one-vs-rest) | `author_axes` / `dataset_axes` | `jlens/src/lib.rs:401` / `:454` |
 | J-space dictionary (unit rows of `W_U·J_ℓ`) | `jlens_dictionary` | `jlens/src/lib.rs:179` |
 | J-space decomposition (non-negative matching pursuit, captured variance) | `jspace_nmp` | `jlens/src/lib.rs:189` |
-| Stable rank `‖J‖_F²/σ₁²` (σ₁ via power iteration) | `stable_rank` / `top_singular_value` | `jlens/src/lib.rs:508` / `:657` |
+| Stable rank `‖J‖_F²/σ₁²` (σ₁ via power iteration) | `stable_rank` / `top_singular_value` | `jlens/src/lib.rs:508` / `:678` |
 | Effective dim (participation ratio `‖J‖_F⁴/‖JᵀJ‖_F²`) | `effective_dim` | `jlens/src/lib.rs:516` |
-| Verbalizability (excess kurtosis of the vocab-lens readout) | `excess_kurtosis` | `jlens/src/lib.rs:534` |
-| Layer×layer linear CKA | `linear_cka` | `jlens/src/lib.rs:546` |
-| Autocorrelation (lag-1 readout persistence vs. position-shuffled null — the 4th Fig-28 metric) | `readout_autocorrelation` | `jlens/src/lib.rs:597` |
+| Jackknife SE of the structural metrics (delete-a-group) | `jackknife_se` / `loo_group_mean` | `jlens/src/lib.rs:537` / `:549` |
+| Verbalizability (excess kurtosis of the vocab-lens readout) | `excess_kurtosis` | `jlens/src/lib.rs:555` |
+| Layer×layer linear CKA | `linear_cka` | `jlens/src/lib.rs:567` |
+| Autocorrelation (lag-1 readout persistence vs. position-shuffled null — the 4th Fig-28 metric) | `readout_autocorrelation` | `jlens/src/lib.rs:618` |
 
 All four structural signatures the paper reports (stable rank, effective dim,
 verbalizability, autocorrelation) plus CKA are implemented; the decoder track

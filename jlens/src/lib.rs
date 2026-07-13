@@ -530,6 +530,27 @@ pub fn effective_dim(j: &[f32], dim: usize) -> f32 {
     ((frob2 as f64 * frob2 as f64) / (gram_fro2 + 1e-12)) as f32
 }
 
+/// Delete-a-group jackknife standard error from the `k` leave-one-group-out estimates
+/// `θ_(j)` of a statistic. `SE = sqrt(((k-1)/k) · Σ_j (θ_(j) − θ̄)²)` (Tukey's grouped
+/// jackknife SE of the full-sample statistic). Valid for smooth functionals of the
+/// passage-averaged Jacobian such as `stable_rank` and `effective_dim`. Returns 0 for `k<2`.
+pub fn jackknife_se(loo_estimates: &[f32]) -> f32 {
+    let k = loo_estimates.len();
+    if k < 2 {
+        return 0.0;
+    }
+    let mean = loo_estimates.iter().sum::<f32>() / k as f32;
+    let ss = loo_estimates.iter().map(|&x| (x - mean).powi(2)).sum::<f32>();
+    (((k - 1) as f32 / k as f32) * ss).sqrt()
+}
+
+/// Leave-one-group-out mean matrix: `(total − group_sum) / (n − group_n)`, as `f32`.
+/// `total` and `group_sum` are `dim·dim` accumulators over passage Jacobians.
+pub fn loo_group_mean(total: &[f64], group_sum: &[f64], n: usize, group_n: usize) -> Vec<f32> {
+    let denom = (n - group_n) as f64;
+    total.iter().zip(group_sum).map(|(&t, &g)| ((t - g) / denom) as f32).collect()
+}
+
 /// Excess kurtosis of a readout distribution (peakiness ⇒ verbalizability).
 pub fn excess_kurtosis(v: &[f32]) -> f32 {
     let n = v.len() as f32;

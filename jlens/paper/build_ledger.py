@@ -113,10 +113,19 @@ for key, label, core_fn in DATASETS:
                 add(key, f"jlens_model::{mk}", m[mk], fn, f"model.{mk}", "")
         add(key, "jlens_axes", jl["axes"], fn, "axes", "style-lens axes")
         st = jl["structural"]
-        for sk in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation"):
-            if sk in st:
+        for sk in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation",
+                   "stable_rank_se", "effective_dim_se"):
+            if st.get(sk):
                 add(key, f"structural::{sk}", [r3(v) for v in st[sk]], fn,
                     f"structural.{sk}", "per layer")
+        # Jackknife 95% CI bounds (value ± 1.96·SE) for the two spectral signatures.
+        for sk in ("stable_rank", "effective_dim"):
+            if st.get(sk) and st.get(f"{sk}_se"):
+                vals, ses = st[sk], st[f"{sk}_se"]
+                add(key, f"structural::{sk}_ci_lo", [r3(v - 1.96 * s) for v, s in zip(vals, ses)],
+                    fn, f"{sk} − 1.96·SE", "jackknife 95% CI")
+                add(key, f"structural::{sk}_ci_hi", [r3(v + 1.96 * s) for v, s in zip(vals, ses)],
+                    fn, f"{sk} + 1.96·SE", "jackknife 95% CI")
         if "cka" in st:
             cka = st["cka"]
             off = [cka[i][j] for i in range(len(cka)) for j in range(len(cka)) if i != j]
@@ -208,8 +217,17 @@ if dec:
     fn = "person2vec-decoder-structural-gpt2.json"
     add("gpt2", "decoder_prompts", dec["prompts"], fn, "prompts", "")
     add("gpt2", "decoder_layers", dec["layers"], fn, "layers", "")
-    for k in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation", "next_token_acc"):
-        add("gpt2", f"decoder::{k}", [r3(v) for v in dec[k]], fn, k, "per depth")
+    for k in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation", "next_token_acc",
+              "stable_rank_se", "effective_dim_se"):
+        if dec.get(k):
+            add("gpt2", f"decoder::{k}", [r3(v) for v in dec[k]], fn, k, "per depth")
+    for k in ("stable_rank", "effective_dim"):
+        if dec.get(k) and dec.get(f"{k}_se"):
+            vals, ses = dec[k], dec[f"{k}_se"]
+            add("gpt2", f"decoder::{k}_ci_lo", [r3(v - 1.96 * s) for v, s in zip(vals, ses)],
+                fn, f"{k} − 1.96·SE", "jackknife 95% CI")
+            add("gpt2", f"decoder::{k}_ci_hi", [r3(v + 1.96 * s) for v, s in zip(vals, ses)],
+                fn, f"{k} + 1.96·SE", "jackknife 95% CI")
     sr, ed = dec["stable_rank"], dec["effective_dim"]
     add("gpt2", "decoder_stable_rank_peak", r3(max(sr)), fn, "max stable_rank",
         f"workspace peak at layer {sr.index(max(sr))}; ends {r3(sr[-1])}")

@@ -435,6 +435,96 @@
   },
   {
     "dataset": "minilm",
+    "metric": "structural::stable_rank_se",
+    "value": [
+      0.635,
+      0.593,
+      0.802,
+      0.572,
+      0.505,
+      1.274
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "structural.stable_rank_se",
+    "note": "per layer"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::effective_dim_se",
+    "value": [
+      0.641,
+      0.412,
+      0.718,
+      0.641,
+      0.316,
+      0.225
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "structural.effective_dim_se",
+    "note": "per layer"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::stable_rank_ci_lo",
+    "value": [
+      20.871,
+      30.214,
+      29.64,
+      36.047,
+      53.535,
+      104.444
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "stable_rank \u2212 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::stable_rank_ci_hi",
+    "value": [
+      23.36,
+      32.539,
+      32.782,
+      38.29,
+      55.514,
+      109.439
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "stable_rank + 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::effective_dim_ci_lo",
+    "value": [
+      72.205,
+      88.003,
+      91.642,
+      103.374,
+      126.984,
+      204.754
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "effective_dim \u2212 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::effective_dim_ci_hi",
+    "value": [
+      74.716,
+      89.619,
+      94.455,
+      105.885,
+      128.221,
+      205.637
+    ],
+    "asset": "person2vec-jlens-minilm.json",
+    "path": "effective_dim + 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "minilm",
     "metric": "cka_offdiag_mean",
     "value": 0.858,
     "asset": "person2vec-jlens-minilm.json",
@@ -1616,6 +1706,132 @@
     "asset": "person2vec-decoder-structural-gpt2.json",
     "path": "next_token_acc",
     "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::stable_rank_se",
+    "value": [
+      0.979,
+      1.634,
+      0.814,
+      0.643,
+      0.994,
+      1.124,
+      1.142,
+      0.806,
+      0.634,
+      0.454,
+      0.254,
+      0.067
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "stable_rank_se",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::effective_dim_se",
+    "value": [
+      3.355,
+      5.481,
+      2.889,
+      3.478,
+      6.42,
+      7.958,
+      7.762,
+      5.53,
+      3.97,
+      3.46,
+      1.685,
+      0.27
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "effective_dim_se",
+    "note": "per depth"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::stable_rank_ci_lo",
+    "value": [
+      0.646,
+      1.794,
+      4.7,
+      5.188,
+      4.686,
+      4.525,
+      4.297,
+      4.908,
+      5.435,
+      4.292,
+      3.319,
+      1.902
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "stable_rank \u2212 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::stable_rank_ci_hi",
+    "value": [
+      4.484,
+      8.198,
+      7.89,
+      7.709,
+      8.583,
+      8.931,
+      8.775,
+      8.069,
+      7.922,
+      6.073,
+      4.315,
+      2.166
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "stable_rank + 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::effective_dim_ci_lo",
+    "value": [
+      -0.808,
+      5.421,
+      20.156,
+      23.532,
+      19.492,
+      17.935,
+      15.864,
+      19.101,
+      24.745,
+      16.943,
+      10.503,
+      3.58
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "effective_dim \u2212 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::effective_dim_ci_hi",
+    "value": [
+      12.342,
+      26.906,
+      31.481,
+      37.166,
+      44.657,
+      49.131,
+      46.291,
+      40.778,
+      40.309,
+      30.504,
+      17.11,
+      4.637
+    ],
+    "asset": "person2vec-decoder-structural-gpt2.json",
+    "path": "effective_dim + 1.96\u00b7SE",
+    "note": "jackknife 95% CI"
   },
   {
     "dataset": "gpt2",

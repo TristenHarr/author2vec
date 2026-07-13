@@ -14,8 +14,9 @@ use anyhow::Result;
 use candle_core::IndexOp;
 
 use jlens::{
-    dataset_axes, effective_dim, even_nonmystery, excess_kurtosis, linear_cka, matvec, normalize,
-    readout_autocorrelation, stable_rank, style_scores, to_embedding_jacobian, vocab_topk, Harness,
+    dataset_axes, effective_dim, even_nonmystery, excess_kurtosis, jackknife_se, linear_cka,
+    loo_group_mean, matvec, normalize, readout_autocorrelation, stable_rank, style_scores,
+    to_embedding_jacobian, vocab_topk, Harness,
 };
 use shared::{
     JlensBundle, JlensCell, JlensConcept, JlensExample, JlensJspace, JlensModel, JlensStructural,
@@ -42,6 +43,10 @@ const STYLE_POSITIONS: usize = 16; // positions averaged for a style trajectory
 fn main() -> Result<()> {
     let dataset = std::env::args().nth(1).unwrap_or_else(|| "minilm".to_string());
     let n_sample: usize = std::env::args().nth(2).and_then(|s| s.parse().ok()).unwrap_or(160);
+    // SE-only mode: recompute *only* the structural jackknife SE and merge it into the existing
+    // bundle, preserving the committed point estimates and skipping all post-Jacobian work
+    // (jspace, style, examples). Used for the slow 12-layer code encoder.
+    let se_only = std::env::var("JLENS_SE_ONLY").is_ok();
     let model_name = if dataset == "coders" {
         "jinaai/jina-embeddings-v2-base-code"
     } else {
@@ -65,8 +70,12 @@ fn main() -> Result<()> {
     let sample = even_nonmystery(&meta, n_sample);
     println!("  averaging Jacobians over {} passages × {} layers …", sample.len(), n_layers);
 
-    let mut jraw = vec![vec![0f64; dim * dim]; n_layers]; // accumulate in f64
+    let mut jraw_sum = vec![vec![0f64; dim * dim]; n_layers]; // f64 total over passages
     let mut jemb = vec![vec![0f64; dim * dim]; n_layers];
+    // Per-fold Jacobian totals for a delete-a-group jackknife SE on the structural metrics.
+    let n_folds = sample.len().clamp(1, 8);
+    let mut fold_sum = vec![vec![vec![0f64; dim * dim]; n_layers]; n_folds];
+    let mut fold_n = vec![0usize; n_folds];
     // Probe activations for structural metrics: [layer][sample][dim].
     let mut probe: Vec<Vec<Vec<f32>>> = vec![Vec::new(); n_layers];
 
@@ -76,14 +85,22 @@ fn main() -> Result<()> {
     for (ci, &pi) in sample.iter().enumerate() {
         let ts = std::time::Instant::now();
         let fwd = h.forward_capped(&meta.passages[pi].text, jl)?;
-        let collect_probe = ci < PROBE_PASSAGES;
+        let collect_probe = ci < PROBE_PASSAGES && !se_only;
         let probe_pos = spread_positions(fwd.t_len, PROBE_POSITIONS);
+        let fold = ci % n_folds;
+        fold_n[fold] += 1;
         for l in 0..n_layers {
             let jr = h.layer_jacobian(&fwd, l)?;
-            let je = to_embedding_jacobian(&jr, &fwd.embedding, fwd.pooled_norm, dim);
             for k in 0..dim * dim {
-                jraw[l][k] += jr[k] as f64;
-                jemb[l][k] += je[k] as f64;
+                let v = jr[k] as f64;
+                jraw_sum[l][k] += v;
+                fold_sum[fold][l][k] += v;
+            }
+            if !se_only {
+                let je = to_embedding_jacobian(&jr, &fwd.embedding, fwd.pooled_norm, dim);
+                for k in 0..dim * dim {
+                    jemb[l][k] += je[k] as f64;
+                }
             }
             if collect_probe {
                 for &t in &probe_pos {
@@ -106,7 +123,7 @@ fn main() -> Result<()> {
     println!("  Jacobians done in {:.1}s", t0.elapsed().as_secs_f32());
 
     let scale = 1.0 / sample.len() as f64;
-    let jraw: Vec<Vec<f32>> = jraw
+    let jraw: Vec<Vec<f32>> = jraw_sum
         .iter()
         .map(|m| m.iter().map(|&x| (x * scale) as f32).collect())
         .collect();
@@ -149,8 +166,38 @@ fn main() -> Result<()> {
             };
         }
     }
+    // Delete-a-group jackknife SE on the two load-bearing structural metrics: recompute each
+    // metric on every leave-one-fold-out passage average, then take Tukey's grouped-jackknife SE.
+    let mut stable_se = vec![0f32; n_layers];
+    let mut effdim_se = vec![0f32; n_layers];
+    for l in 0..n_layers {
+        let mut sr = Vec::with_capacity(n_folds);
+        let mut ed = Vec::with_capacity(n_folds);
+        for f in 0..n_folds {
+            let loo = loo_group_mean(&jraw_sum[l], &fold_sum[f][l], sample.len(), fold_n[f]);
+            sr.push(stable_rank(&loo, dim));
+            ed.push(effective_dim(&loo, dim));
+        }
+        stable_se[l] = jackknife_se(&sr);
+        effdim_se[l] = jackknife_se(&ed);
+    }
     println!("    stable_rank: {:?}", round2(&stable));
+    println!("    stable_rank_se(±): {:?}", round2(&stable_se));
     println!("    effective_dim: {:?}", round2(&effdim));
+    println!("    effective_dim_se(±): {:?}", round2(&effdim_se));
+
+    // SE-only: merge the two SE vectors into the committed bundle (point estimates preserved) and stop.
+    if se_only {
+        let path = assets.join(format!("person2vec-jlens-{dataset}.json"));
+        let mut bundle: JlensBundle = serde_json::from_slice(&std::fs::read(&path)?)?;
+        let drift: f32 = bundle.structural.stable_rank.iter().zip(&stable).map(|(a, b)| (a - b).abs()).fold(0.0, f32::max);
+        println!("  (sanity: max |committed − recomputed| stable_rank = {drift:.4})");
+        bundle.structural.stable_rank_se = stable_se;
+        bundle.structural.effective_dim_se = effdim_se;
+        std::fs::write(&path, serde_json::to_vec(&bundle)?)?;
+        println!("  merged structural SE into {} (point estimates preserved)", path.display());
+        return Ok(());
+    }
     println!("    verbalizability(kurtosis): {:?}", round2(&verb));
 
     // ---- autocorrelation across depth (paper's 4th Fig-28 signature) ----
@@ -301,6 +348,8 @@ fn main() -> Result<()> {
             verbalizability: verb,
             cka,
             autocorrelation: autocorr,
+            stable_rank_se: stable_se,
+            effective_dim_se: effdim_se,
         },
         examples,
     };

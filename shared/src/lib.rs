@@ -1194,6 +1194,13 @@ pub struct JlensStructural {
     /// Figure-28 signature). Positive ⇒ readout persists across the sequence.
     #[serde(default)]
     pub autocorrelation: Vec<f32>,
+    /// Delete-a-group jackknife standard error of `stable_rank` per layer (uncertainty
+    /// of the passage-averaged estimate). Empty on legacy bundles.
+    #[serde(default)]
+    pub stable_rank_se: Vec<f32>,
+    /// Delete-a-group jackknife standard error of `effective_dim` per layer.
+    #[serde(default)]
+    pub effective_dim_se: Vec<f32>,
 }
 
 /// One curated passage, with its per-(layer, position) token readouts and per-axis
