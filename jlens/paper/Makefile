@@ -26,16 +26,25 @@ gate: review pdf
 
 $(OUT): $(PAPER) $(BIB)
 	pandoc $(PAPER) \
-	  --from=gfm+tex_math_dollars \
+	  --from=markdown+tex_math_dollars \
 	  --citeproc --bibliography=$(BIB) \
+	  -M reference-section-title=References \
+	  --shift-heading-level-by=-1 \
+	  -M date=" " \
 	  --pdf-engine=$(ENGINE) \
 	  --resource-path=..:. \
 	  -H header.tex \
-	  -V geometry:margin=1in -V fontsize=10pt -V linkcolor=blue \
-	  -V colorlinks=true \
-	  --toc \
+	  -V geometry:margin=1in -V fontsize=10pt \
+	  -V colorlinks=true -V linkcolor=black -V citecolor=black -V urlcolor=Blue4 \
 	  -o $(OUT)
 	@echo "built $(OUT)"
+	@# build-integrity gate: citations must resolve and figures must be captioned
+	@pandoc $(PAPER) --from=markdown+tex_math_dollars --citeproc --bibliography=$(BIB) \
+	  --shift-heading-level-by=-1 -M reference-section-title=References -t latex 2>/dev/null \
+	  | awk 'BEGIN{c=0;f=0} /\[@[a-zA-Z]/{c++} /\\caption\{/{f++} END{\
+	    if(c>0){print "PDF INTEGRITY FAIL: "c" unresolved [@cite] markers"; exit 1}\
+	    if(f<8){print "PDF INTEGRITY FAIL: only "f" figure captions (<8)"; exit 1}\
+	    print "PDF integrity OK: citations resolve, "f" figure captions"}'
 
 check:
 	@command -v pandoc >/dev/null 2>&1 && echo "pandoc: OK" || echo "pandoc: MISSING (build blocked)"

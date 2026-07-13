@@ -22,3 +22,13 @@
 \newunicodechar{ℓ}{\ensuremath{\ell}}
 \newunicodechar{√}{\ensuremath{\surd}}
 \newunicodechar{…}{\ldots}
+
+% --- Wrap code blocks and long inline-code strings so nothing runs off the page ---
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,fontsize=\small}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{breaklines,breakanywhere,fontsize=\small}
+\usepackage[htt]{hyphenat}   % allow \texttt{...} (model names, paths) to break
+\emergencystretch=3em          % last-resort stretch to kill remaining overfull boxes
+\usepackage{xurl}              % break long URLs anywhere (bibliography links)
+\usepackage{etoolbox}
+\AtBeginEnvironment{CSLReferences}{\sloppy}  % ragged bibliography — no overfull URL boxes

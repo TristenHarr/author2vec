@@ -194,8 +194,8 @@ gap — and §5.2, §5.5–5.7 are our attempts at the behavioral half the encod
 ## 4. Method
 
 **Setup.** We study two open **embedding encoders**: `sentence-transformers/all-MiniLM-L6-v2`
-[@wang2020minilm] (prose; 6 layers, $d=384$, vocab 30{,}522) and
-`jinaai/jina-embeddings-v2-base-code` [@gunther2023jina] (code; 12 layers, $d=768$, vocab 61{,}056). Each maps a passage to one **masked-mean-pooled**,
+[@wang2020minilm] (prose; 6 layers, $d=384$, vocab 30,522) and
+`jinaai/jina-embeddings-v2-base-code` [@gunther2023jina] (code; 12 layers, $d=768$, vocab 61,056). Each maps a passage to one **masked-mean-pooled**,
 L2-normalized vector $p$. A **faithfulness gate** (`bin/spike`) asserts our native candle
 forward reproduces the shipped fastembed embeddings at cosine $>0.99$ before any Jacobian is
 trusted.
