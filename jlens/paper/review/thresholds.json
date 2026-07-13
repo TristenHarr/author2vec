@@ -6,5 +6,7 @@
                         "truly", "absolutely", "remarkably", "super", "vastly", "enormously"],
   "intensifier_per_1k": 1.5,
   "novel_per_1k": 0.6,
-  "number_density_floor_per_1k": 15.0
+  "number_density_floor_per_1k": 15.0,
+  "emdash_per_1k": 4.0,
+  "bold_per_1k": 7.0
 }

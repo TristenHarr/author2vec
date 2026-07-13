@@ -326,6 +326,30 @@ def _novel():
     return []
 
 
+# ---------- CHECK: em-dash budget (nested-aside dashes are a classic LLM tell; landmark ~2.2/1k) ----------
+@check("emdash_budget", hard=True)
+def _emdash():
+    cap = TH.get("emdash_per_1k", 4.0)
+    n = PAPER_TEXT.count("—")
+    rate = n / _PER1K
+    if rate > cap:
+        return [f"em-dash rate {rate:.2f}/1k exceeds cap {cap}/1k ({n} em-dashes) — "
+                "convert nested asides to periods/commas/parentheses (landmark papers ~2.2/1k)"]
+    return []
+
+
+# ---------- CHECK: bold budget (landmark ~3.8/1k; bold only run-in headers, not emphasis) ----------
+@check("bold_budget", hard=True)
+def _bold():
+    cap = TH.get("bold_per_1k", 7.0)
+    n = PAPER_TEXT.count("**") // 2
+    rate = n / _PER1K
+    if rate > cap:
+        return [f"bold rate {rate:.2f}/1k exceeds cap {cap}/1k ({n} spans) — "
+                "bold only run-in paragraph headers, never mid-sentence emphasis (landmark ~3.8/1k)"]
+    return []
+
+
 # ---------- CHECK: sentence length (exemplars mean 15-24.5 words) — flag run-ons ----------
 @check("sentence_length", hard=False)
 def _sentlen():

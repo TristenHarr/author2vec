@@ -32,6 +32,9 @@ POISONS = [
     ("This builds on prior work [@nonexistent_citation_xyz].", "not in refs.bib", "bogus citation"),
     ("We prove this in §9.9 later.", "dangling section ref", "dangling section ref"),
     ("Remaining task: TODO finish this section.", "placeholder", "placeholder debris"),
+    # rate-budget poisons (document-level): inject enough to breach the cap
+    ("This " + "— aside " * 40 + "ends.", "em-dash rate", "em-dash flood"),
+    (" ".join(f"**term{i}**" for i in range(70)) + " done.", "bold rate", "bold flood"),
 ]
 
 
