@@ -53,10 +53,28 @@ fn main() -> Result<()> {
 
     let api = Api::new()?;
     let repo = api.model("openai-community/gpt2".to_string());
-    let cfg: Config = serde_json::from_slice(&std::fs::read(repo.get("config.json")?)?)?;
+    let cfg_bytes = std::fs::read(repo.get("config.json")?)?;
+    let cfg: Config = serde_json::from_slice(&cfg_bytes)?;
     let (n_layer, dim, vocab) = (cfg.n_layer, cfg.n_embd, cfg.vocab_size);
     let tok = Tokenizer::from_file(repo.get("tokenizer.json")?).map_err(|e| anyhow!("tokenizer: {e}"))?;
-    let vb = unsafe { VarBuilder::from_mmaped_safetensors(&[repo.get("model.safetensors")?], DType::F32, &device)? };
+    let weights = repo.get("model.safetensors")?;
+    // Untrained-model control (§7): randomly-initialized GPT-2 twin (causal residual init).
+    let weights = match jlens::randinit::random_init_seed() {
+        Some(seed) => {
+            let init_range = serde_json::from_slice::<serde_json::Value>(&cfg_bytes)
+                .ok()
+                .and_then(|v| v.get("initializer_range").and_then(|x| x.as_f64()))
+                .unwrap_or(0.02);
+            eprintln!("  ⚠ RANDOM-INIT (GPT-2) control: seed={seed}, init_range={init_range}, n_layer={n_layer} — UNTRAINED");
+            jlens::randinit::random_init_checkpoint(
+                &weights,
+                jlens::randinit::InitSpec { init_range, residual_nlayer: Some(n_layer) },
+                seed,
+            )?
+        }
+        None => weights,
+    };
+    let vb = unsafe { VarBuilder::from_mmaped_safetensors(&[weights], DType::F32, &device)? };
     let model = Gpt2::load(vb, cfg)?;
 
     let assets = jlens::assets_dir();
@@ -169,7 +187,10 @@ fn main() -> Result<()> {
     println!("  next_token_acc : {:?}", r2(&next_token_acc));
 
     let out = DecoderStructural {
-        model: "openai-community/gpt2".into(),
+        model: match jlens::randinit::random_init_seed() {
+            Some(seed) => format!("openai-community/gpt2 [random-init seed{seed}]"),
+            None => "openai-community/gpt2".into(),
+        },
         layers: n_layer,
         d_model: dim,
         vocab,
@@ -182,7 +203,10 @@ fn main() -> Result<()> {
         autocorrelation: autoc,
         next_token_acc,
     };
-    let path = assets.join("person2vec-decoder-structural-gpt2.json");
+    let path = match jlens::randinit::random_init_seed() {
+        Some(seed) => assets.join(format!("person2vec-untrained-gpt2-seed{seed}.json")),
+        None => assets.join("person2vec-decoder-structural-gpt2.json"),
+    };
     std::fs::write(&path, serde_json::to_vec(&out)?)?;
     println!("  wrote {}", path.display());
     Ok(())

@@ -464,8 +464,59 @@ def fig9_ai_fingerprint():
     save(fig, "fig9_ai_fingerprint.png")
 
 
+# ---- Fig 12: untrained-model control (random init vs trained) ----
+def fig12_untrained():
+    def g(ds, m):
+        return LED.get((ds, m))
+    if g("minilm", "structural::stable_rank_untrained") is None and \
+       g("gpt2", "decoder::stable_rank_untrained") is None:
+        print("  (skip fig12: untrained control not in ledger yet)")
+        return
+    UNTR = "#9a9aa8"          # random-init = neutral grey, behind the trained curve
+    DEC = "#c2410c"           # GPT-2 decoder orange (matches Fig 7)
+    fig, axes = plt.subplots(1, 4, figsize=(15.0, 3.2))
+
+    def overlay(ax, ds, trained_key, untr_key, color, ci=True, pct=False):
+        tr = g(ds, trained_key)
+        if tr is None:
+            return
+        scale = 100.0 if pct else 1.0
+        x = list(range(len(tr)))
+        if ci:
+            lo, hi = g(ds, trained_key + "_ci_lo"), g(ds, trained_key + "_ci_hi")
+            if lo and hi:
+                ax.fill_between(x, [v * scale for v in lo], [v * scale for v in hi],
+                                color=color, alpha=0.16, lw=0)
+        un, sd = g(ds, untr_key), g(ds, untr_key + "_sd")
+        if un is not None:
+            xu = list(range(len(un)))
+            if sd:
+                ax.fill_between(xu, [(v - s) * scale for v, s in zip(un, sd)],
+                                [(v + s) * scale for v, s in zip(un, sd)], color=UNTR, alpha=0.25, lw=0)
+            ax.plot(xu, [v * scale for v in un], "--s", color=UNTR, lw=2, ms=4, label="random init")
+        ax.plot(x, [v * scale for v in tr], "-o", color=color, lw=2, ms=4, label="trained")
+        ax.set_xlabel("layer")
+
+    overlay(axes[0], "minilm", "structural::stable_rank", "structural::stable_rank_untrained", AUTHORS)
+    axes[0].set_title("MiniLM · stable rank")
+    axes[0].set_ylabel("value")
+    overlay(axes[1], "minilm", "structural::autocorrelation", "structural::autocorrelation_untrained", AUTHORS, ci=False)
+    axes[1].set_title("MiniLM · autocorrelation")
+    overlay(axes[2], "gpt2", "decoder::stable_rank", "decoder::stable_rank_untrained", DEC)
+    axes[2].set_title("GPT-2 · stable rank")
+    overlay(axes[3], "gpt2", "decoder::next_token_acc", "decoder::next_token_acc_untrained", DEC, ci=False, pct=True)
+    axes[3].set_title("GPT-2 · next-token acc")
+    axes[3].set_ylabel("%")
+    axes[0].legend(loc="upper left")
+    fig.suptitle("Untrained-model control — which depth structure is training-induced vs. architectural\n"
+                 "(dashed = random init; shaded = trained jackknife 95% CI / random-init across-seed ±1 SD)",
+                 fontsize=12, fontweight="bold", y=1.10)
+    save(fig, "fig12_untrained.png")
+
+
 if __name__ == "__main__":
     print("rendering figures ->", os.path.relpath(OUT, ROOT))
+    fig12_untrained()
     fig9_ai_fingerprint()
     fig11_negative_control()
     fig10_bigfive()

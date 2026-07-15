@@ -21,7 +21,9 @@ could not check from the outside, authorship identity, across a 6-layer prose en
 on all three and yields stable, jackknife-bounded depth signatures, but the workspace *geometry* does
 not carry over: the averaged Jacobian shows a distinct mid-network spectral regime in the code
 encoder (a low-rank dip) and in GPT-2 (an inverted-U), yet these have opposite sign, and the prose
-encoder shows only a monotone trend. Identity is linearly decodable at every layer;
+encoder shows only a monotone trend. A randomly-initialized control attributes that monotone
+rank-with-depth trend to architecture, and the mid-network readout persistence and the decoder's
+next-token rank collapse to training. Identity is linearly decodable at every layer;
 measured against a plain-activation probe, the Jacobian readout ties it on prose and modestly
 exceeds it mid-network on code (best $50.8\%$ vs. $48.8\%$, chance $6.7\%$), so the Jacobian's
 contribution is the geometry, not the decode accuracy. As a construct-validity check the same embeddings
@@ -44,7 +46,9 @@ ledger. We make no "IQ" and no consciousness claim.
    models** (§5.3, §5.4): the averaged Jacobian yields stable depth-varying spectral signatures on
    both encoders and a decoder, but the mid-network regime differs in sign across models and readouts
    (a low-rank dip on the code encoder, an inverted-U on GPT-2, a monotone trend on the prose
-   encoder). The workspace geometry therefore reproduces only partially, with confidence intervals throughout.
+   encoder). The workspace geometry therefore reproduces only partially, with confidence intervals
+   throughout, and a randomly-initialized control (three seeds, §5.3–§5.4) attributes the monotone
+   rank trend to architecture and the readout-persistence and rank-collapse signatures to training.
 5. **A depth study of authorship identity as a checkable target**: identity is linearly decodable
    at every layer and benchmarked against a plain probe (§5.1), commits to a single individual with
    depth (ignition, §5.2), and is a sign-controllable causal lever (§5.5).
@@ -327,6 +331,18 @@ through the middle in both (prose peaks at $0.12$ around layer 4; code climbs to
 layers 8–9), a readout-persistence trend consistent with [@workspace2026]. We do not see the paper's
 sensory→workspace→motor tripartition; at 6–12 layers there is too little depth for it.
 
+**Untrained control: which of these is training-induced?** To separate learned structure from
+architecture we rerun the pipeline on a randomly-initialized MiniLM (HuggingFace `_init_weights`;
+three seeds, `randinit.rs`), reading the same signatures off the untrained network (Fig 12). The
+monotone stable-rank rise *survives at init*: $109.2$ at layer 0 to $215.4$ at layer 5 (across-seed
+SD $\le 3.5$), the trained encoder's increasing shape but $2$–$5\times$ higher. The rise with depth
+is thus architectural; training *compresses* the spectrum, most at the shallow layers (trained
+layer 0 is $22.1$, a $5\times$ drop). Verbalizability is likewise unchanged at init ($0.46$–$0.54$).
+Autocorrelation is the exception: flat at $\approx 0$ (max $|{\cdot}|=0.005$) at every depth
+untrained, against the trained peak of $0.116$. The mid-network readout-persistence trend — the one
+signature that agreed across models — is therefore training-induced; the bare rank-rise is not. (The
+12-layer code encoder's untrained control, like its per-layer jackknife band, is deferred, §7.)
+
 ### 5.4 Structural signatures on a decoder (GPT-2)
 
 Everything above is on *encoders*. If the depth-wise workspace geometry is a real property of the
@@ -365,6 +381,19 @@ averaged Jacobian carries depth-dependent spectral structure with a mid-network 
 the endpoints; the *sign* of that regime depends on the model and the readout. The shapes matter more than the
 levels here: final-layer next-token accuracy ($22.6\%$) is low, given archaic literary prose, a
 48-token context, and 10 prompts.
+
+**Untrained control sharpens the decoder reading.** The same random-init test on GPT-2 (three
+seeds; Fig 12) settles the caveat above. At init the stable rank rises monotonically to $345.8$ at
+the output — no inverted-U, and no collapse. The trained decoder's low-rank output end ($2.0$) is
+thus training-induced, not a readout artifact: the identical last-position readout on random weights
+gives the *highest* rank at the output, because an untrained network commits to no next token.
+Consistently, untrained next-token accuracy is $0.0$ at every depth (exact chance) against the
+trained rise to $22.6\%$ — the motor regime is entirely learned. Autocorrelation carries a modest
+architectural baseline ($\approx 0.07$) that training lifts into the depth-rising trend peaking at
+$0.161$. So the inverted-U's output arm and the next-token rise are training signatures; the
+underlying rank-grows-with-depth is not.
+
+![Untrained-model control (§5.3, §5.4). The identical structural pipeline on randomly-initialized MiniLM and GPT-2 (three seeds each). The monotone stable-rank rise is present at random init (architectural); the mid-network autocorrelation trend, the decoder's output-end rank collapse, and next-token accuracy are absent at init (training-induced). Dashed = random init; shaded = trained jackknife 95% CI / random-init across-seed ±1 SD.](figures/fig12_untrained.png)
 
 ### 5.5 The identity direction is a causal lever
 
@@ -457,8 +486,12 @@ decodes identity from the layer Jacobian and from the raw activation with no Jac
 are within noise on prose (the Jacobian modestly ahead on code), so the identity-at-every-layer
 result does not depend on the Jacobian readout. Model class: the GPT-2 decoder (§5.4) runs the
 *same* apparatus on a generative model; the spectral signature is depth-varying there too, though its
-shape differs from the encoders. Controls-as-ablations: every causal claim ablates its direction
-against a matched-norm random and/or shuffled-label null (§5.2, §5.5). Two things we did *not* do,
+shape differs from the encoders. Training vs. architecture: §5.3 and §5.4 rerun the structural
+pipeline on randomly-initialized checkpoints of MiniLM and GPT-2 (three seeds each), isolating the
+signatures that are training-induced (the autocorrelation trend, the decoder's rank collapse,
+next-token accuracy) from the one already present at init (the monotone rank rise).
+Controls-as-ablations: every causal claim ablates its direction against a matched-norm random and/or
+shuffled-label null (§5.2, §5.5). Two things we did *not* do,
 and flag as limitations rather than strengths (§7): the prose-vs-code contrast confounds depth with
 modality, architecture, and dimension, so it is not a clean depth ablation; and we did not sweep the
 finite-difference $\varepsilon$ or the Jacobian context length, so the structural curves' robustness
@@ -520,11 +553,14 @@ standard deviations and the raw per-depth series. The ignition
 *index* at each depth averages only over the pairs whose endpoints separate along the axis (5–14 of
 15, fewest at the shallowest layers).
 
-**No untrained-model control.** We do not run the pipeline on randomly-initialized checkpoints, so we
-cannot rule out that some of the depth-varying spectral structure (§5.3, §5.4) is a property of the
-architecture rather than of training. This is the cleanest missing control on the structural
-signatures and the first we would add; it is why we state that result as a *partial,
-uncertainty-quantified* reproduction, not as evidence the geometry is training-induced.
+**Untrained-model control (partial).** We run the structural pipeline on randomly-initialized
+MiniLM and GPT-2 (three seeds each; §5.3, §5.4, Fig 12), separating training-induced structure from
+architecture on those two models. The monotone stable-rank rise is present at init, hence
+architectural; the mid-network autocorrelation trend, the decoder's output-end rank collapse, and
+next-token accuracy are absent at init, hence training-induced. We therefore state the depth
+signatures with that split explicit, not as an undifferentiated "workspace geometry." Deferred is
+the 12-layer *code* encoder's control — the same follow-up as its per-layer jackknife band (§5.3) —
+so whether its mid-network low-rank dip is architectural or learned is still open.
 
 **Reproducibility caveats.** Structural signatures reproduce bit-for-bit on MiniLM across runs; on
 the 12-layer models (JinaBERT, GPT-2) we have not verified GPU-reduction determinism, and the

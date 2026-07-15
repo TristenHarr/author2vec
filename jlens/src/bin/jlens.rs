@@ -232,6 +232,40 @@ fn main() -> Result<()> {
     }
     println!("    autocorrelation: {:?}", round2(&autocorr));
 
+    // Untrained-model control (§7): write the structural block and stop. The viewer's J-space /
+    // style / example decode is meaningless on random weights (and `jspace_nmp` can divide by a
+    // zero norm), and the structural signatures above use the *identical* Jacobian + metric code
+    // as the trained run — which is the whole point of the comparison.
+    if let Some(seed) = jlens::randinit::random_init_seed() {
+        let bundle = JlensBundle {
+            model: JlensModel {
+                name: format!("{model_name} [random-init seed{seed}]"),
+                layers: n_layers,
+                d_model: dim,
+                vocab: h.word_embeddings().dim(0)?,
+                max_len: jlens::MAX_LEN,
+                w_u_source: "tied word embeddings (RANDOM-INIT control)".to_string(),
+                passages: sample.len(),
+            },
+            axes: axes.iter().map(|a| a.name.clone()).collect(),
+            layers: (0..n_layers).collect(),
+            structural: JlensStructural {
+                stable_rank: stable,
+                effective_dim: effdim,
+                verbalizability: verb,
+                cka,
+                autocorrelation: autocorr,
+                stable_rank_se: stable_se,
+                effective_dim_se: effdim_se,
+            },
+            examples: vec![],
+        };
+        let out = assets.join(format!("person2vec-untrained-{dataset}-seed{seed}.json"));
+        std::fs::write(&out, serde_json::to_vec(&bundle)?)?;
+        println!("  wrote UNTRAINED control {} (structural only)", out.display());
+        return Ok(());
+    }
+
     // ---- J-space dictionary at the most "verbalizable" (peak-kurtosis) layer ----
     let jspace_layer = verb
         .iter()

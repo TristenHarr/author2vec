@@ -541,6 +541,153 @@
   },
   {
     "dataset": "minilm",
+    "metric": "structural_untrained_seeds",
+    "value": 3,
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "seed files",
+    "note": "random-init control"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::stable_rank_untrained",
+    "value": [
+      109.202,
+      119.785,
+      133.343,
+      152.18,
+      175.378,
+      215.423
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "structural.stable_rank",
+    "note": "random-init, per-layer mean over seeds"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::stable_rank_untrained_sd",
+    "value": [
+      0.948,
+      2.36,
+      3.175,
+      3.014,
+      3.485,
+      1.563
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "sd(structural.stable_rank)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::effective_dim_untrained",
+    "value": [
+      242.721,
+      259.09,
+      276.758,
+      297.547,
+      321.311,
+      349.034
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "structural.effective_dim",
+    "note": "random-init, per-layer mean over seeds"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::effective_dim_untrained_sd",
+    "value": [
+      0.176,
+      0.153,
+      0.213,
+      0.218,
+      0.217,
+      0.38
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "sd(structural.effective_dim)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::verbalizability_untrained",
+    "value": [
+      0.463,
+      0.478,
+      0.492,
+      0.511,
+      0.527,
+      0.544
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "structural.verbalizability",
+    "note": "random-init, per-layer mean over seeds"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::verbalizability_untrained_sd",
+    "value": [
+      0.052,
+      0.049,
+      0.048,
+      0.042,
+      0.042,
+      0.047
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "sd(structural.verbalizability)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::autocorrelation_untrained",
+    "value": [
+      -0.005,
+      -0.004,
+      -0.005,
+      -0.005,
+      -0.005,
+      -0.005
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "structural.autocorrelation",
+    "note": "random-init, per-layer mean over seeds"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::autocorrelation_untrained_sd",
+    "value": [
+      0.004,
+      0.004,
+      0.003,
+      0.003,
+      0.003,
+      0.003
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "sd(structural.autocorrelation)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::autocorr_untrained_absmax",
+    "value": 0.005,
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "max|autocorrelation|",
+    "note": "untrained autocorrelation \u2248 0 at every depth"
+  },
+  {
+    "dataset": "minilm",
+    "metric": "structural::stable_rank_untrained_ends",
+    "value": [
+      109.202,
+      215.423
+    ],
+    "asset": "person2vec-untrained-minilm-seed1..3.json",
+    "path": "[stable_rank[0], stable_rank[-1]]",
+    "note": "untrained rank rises monotonically with depth"
+  },
+  {
+    "dataset": "minilm",
     "metric": "identity_chance",
     "value": 0.018,
     "asset": "person2vec-identity-minilm.json",
@@ -1856,6 +2003,200 @@
     "asset": "person2vec-decoder-structural-gpt2.json",
     "path": "next_token_acc[-1]",
     "note": "final-depth logit-lens next-token accuracy"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_untrained_seeds",
+    "value": 3,
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "seed files",
+    "note": "random-init control"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::stable_rank_untrained",
+    "value": [
+      36.859,
+      50.761,
+      64.106,
+      75.125,
+      88.208,
+      103.337,
+      121.992,
+      143.378,
+      172.244,
+      203.158,
+      256.261,
+      345.837
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "stable_rank",
+    "note": "random-init, per-depth mean over seeds"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::stable_rank_untrained_sd",
+    "value": [
+      0.675,
+      0.287,
+      1.945,
+      1.609,
+      1.018,
+      1.761,
+      1.357,
+      2.761,
+      1.884,
+      0.246,
+      1.893,
+      2.633
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "sd(stable_rank)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::effective_dim_untrained",
+    "value": [
+      92.769,
+      126.266,
+      157.924,
+      188.266,
+      219.976,
+      255.915,
+      295.993,
+      341.544,
+      394.665,
+      458.116,
+      536.788,
+      636.251
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "effective_dim",
+    "note": "random-init, per-depth mean over seeds"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::effective_dim_untrained_sd",
+    "value": [
+      1.144,
+      0.994,
+      1.178,
+      1.051,
+      1.394,
+      0.764,
+      1.084,
+      1.122,
+      0.905,
+      1.452,
+      1.313,
+      2.327
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "sd(effective_dim)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::autocorrelation_untrained",
+    "value": [
+      -0.004,
+      0.066,
+      0.074,
+      0.078,
+      0.079,
+      0.077,
+      0.075,
+      0.074,
+      0.072,
+      0.071,
+      0.069,
+      0.067
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "autocorrelation",
+    "note": "random-init, per-depth mean over seeds"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::autocorrelation_untrained_sd",
+    "value": [
+      0.013,
+      0.008,
+      0.002,
+      0.004,
+      0.003,
+      0.003,
+      0.003,
+      0.002,
+      0.002,
+      0.001,
+      0.002,
+      0.002
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "sd(autocorrelation)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::next_token_acc_untrained",
+    "value": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "next_token_acc",
+    "note": "random-init, per-depth mean over seeds"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder::next_token_acc_untrained_sd",
+    "value": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "sd(next_token_acc)",
+    "note": "across-seed std"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_stable_rank_untrained_end",
+    "value": 345.837,
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "stable_rank[-1]",
+    "note": "untrained output rank is highest \u2014 no motor collapse"
+  },
+  {
+    "dataset": "gpt2",
+    "metric": "decoder_nexttok_untrained_final",
+    "value": 0.0,
+    "asset": "person2vec-untrained-gpt2-seed1..3.json",
+    "path": "next_token_acc[-1]",
+    "note": "untrained next-token accuracy \u2248 chance"
   },
   {
     "dataset": "gpt2",

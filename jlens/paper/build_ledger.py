@@ -47,6 +47,36 @@ def r3(x):
     return round(x, 3) if isinstance(x, float) else x
 
 
+def _sd(xs):
+    if len(xs) < 2:
+        return 0.0
+    m = sum(xs) / len(xs)
+    return (sum((x - m) ** 2 for x in xs) / (len(xs) - 1)) ** 0.5
+
+
+def untrained_agg(prefix, get, keys, seeds=(1, 2, 3)):
+    """Aggregate the random-init control (§7) across available seed bundles.
+
+    `get(bundle, key)` extracts one per-layer list. Returns {key: {"mean":[...],
+    "sd":[...]}, "_n": n_seeds} — per-layer mean and across-seed sample std."""
+    bundles = []
+    for s in seeds:
+        b = load(f"person2vec-untrained-{prefix}-seed{s}.json")
+        if b:
+            bundles.append(b)
+    out = {"_n": len(bundles)}
+    for k in keys:
+        cols = [get(b, k) for b in bundles if get(b, k)]
+        if not cols:
+            continue
+        L = len(cols[0])
+        out[k] = {
+            "mean": [sum(c[i] for c in cols) / len(cols) for i in range(L)],
+            "sd": [_sd([c[i] for c in cols]) for i in range(L)],
+        }
+    return out
+
+
 def cosine_nn(vec, centroids):
     """Vectors are L2-normalized => cosine == dot. Return (max_cos, argmax)."""
     best, bi = -2.0, -1
@@ -132,6 +162,27 @@ for key, label, core_fn in DATASETS:
             add(key, "cka_offdiag_mean", r3(sum(off) / len(off)), fn,
                 "mean off-diag structural.cka", "")
             add(key, "cka_offdiag_min", r3(min(off)), fn, "min off-diag structural.cka", "")
+
+    # ---- untrained-model control (§7): random-init structural signatures ----
+    un = untrained_agg(key, lambda b, kk: b.get("structural", {}).get(kk),
+                       ("stable_rank", "effective_dim", "verbalizability", "autocorrelation"))
+    if un["_n"]:
+        ufn = f"person2vec-untrained-{key}-seed1..{un['_n']}.json"
+        add(key, "structural_untrained_seeds", un["_n"], ufn, "seed files", "random-init control")
+        for sk in ("stable_rank", "effective_dim", "verbalizability", "autocorrelation"):
+            if sk in un:
+                add(key, f"structural::{sk}_untrained", [r3(v) for v in un[sk]["mean"]],
+                    ufn, f"structural.{sk}", "random-init, per-layer mean over seeds")
+                add(key, f"structural::{sk}_untrained_sd", [r3(v) for v in un[sk]["sd"]],
+                    ufn, f"sd(structural.{sk})", "across-seed std")
+        if "autocorrelation" in un:
+            add(key, "structural::autocorr_untrained_absmax",
+                r3(max(abs(v) for v in un["autocorrelation"]["mean"])),
+                ufn, "max|autocorrelation|", "untrained autocorrelation ≈ 0 at every depth")
+        if "stable_rank" in un:
+            sr = un["stable_rank"]["mean"]
+            add(key, "structural::stable_rank_untrained_ends", [r3(sr[0]), r3(sr[-1])],
+                ufn, "[stable_rank[0], stable_rank[-1]]", "untrained rank rises monotonically with depth")
 
     # ---- identity bundle: identity-across-depth ----
     idb = load(f"person2vec-identity-{key}.json")
@@ -235,6 +286,25 @@ if dec:
         f"peak at layer {ed.index(max(ed))}; ends {r3(ed[-1])}")
     add("gpt2", "decoder_nexttok_final", r3(dec["next_token_acc"][-1]), fn,
         "next_token_acc[-1]", "final-depth logit-lens next-token accuracy")
+
+# ---- untrained-model control (GPT-2): random-init decoder structural (§7) ----
+undec = untrained_agg("gpt2", lambda b, kk: b.get(kk),
+                      ("stable_rank", "effective_dim", "autocorrelation", "next_token_acc"))
+if undec["_n"]:
+    ufn = f"person2vec-untrained-gpt2-seed1..{undec['_n']}.json"
+    add("gpt2", "decoder_untrained_seeds", undec["_n"], ufn, "seed files", "random-init control")
+    for k in ("stable_rank", "effective_dim", "autocorrelation", "next_token_acc"):
+        if k in undec:
+            add("gpt2", f"decoder::{k}_untrained", [r3(v) for v in undec[k]["mean"]],
+                ufn, k, "random-init, per-depth mean over seeds")
+            add("gpt2", f"decoder::{k}_untrained_sd", [r3(v) for v in undec[k]["sd"]],
+                ufn, f"sd({k})", "across-seed std")
+    if "stable_rank" in undec:
+        add("gpt2", "decoder_stable_rank_untrained_end", r3(undec["stable_rank"]["mean"][-1]),
+            ufn, "stable_rank[-1]", "untrained output rank is highest — no motor collapse")
+    if "next_token_acc" in undec:
+        add("gpt2", "decoder_nexttok_untrained_final", r3(undec["next_token_acc"]["mean"][-1]),
+            ufn, "next_token_acc[-1]", "untrained next-token accuracy ≈ chance")
 
 # ---- decoder directed-modulation (GPT-2) ----
 sti = load("person2vec-decoder-steer-gpt2.json")

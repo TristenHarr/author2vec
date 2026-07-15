@@ -8,6 +8,7 @@
 pub mod bert;
 pub mod gpt2;
 pub mod jina;
+pub mod randinit;
 
 /// A loaded interpretability model — the authors encoder (BERT/MiniLM) or the coders
 /// encoder (JinaBERT). Both expose per-layer hidden states, a forward-from-layer path,
@@ -126,6 +127,22 @@ impl Harness {
         let cfg_bytes = std::fs::read(repo.get("config.json").context("download config.json")?)?;
         let tok_path = repo.get("tokenizer.json").context("download tokenizer.json")?;
         let weights = repo.get("model.safetensors").context("download model.safetensors")?;
+        // Untrained-model control (§7): swap in a randomly-initialized twin of this checkpoint.
+        let weights = match crate::randinit::random_init_seed() {
+            Some(seed) => {
+                let init_range = serde_json::from_slice::<serde_json::Value>(&cfg_bytes)
+                    .ok()
+                    .and_then(|v| v.get("initializer_range").and_then(|x| x.as_f64()))
+                    .unwrap_or(0.02);
+                eprintln!("  ⚠ RANDOM-INIT control (seed={seed}, init_range={init_range}) — UNTRAINED weights");
+                crate::randinit::random_init_checkpoint(
+                    &weights,
+                    crate::randinit::InitSpec { init_range, residual_nlayer: None },
+                    seed,
+                )?
+            }
+            None => weights,
+        };
         let mut tok = Tokenizer::from_file(tok_path).map_err(|e| anyhow!("tokenizer: {e}"))?;
         tok.with_truncation(Some(TruncationParams {
             max_length: MAX_LEN,
